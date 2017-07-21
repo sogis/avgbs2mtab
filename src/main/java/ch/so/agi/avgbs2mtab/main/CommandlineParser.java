@@ -3,6 +3,7 @@ package ch.so.agi.avgbs2mtab.main;
 /**
  * Created by bjsvwsch on 04.07.17.
  */
+
 import org.apache.commons.cli.*;
 
 import java.util.logging.Level;
