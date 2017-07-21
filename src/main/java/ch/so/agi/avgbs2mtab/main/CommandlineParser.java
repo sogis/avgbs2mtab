@@ -8,9 +8,6 @@ import java.util.logging.Logger;
 /**
  * Defines which arguments can be used as commandline options
  */
-
-
-
 public class CommandlineParser {
     private static final Logger log = Logger.getLogger(CommandlineParser.class.getName());
     private String[] args = null;
