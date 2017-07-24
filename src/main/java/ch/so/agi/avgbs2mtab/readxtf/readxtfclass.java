@@ -1,8 +1,6 @@
 package ch.so.agi.avgbs2mtab.readxtf;
 
 import ch.interlis.iox.StartBasketEvent;
-import java.util.ArrayList;
-import ch.so.agi.avgbs2mtab.mutdat.readxtf;
 
 
 public class readxtfclass {
@@ -16,11 +14,10 @@ public class readxtfclass {
     }
 
     /**
-     * 
+     *
      * @param basket
      */
     public void readXtf(StartBasketEvent basket) {
-
 
 
     }
