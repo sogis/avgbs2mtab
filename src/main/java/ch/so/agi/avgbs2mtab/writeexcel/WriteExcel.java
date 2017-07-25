@@ -24,9 +24,9 @@ public interface WriteExcel {
     public Workbook writeRoundingDifference(int oldParcelNumber);
 
 
-    public Workbook writeParcelsAffectedByDPRInTemplate(List<Integer> orderedListOfParcelNumbersAffectedByDPRs);
+    public Workbook writeParcelsAffectedByDPRsInTemplate(List<Integer> orderedListOfParcelNumbersAffectedByDPRs);
 
-    public Workbook writeDPRInTemplate(List<String> orderedListOfDPR);
+    public Workbook writeDPRsInTemplate(List<String> orderedListOfDPRs);
 
     public Workbook writeDPRInflowAndOutflows(int parcelNumberAffectedByDPR, int dpr);
 
