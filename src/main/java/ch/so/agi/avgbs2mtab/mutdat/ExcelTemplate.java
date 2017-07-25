@@ -12,7 +12,7 @@ public interface ExcelTemplate {
 
     public Workbook createWorkbook(String filePath);
 
-    public Workbook createPropertyTable(Workbook excelTemplate, int newProperties, int oldProperties);
+    public Workbook createParcelTable(Workbook excelTemplate, int newParcels, int oldParcels);
 
-    public Workbook createDPRTable(Workbook excelTemplate, int Properties, int dpr);
+    public Workbook createDPRTable(Workbook excelTemplate, int parcels, int dpr);
 }

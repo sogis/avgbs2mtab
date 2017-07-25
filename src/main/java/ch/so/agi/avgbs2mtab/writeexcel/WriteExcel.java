@@ -13,23 +13,22 @@ import java.util.List;
 
 public interface WriteExcel {
 
-    public Workbook writeOldPropertiesInTemplate(List<Integer> orderedListOfOldProperties);
+    public Workbook writeOldParcelsInTemplate(List<Integer> orderedListOfOldParcelNumbers);
 
-    public Workbook writeNewPropertiesInTemplate(List<Integer> orderedListOfNewProperties);
+    public Workbook writeNewParcelsInTemplate(List<Integer> orderedListOfNewParcelNumbers);
 
-    public Workbook writeInflowAndOutflows(int oldProperty, int newProperty);
+    public Workbook writeInflowAndOutflows(int oldParcelNumber, int newParcelNumber);
 
-    public Workbook writeNewArea(int newProperty);
+    public Workbook writeNewArea(int newParcelNumber);
 
-    public Workbook writeOldArea(int oldProperty);
+    public Workbook writeRoundingDifference(int oldParcelNumber);
 
-    public Workbook writeRoundingDifference(int oldProperty);
 
-    public Workbook writePropertiesInTemplate(List<Integer> orderedListOfProperties);
+    public Workbook writeParcelsAffectedByDPRInTemplate(List<Integer> orderedListOfParcelNumbersAffectedByDPRs);
 
     public Workbook writeDPRInTemplate(List<String> orderedListOfDPR);
 
-    public Workbook writeDPRInflowAndOutflows(int property, int dpr);
+    public Workbook writeDPRInflowAndOutflows(int parcelNumberAffectedByDPR, int dpr);
 
     public Workbook writeNewDPRArea(int dpr);
 

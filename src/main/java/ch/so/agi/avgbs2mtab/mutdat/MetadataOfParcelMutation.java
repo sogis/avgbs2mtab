@@ -3,13 +3,10 @@ package ch.so.agi.avgbs2mtab.mutdat;
 /**
  * Defines which informations will be needed to create a excel-template
  */
-public interface DataOfMutation {
+public interface MetadataOfParcelMutation {
 
-    public int getNumberOfOldProperties();
+    public int getNumberOfOldParcels();
 
-    public int getNumberOfNewProperties();
+    public int getNumberOfNewParcels();
 
-    public int getNumberOfDPR();
-
-    public int getNumberOfProperties();
 }

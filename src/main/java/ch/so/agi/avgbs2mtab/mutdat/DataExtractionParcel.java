@@ -1,29 +1,19 @@
-package ch.so.agi.avgbs2mtab.writeexcel;
+package ch.so.agi.avgbs2mtab.mutdat;
 
 import java.util.List;
 
-public interface DataExtraction {
+public interface DataExtractionParcel {
 
-    public List<Integer> getOldProperties();
+    public List<Integer> getOldParcels();
 
-    public List<Integer> getNewProperties();
+    public List<Integer> getNewParcels();
 
-    public int getAddedArea(int oldProperty, int newProperty);
+    public int getAddedArea(int oldParcelNumber, int newParcelNumber);
 
-    public int getNewArea(int newProperty);
+    public int getNewArea(int newParcelNumber);
 
-    public int getOldArea(int oldProperty);
+    public int getRoundingDifference(int oldParcelNumber);
 
-    public int getRoundingDifference(int oldProperty);
 
-    public List<Integer> getProperty();
-
-    public List<Integer> getNewDPR();
-
-    public int getAddedAreaDPR(int property, int dpr);
-
-    public int getNewAreaDPR(int dpr);
-
-    public int getRoundingDifferenceDPR(int dpr);
 
 }
