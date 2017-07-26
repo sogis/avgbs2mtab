@@ -1,11 +1,11 @@
 package ch.so.agi.avgbs2mtab.mutdat;
 
 /**
- * 
+ *
  */
 public class GetAndSetDRP implements SetDRP {
     @Override
-    public void setDRPWithAdditions(AdditionNumber dpr, Addition[] add) {
+    public void setDRPWithAdditions(ParcelWithAddition dpr, Addition[] add) {
 
     }
 
