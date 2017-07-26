@@ -18,7 +18,7 @@ public class GetAndSetParcelTest {
 
         GetAndSetParcel getandset = new GetAndSetParcel();
 
-        getandset.setParcelWithAdditions(additionnumber,add);
+        getandset.setParcelAddition(additionnumber.parcelid,add.addedfromnumber,add.area);
 
         int value = getandset.getAddedArea(748,90154);
 

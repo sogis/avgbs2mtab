@@ -11,7 +11,7 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile files('./lib/commons-cli-1.4/commons-cli-1.4.jar', './lib/poi-3.16/poi-3.16.jar', './lib/poi-3.16/poi-ooxml-3.16.jar')
+    compile files('./lib/commons-cli-1.4/commons-cli-1.4.jar', './lib/poi-3.16/poi-3.16.jar', './lib/poi-3.16/poi-ooxml-3.16.jar', './lib/iox/iox.jar', './lib/iox/iox-api.jar')
     compile gradleApi()
 }
 
