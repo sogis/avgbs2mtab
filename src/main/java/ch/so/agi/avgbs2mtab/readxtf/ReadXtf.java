@@ -4,13 +4,13 @@ package ch.so.agi.avgbs2mtab.readxtf;
 import ch.interlis.iom.IomObject;
 import ch.interlis.iox.*;
 
-import java.io.File;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
+import ch.so.agi.avgbs2mtab.mutdat.GetAndSetParcel;
+
 /**
- *
+ * This Class contains methods to read xtf-files and write specific content to a hashtable
  */
 public class ReadXtf {
 
@@ -30,8 +30,7 @@ public class ReadXtf {
      */
     private IoxReader ioxReader=null;
 
-
-    public void readFile(String xtffilepath) {
+    public Map readFile(String xtffilepath) {
         try{
             // open xml file
             ioxReader=new ch.interlis.iom_j.xtf.XtfReader(new java.io.File(xtffilepath));
@@ -42,7 +41,7 @@ public class ReadXtf {
                 if(event instanceof ObjectEvent){
                 }else if(event instanceof StartBasketEvent){
                     StartBasketEvent se=(StartBasketEvent)event;
-                    getParcelAndNewArea(se);
+                    map = getParcelAndNewArea(se);
                 }else if(event instanceof EndBasketEvent){
                 }else if(event instanceof StartTransferEvent){
                     StartTransferEvent se=(StartTransferEvent)event;
@@ -69,18 +68,18 @@ public class ReadXtf {
                 ioxReader=null;
             }
         }
+        return map;
     }
 
     public Map getParcelAndNewArea (StartBasketEvent basket) {
-        System.out.println(basket.getType()+" (BID "+basket.getBid()+")");
         HashMap objv=new HashMap();
-        String parcelnumber;
-        String area;
-        String oldparcelnumber;
-        String oldarea;
+        int parcelnumber;
+        int area;
+        int oldparcelnumber;
+        int oldarea;
+        GetAndSetParcel getandsetter = new GetAndSetParcel();
 
         try{
-
             // loop threw basket
             IoxEvent event;
             while(true){
@@ -89,34 +88,23 @@ public class ReadXtf {
                     IomObject iomObj=((ObjectEvent)event).getIomObject();
                         objv.put(iomObj.getobjectoid(),iomObj);
                         String aclass=iomObj.getobjecttag();
-                        //EhiLogger.debug("object "+aclass);
                         if(aclass.equals(ILI_MUT+".Liegenschaft") || aclass.equals(ILI_GRUDA_MUT+".Liegenschaft")){
-                            area = iomObj.getattrvalue("Flaechenmass");
-                            parcelnumber = iomObj.getattrobj("Nummer",0).getattrvalue("Nummer");
-                            System.out.println("ParcelNumber = "+parcelnumber);
-                            System.out.println("ParcelArea = "+area);
-                            try {
-                                System.out.println("Objekte: "+iomObj.getattrvaluecount("Zugang"));
+                            area = Integer.parseInt(iomObj.getattrvalue("Flaechenmass"));
+                            parcelnumber = Integer.parseInt(iomObj.getattrobj("Nummer",0).getattrvalue("Nummer"));
+                            //System.out.println("ParcelNumber = "+parcelnumber);
+                            //System.out.println("ParcelArea = "+area);
+                            getandsetter.setParcelNewArea(parcelnumber,area);
+                            if(iomObj.getattrvaluecount("Zugang")>0) {
+                                //System.out.println("Zugänge: "+iomObj.getattrvaluecount("Zugang"));
                                 for(int i = 0; i < iomObj.getattrvaluecount("Zugang"); i++) {
-                                    oldparcelnumber = iomObj.getattrobj("Zugang",i).getattrobj("von",0).getattrvalue("Nummer");
-                                    oldarea = iomObj.getattrobj("Zugang",i).getattrvalue("Flaechenmass");
-
-                                    System.out.println("Zugang = "+oldparcelnumber);
-                                    System.out.println("Fläche = "+oldarea);
+                                    oldparcelnumber = Integer.parseInt(iomObj.getattrobj("Zugang",i).getattrobj("von",0).getattrvalue("Nummer"));
+                                    oldarea = Integer.parseInt(iomObj.getattrobj("Zugang",i).getattrvalue("Flaechenmass"));
+                                    //System.out.println("Zugang = "+oldparcelnumber);
+                                    //System.out.println("Fläche = "+oldarea);
+                                    getandsetter.setParcelAddition(parcelnumber,oldparcelnumber,oldarea);
                                 }
-                            } catch (NullPointerException e) {
                             }
                         }
-                        if(aclass.equals(ILI_MUT+".AVMutationsAnnulation") || aclass.equals(ILI_GRUDA_MUT+".AVMutationsAnnulation")){
-                            //mutannulationv.add(iomObj);
-                        }
-                        if(aclass.equals(ILI_MUT+".AVMutationBetroffeneGrundstuecke") || aclass.equals(ILI_GRUDA_MUT+".AVMutationBetroffeneGrundstuecke")){
-                            //EhiLogger.debug(iomObj.toString());
-                            //mutBetrfGs.add(iomObj);
-                        }
-                        //if(aclass.equals(ILI_GSBESCHR+".Anteil")){
-                            //anteilv.add(iomObj);
-                        //}
                 }else if(event instanceof EndBasketEvent){
                     break;
                 }else{
@@ -126,6 +114,7 @@ public class ReadXtf {
         }catch(IoxException ex){
             System.out.println("Fehler!");
         }
+        System.out.println(map.toString());
         return map;
     }
 }

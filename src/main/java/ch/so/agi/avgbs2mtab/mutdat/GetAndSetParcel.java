@@ -9,18 +9,31 @@ import java.util.Map;
 public class GetAndSetParcel implements SetParcel {
 
     Map<Integer,Map> map=new Hashtable<Integer,Map>();
+    Map<Integer,Integer> parcelmap = new Hashtable<>();
+    Map<Integer,Integer> parcelnewareamap = new Hashtable<>();
 
     @Override
     public void setParcelAddition(int newparcelnumber, int oldparcelnumber, int area) {
-        //Eintrag mit key newparcelnumber in map finden
-        //neue Map generieren falls nicht vorhanden
-        //...
-        //map.put(newparcelnumber,add.map);
+        try {
+            Map parcelmap = map.get(newparcelnumber);
+            parcelmap.put(oldparcelnumber,area);
+        } catch (NullPointerException e) {
+            parcelmap.put(oldparcelnumber,area);
+        } finally {
+            map.put(newparcelnumber,parcelmap);
+        }
+
         System.out.println("Values in setParcelAddition: "+newparcelnumber+" "+oldparcelnumber+" "+area);
     }
 
     @Override
     public void setParcelNewArea(int newparcelnumber, int newarea) {
+        try {
+            parcelnewareamap.put(newparcelnumber,newarea);
+        } catch (Exception e) {
+            System.out.println("Fehler in der Methode setParcelNewArea");
+            throw new RuntimeException(e);
+        }
 
     }
 

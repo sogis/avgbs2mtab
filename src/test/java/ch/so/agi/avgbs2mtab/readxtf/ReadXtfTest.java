@@ -2,6 +2,8 @@ package ch.so.agi.avgbs2mtab.readxtf;
 
 import org.junit.Test;
 
+import java.util.Map;
+
 import static org.junit.Assert.*;
 
 /**
@@ -11,7 +13,8 @@ public class ReadXtfTest {
     @Test
     public void readFile() throws Exception {
         ReadXtf xtfreader = new ReadXtf();
-        xtfreader.readFile("/home/bjsvwsch/codebasis_test/test.xml");
+        Map map = xtfreader.readFile("/home/bjsvwsch/codebasis_test/test.xml");
+        System.out.println(map.toString());
     }
 
     @Test
