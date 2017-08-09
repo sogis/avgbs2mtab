@@ -5,7 +5,7 @@ import org.junit.Test;
 /**
  * Created by bjsvwsch on 25.07.17.
  */
-public class GetAndSetParcelTest {
+public class ParcelContainerTest {
     @Test
     public void setParcelWithAdditions() throws Exception {
         ParcelWithAddition additionnumber = new ParcelWithAddition();
@@ -16,7 +16,7 @@ public class GetAndSetParcelTest {
         add.addedfromnumber = 90154;
         add.area = 24;
 
-        GetAndSetParcel getandset = new GetAndSetParcel();
+        ParcelContainer getandset = new ParcelContainer();
 
         getandset.setParcelAddition(additionnumber.parcelid,add.addedfromnumber,add.area);
 

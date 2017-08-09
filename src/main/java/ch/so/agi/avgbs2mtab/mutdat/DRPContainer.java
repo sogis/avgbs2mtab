@@ -1,7 +1,16 @@
 package ch.so.agi.avgbs2mtab.mutdat;
 
 /**
- * Created by bjsvwsch on 27.07.17.
+ *
  */
-public class DRPContainer {
+public class DRPContainer implements SetDRP {
+    @Override
+    public void setDRPWithAdditions(ParcelWithAddition dpr, Addition[] add) {
+
+    }
+
+    @Override
+    public void setDRPRoundingDifference(int drp, int roundingdifference) {
+
+    }
 }
