@@ -10,6 +10,8 @@ public interface SetParcel {
 
     public void setParcelOldArea(int oldparcelnumber, int oldarea);
 
+    void delParcelOldArea(int oldparcelnumber);
+
     public void setParcelRoundingDifference(int parcel, int roundingdifference);
 
 }

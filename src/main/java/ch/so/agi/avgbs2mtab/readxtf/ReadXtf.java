@@ -139,26 +139,30 @@ public class ReadXtf {
                                     int parcelnumber = Integer.parseInt(iomObj.getattrobj("Nummer", 0).getattrvalue("Nummer"));
                                     int area = Integer.parseInt(iomObj.getattrvalue("Flaechenmass"));
                                     parceldump.setParcelNewArea(parcelnumber, area);
+                                    parceldump.setParcelOldArea(parcelnumber,area); //vorläufig wird die alte Fläche = neue Fläche gesetzt.
 
                                     try {
                                         int roundingdifference = Integer.parseInt(iomObj.getattrvalue("Korrektur"));
                                         parceldump.setParcelRoundingDifference(parcelnumber, roundingdifference);
                                     } catch (NumberFormatException e) {
-                                    }
-                                    ;
-                                    try {
-                                        int oldarea = Integer.parseInt(iomObj.getattrvalue("korrigiertesFlaechenmass"));
-                                        parceldump.setParcelOldArea(parcelnumber, oldarea);
-                                    } catch (NumberFormatException e) {
-                                    }
-
+                                    };                                    ;
 
                                     if (iomObj.getattrvaluecount("Zugang") > 0) {
+                                        int additionsum = 0;
                                         for (int i = 0; i < iomObj.getattrvaluecount("Zugang"); i++) {
                                             int oldparcelnumber = Integer.parseInt(iomObj.getattrobj("Zugang", i).getattrobj("von", 0).getattrvalue("Nummer"));
                                             int additionarea = Integer.parseInt(iomObj.getattrobj("Zugang", i).getattrvalue("Flaechenmass"));
                                             parceldump.setParcelAddition(parcelnumber, oldparcelnumber, additionarea);
+                                            additionsum += additionarea;
                                         }
+                                        if(area != additionsum){
+                                            System.out.println("Parcel "+parcelnumber+" area = "+area+" additionsum = "+additionsum);
+                                            parceldump.setParcelOldArea(parcelnumber,area-additionsum);
+                                        }
+                                        else{
+                                            parceldump.delParcelOldArea(parcelnumber);
+                                        }
+
                                     }
                                 }
                             }
