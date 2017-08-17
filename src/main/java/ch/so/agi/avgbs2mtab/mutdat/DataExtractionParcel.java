@@ -14,6 +14,6 @@ public interface DataExtractionParcel {
 
     public int getRoundingDifference(int oldParcelNumber);
 
-
+    public int getRestAreaOfParcel(int oldParcelNumber);
 
 }

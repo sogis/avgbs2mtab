@@ -2,6 +2,8 @@ package ch.so.agi.avgbs2mtab.readxtf;
 
 import ch.interlis.iom.IomObject;
 import ch.interlis.iox.*;
+
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import ch.so.agi.avgbs2mtab.mutdat.SetParcel;
 
@@ -30,11 +32,12 @@ public class ReadXtf {
     }
 
     public void readFile(String xtffilepath) {
-        HashMap<String,String> map = readMetadata(xtffilepath);
-        readValues(xtffilepath, map);
+        HashMap<String,String> parcelmetadatamap = readParcelMetadata(xtffilepath);
+        HashMap<String,String[]> drpmetadatamap = readDRPMetadata(xtffilepath);
+        readValues(xtffilepath, parcelmetadatamap, drpmetadatamap);
     }
 
-    private void readValues(String xtffilepath, HashMap<String,String> metadatamap) {
+    private void readValues(String xtffilepath, HashMap<String,String> parcelmetadatamap, HashMap<String, String[]> drpmetadatamap) {
         try{
             // open xml file
             ioxReader=new ch.interlis.iom_j.xtf.XtfReader(new java.io.File(xtffilepath));
@@ -46,7 +49,8 @@ public class ReadXtf {
                 }else if(event instanceof StartBasketEvent){
                     StartBasketEvent se=(StartBasketEvent)event;
                     //Hier beginnt das eigentliche Auslesen!
-                    transferParcelAndNewArea(se, metadatamap);
+                    transferParcelAndNewArea(se, parcelmetadatamap);
+                    transferDRP(se, drpmetadatamap);
                     ///////////////////////////////////////
                 }else if(event instanceof EndBasketEvent){
                 }else if(event instanceof StartTransferEvent){
@@ -76,7 +80,35 @@ public class ReadXtf {
         }
     }
 
-    private HashMap<String,String> readMetadata(String xtffilepath) {
+    private void transferDRP(StartBasketEvent se, HashMap<String, String[]> drpmetadatamap) {
+        HashMap objv=new HashMap();
+
+        try {
+            //loop threw basket, find things and write them to the Container
+            IoxEvent event2;
+            while (true) {
+                event2 = ioxReader.read();
+                if (event2 instanceof ObjectEvent) {
+                    IomObject iomObj = ((ObjectEvent) event2).getIomObject();
+                    objv.put(iomObj.getobjectoid(), iomObj);
+                    String aclass = iomObj.getobjecttag();
+                    if (aclass.equals(ILI_MUT + ".Liegenschaft") || aclass.equals(ILI_GRUDA_MUT + ".Liegenschaft")) {
+                        if (iomObj.getattrvalue("GrundstueckArt").equals("Selbstrecht")) { //Selbstrecht.* ?
+                            if (drpmetadatamap.containsKey(iomObj.getobjectoid())) {
+                                int parcelnumber = Integer.parseInt(iomObj.getattrobj("Nummer", 0).getattrvalue("Nummer"));
+                                int fromparcelnumber = Integer.parseInt(drpmetadatamap.get(iomObj.getobjectoid())[0]);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error in transferDRP");
+        }
+
+    }
+
+    private HashMap<String,String> readParcelMetadata(String xtffilepath) {
         HashMap<String, String> map = new HashMap<String, String>();
         try{
             // open xml file
@@ -89,7 +121,51 @@ public class ReadXtf {
                 }else if(event instanceof StartBasketEvent){
                     StartBasketEvent se=(StartBasketEvent)event;
                     //Hier beginnt das Auslesen der Metadaten!
-                    map = getMetadata(se);
+                    map = getParcelMetadata(se);
+                    ///////////////////////////////////////
+                }else if(event instanceof EndBasketEvent){
+                }else if(event instanceof StartTransferEvent){
+                    StartTransferEvent se=(StartTransferEvent)event;
+                    String sender=se.getSender();
+                }else if(event instanceof EndTransferEvent){
+                    System.out.flush();
+                    ioxReader.close();
+                    ioxReader=null;
+                    break;
+                }else {
+                }
+            }
+        }catch(Exception e){
+            System.out.println("FEHLER 1");
+            throw new RuntimeException(e);
+        }
+        finally{
+            if(ioxReader!=null){
+                try{
+                    ioxReader.close();
+                }catch(IoxException ex){
+                    System.out.println(ex.getMessage());
+                }
+                ioxReader=null;
+            }
+        }
+        return map;
+    }
+
+    private HashMap<String,String[]> readDRPMetadata(String xtffilepath) {
+        HashMap<String, String[]> map = new HashMap<String, String[]>();
+        try{
+            // open xml file
+            ioxReader=new ch.interlis.iom_j.xtf.XtfReader(new java.io.File(xtffilepath));
+            // loop threw baskets
+            IoxEvent event;
+            while(true){
+                event=ioxReader.read();;
+                if(event instanceof ObjectEvent){
+                }else if(event instanceof StartBasketEvent){
+                    StartBasketEvent se=(StartBasketEvent)event;
+                    //Hier beginnt das Auslesen der Metadaten!
+                    map = getDRPMetadata(se);
                     ///////////////////////////////////////
                 }else if(event instanceof EndBasketEvent){
                 }else if(event instanceof StartTransferEvent){
@@ -178,7 +254,9 @@ public class ReadXtf {
         }
     }
 
-    private HashMap<String,String> getMetadata(StartBasketEvent basket) throws IoxException {
+
+
+    private HashMap<String,String> getParcelMetadata(StartBasketEvent basket) throws IoxException {
         // loop threw basket and find all "betroffeneGrundstuecke"
         HashMap objv=new HashMap();
         HashMap<String,String> betroffenegrundstuecke = new HashMap<String,String>();
@@ -202,5 +280,33 @@ public class ReadXtf {
             }
         }
         return betroffenegrundstuecke;
+    }
+
+    private HashMap<String,String[]> getDRPMetadata(StartBasketEvent basket) throws IoxException {
+        // loop threw basket and find all "betroffeneGrundstuecke"
+        HashMap objv=new HashMap();
+        HashMap<String,String[]> anteil = new HashMap<String,String[]>();
+        IoxEvent event;
+        while (true) {
+            event = ioxReader.read();
+            if (event instanceof ObjectEvent) {
+                IomObject iomObj = ((ObjectEvent) event).getIomObject();
+                objv.put(iomObj.getobjectoid(), iomObj);
+                String aclass = iomObj.getobjecttag();
+                if (aclass.equals(ILI_MODEL + ".Grundstuecksbeschrieb.Anteil") || aclass.equals(ILI_MODEL + ".Grundstuecksbeschrieb.Anteil")) {
+                    String drpnumber = iomObj.getattrobj("flaeche",0).getobjectrefoid();
+                    String liegt_auf = iomObj.getattrobj("liegt_auf",0).getobjectrefoid();
+                    String area = iomObj.getattrobj("Flaechenmass",0).getobjectoid();
+                    anteil.put(drpnumber, new String[]{liegt_auf, area});
+                    System.out.println(anteil.toString());
+                }
+            }
+            else if(event instanceof EndBasketEvent){
+                break;
+            }else{
+                throw new IllegalStateException("unexpected event "+event.getClass().getName());
+            }
+        }
+        return anteil;
     }
 }
