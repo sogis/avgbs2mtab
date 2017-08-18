@@ -21,14 +21,13 @@ public class ParcelContainer implements SetParcel,MetadataOfParcelMutation, Data
     public void setParcelAddition(int newparcelnumber, int oldparcelnumber, int area) {
         //Versuch die Parcelmap aus der main-map zu holen und füge den neuen Wert hinzu. Hat es noch keine Parcelmap von dieser Parzelle, dann leg eine neue an.
         //Schlussendlich füge die Parcemap (neu oder alt) wieder zur main-map hinzu.
-        try {
+        if (map.get(newparcelnumber) != null) {
             Map parcelmap = map.get(newparcelnumber);
             parcelmap.put(oldparcelnumber,area);
-        } catch (NullPointerException e) {
+        } else {
             parcelmap.put(oldparcelnumber,area);
-        } finally {
-            map.put(newparcelnumber,parcelmap);
         }
+        map.put(newparcelnumber,parcelmap);
     }
 
     @Override

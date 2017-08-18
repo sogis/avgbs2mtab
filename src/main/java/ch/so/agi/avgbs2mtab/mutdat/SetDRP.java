@@ -1,11 +1,16 @@
 package ch.so.agi.avgbs2mtab.mutdat;
 
+import java.util.HashMap;
+
 /**
  *
  */
 public interface SetDRP {
 
-    public void setDRPWithAdditions(ParcelWithAddition dpr, Addition[] add);
+    public void setDRPWithAdditions(Integer dprnumber, String laysonref, Integer area);
 
-    public void setDRPRoundingDifference(int drp, int roundingdifference);
+    void setDPRNumberAndRef(String ref, int parcelnumber);
+
+    void setDPRNewArea(Integer parcelnumber, Integer area);
+
 }

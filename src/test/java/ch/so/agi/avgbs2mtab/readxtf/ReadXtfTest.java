@@ -1,25 +1,29 @@
 package ch.so.agi.avgbs2mtab.readxtf;
 
+import ch.so.agi.avgbs2mtab.mutdat.DRPContainer;
 import ch.so.agi.avgbs2mtab.mutdat.ParcelContainer;
 import org.junit.Test;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.List;
 
+import static junit.framework.TestCase.assertTrue;
+
 /**
- * Created by bjsvwsch on 26.07.17.
+ * Unit-Tests for avgbs2mtab
  */
 public class ReadXtfTest {
 
     ParcelContainer parceldump = new ParcelContainer();
+    DRPContainer drpdump = new DRPContainer();
 
 
     @Test
-    public void readFile() throws Exception {
-        ReadXtf xtfreader = new ReadXtf(parceldump);
+    public void readFile1() throws Exception {
+        ReadXtf xtfreader = new ReadXtf(parceldump, drpdump);
         xtfreader.readFile("/home/bjsvwsch/codebasis_test/test.xml");
         int addedarea = parceldump.getAddedArea(90154,748);
-        //xtfreader.readFile("/home/bjsvwsch/codebasis_test/test2.xml");
-        //int addedarea = parceldump.getAddedArea(4004,695);
         int numberofnewparcels = parceldump.getNumberOfNewParcels();
         int numberofoldparcels = parceldump.getNumberOfOldParcels();
         List<Integer> newparcels = parceldump.getNewParcelNumbers();
@@ -27,20 +31,78 @@ public class ReadXtfTest {
         int restarea = parceldump.getRestAreaOfParcel(751);
         int newarea = parceldump.getNewArea(751);
         int rundungsdifferenz = parceldump.getRoundingDifference(753);
-        System.out.println("Addedarea from 748 to 90154 = "+addedarea);
-        System.out.println("Number of new parcels: "+numberofnewparcels);
-        System.out.println("Number of old parcels: "+numberofoldparcels);
-        System.out.println("New Parcels: "+newparcels);
-        System.out.println("Old Parcels: "+oldparcels);
-        System.out.println("Rest Area from Parcel 751 should be 1157: "+restarea);
-        System.out.println("New Area from Parcel 751 should be 1176: "+newarea);
-        System.out.println("Roundingdifference of Parcel 753 should be 1: "+rundungsdifferenz);
-
-
+        assertTrue(addedarea ==24);
+        assertTrue(numberofnewparcels == 14);
+        assertTrue(numberofoldparcels == 14);
+        List<Integer> newandoldparcelsastheyshouldbe = Arrays.asList(748,749,750,751,753,755,756,757,758,1303,1799,2097,2098,90154);
+        assertTrue(newparcels.containsAll(newandoldparcelsastheyshouldbe) && newparcels.size()==newandoldparcelsastheyshouldbe.size());
+        assertTrue(oldparcels.containsAll(newandoldparcelsastheyshouldbe) && oldparcels.size()==newandoldparcelsastheyshouldbe.size());
+        assertTrue(restarea == 1157);
+        assertTrue(newarea == 1176);
+        assertTrue(rundungsdifferenz == -1);
     }
 
     @Test
-    public void getParcelAndNewArea() throws Exception {
+    public void readFile2() throws Exception {
+        ReadXtf xtfreader = new ReadXtf(parceldump, drpdump);
+        xtfreader.readFile("/home/bjsvwsch/codebasis_test/test2.xml");
+        int addedarea = parceldump.getAddedArea(4004,695);
+        int numberofnewparcels = parceldump.getNumberOfNewParcels();
+        int numberofoldparcels = parceldump.getNumberOfOldParcels();
+        List<Integer> newparcels = parceldump.getNewParcelNumbers();
+        List<Integer> oldparcels = parceldump.getOldParcelNumbers();
+        int restarea = parceldump.getRestAreaOfParcel(701);
+        int newarea = parceldump.getNewArea(701);
+        int rundungsdifferenz = parceldump.getRoundingDifference(701);
+        assertTrue(addedarea == 242);
+        assertTrue(numberofnewparcels == 7);
+        assertTrue(numberofoldparcels == 6);
+        List<Integer> newparcelsastheyshouldbe = Arrays.asList(695,696,697,701,870,874,4004);
+        List<Integer> oldparcelsastheyshouldbe = Arrays.asList(695,696,697,701,870,874);
+        assertTrue(newparcels.containsAll(newparcelsastheyshouldbe) && newparcels.size()==newparcelsastheyshouldbe.size());
+        assertTrue(oldparcels.containsAll(oldparcelsastheyshouldbe) && oldparcels.size()==oldparcelsastheyshouldbe.size());
+        assertTrue(restarea == 1112);
+        assertTrue(newarea == 1114);
+        assertTrue(rundungsdifferenz == -1);
     }
+
+    @Test
+    public void readFileWithDRP() throws Exception {
+        ReadXtf xtfreader = new ReadXtf(parceldump, drpdump);
+        xtfreader.readFile("/home/bjsvwsch/codebasis_test/test_mit_drp.xml");
+        int numberofdrps = drpdump.getNumberOfDPRs();
+        int numberofareasafected = drpdump.getNumberOfParcelsAffectedByDPRs();
+        List<Integer> parcelsaffectedbydprs = drpdump.getParcelsAffectedByDPRs();
+        List<Integer> newdrps = drpdump.getNewDPRs();
+        int getaddedarea = drpdump.getAddedAreaDPR(2141,40051);
+        int newarea = drpdump.getNewAreaDPR(40051);
+        int roundingdifference = drpdump.getRoundingDifferenceDPR(40051);
+        assertTrue(numberofdrps==1);
+        assertTrue(numberofareasafected==2);
+        List<Integer> parcelsaffectedbydprsasitshouldbe = Arrays.asList(2141,2142);
+        List<Integer> newdrpsasitshouldbe = Arrays.asList(40051);
+        assertTrue(parcelsaffectedbydprs.containsAll(parcelsaffectedbydprsasitshouldbe) && parcelsaffectedbydprs.size()==parcelsaffectedbydprsasitshouldbe.size());
+        assertTrue(newdrps.containsAll(newdrpsasitshouldbe) && newdrps.size()==newdrpsasitshouldbe.size());
+        assertTrue(getaddedarea == 1175);
+        assertTrue(newarea == 3656);
+        assertTrue(roundingdifference == 0);
+    }
+
+    @Test
+    public void readFileWithDeleteDRP() throws Exception {
+        ReadXtf xtfreader = new ReadXtf(parceldump, drpdump);
+        xtfreader.readFile("/home/bjsvwsch/codebasis_test/test_loeschen_dpr.xml");
+        int numberofdrps = drpdump.getNumberOfDPRs();
+        List<Integer> parcelsaffectedbydprsa = drpdump.getParcelsAffectedByDPRs();
+        List<Integer> newdrps = drpdump.getNewDPRs();
+        int newarea = drpdump.getNewAreaDPR(40051);
+        assertTrue(numberofdrps==1);
+        assertTrue(parcelsaffectedbydprsa.size()==0);
+        List<Integer> newdrpsasitshouldbe = Arrays.asList(40051);
+        assertTrue(newdrps.containsAll(newdrpsasitshouldbe) && newdrps.size()==newdrpsasitshouldbe.size());
+        assertTrue(newarea==0);
+    }
+
+    
 
 }
