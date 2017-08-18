@@ -6,7 +6,7 @@ import ch.interlis.iox.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.so.agi.avgbs2mtab.mutdat.SetDRP;
+import ch.so.agi.avgbs2mtab.mutdat.SetDPR;
 import ch.so.agi.avgbs2mtab.mutdat.SetParcel;
 
 /**
@@ -21,9 +21,9 @@ public class ReadXtf {
 
     private IoxReader ioxReader=null;
     private SetParcel parceldump;
-    private SetDRP drpdump;
+    private SetDPR drpdump;
 
-    public ReadXtf(SetParcel parceldump, SetDRP drpdump) {
+    public ReadXtf(SetParcel parceldump, SetDPR drpdump) {
 
         this.parceldump = parceldump;
         this.drpdump = drpdump;

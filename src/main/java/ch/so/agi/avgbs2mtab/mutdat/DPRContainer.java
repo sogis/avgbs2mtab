@@ -1,7 +1,5 @@
 package ch.so.agi.avgbs2mtab.mutdat;
 
-import org.gradle.internal.impldep.com.jcraft.jsch.HASH;
-
 import java.util.*;
 
 /**
@@ -9,15 +7,14 @@ import java.util.*;
  */
 
 
-public class DRPContainer implements SetDRP, MetadataOfDPRMutation, DataExtractionDPR {
+public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtractionDPR {
     Map<Integer,Map> map=new Hashtable<Integer,Map>(); //Haupt Map
     HashMap<String, Integer> laysonrefandareamap = new HashMap<>(); //innere Map der Haupt-Map
     HashMap<String, Integer> numberandrefmap = new HashMap<>(); //Map mit ref (String) und Parzellennummer (int)
     HashMap<String, String> affectedparcelsmap = new HashMap<>(); //Eine kleine Map mit allen Parzellen die irgendwie betroffen sind.
     HashMap<Integer, Integer> newareamap = new HashMap<>(); //HashMap mit den gesamtflächen der DPRs.
 
-    @Override
-    public void setDRPWithAdditions(Integer dprnumber, String laysonref, Integer area) {
+    public void setDPRWithAdditions(Integer dprnumber, String laysonref, Integer area) {
         if(map.get(dprnumber) != null) {
             Map laysonrefandarea = map.get(dprnumber);
             laysonrefandarea.put(laysonref,area);
@@ -77,20 +74,20 @@ public class DRPContainer implements SetDRP, MetadataOfDPRMutation, DataExtracti
     @Override
     public List<Integer> getNewDPRs() {
         Map<Integer,Map> sortedmap = new TreeMap<>(map);
-        List<Integer> newdrps = new ArrayList<>(sortedmap.keySet());
+        List<Integer> newdprs = new ArrayList<>(sortedmap.keySet());
         for (Integer key : newareamap.keySet()) {
             if(newareamap.get(key).equals(0)) {
-                newdrps.add(key);
+                newdprs.add(key);
             }
         }
-        return newdrps;
+        return newdprs;
     }
 
     @Override
     public int getAddedAreaDPR(int parcelNumberAffectedByDPR, int dpr) {
-        Map<String,Integer> innerdrpmap = map.get(dpr);
+        Map<String,Integer> innerdprmap = map.get(dpr);
         String ref = getKeyFromValue(numberandrefmap,parcelNumberAffectedByDPR);
-        int addedarea = innerdrpmap.get(ref);
+        int addedarea = innerdprmap.get(ref);
         return addedarea;
     }
 

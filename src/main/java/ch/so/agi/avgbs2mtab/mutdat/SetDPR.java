@@ -5,9 +5,9 @@ import java.util.HashMap;
 /**
  *
  */
-public interface SetDRP {
+public interface SetDPR {
 
-    public void setDRPWithAdditions(Integer dprnumber, String laysonref, Integer area);
+    public void setDPRWithAdditions(Integer dprnumber, String laysonref, Integer area);
 
     void setDPRNumberAndRef(String ref, int parcelnumber);
 
