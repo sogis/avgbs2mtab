@@ -47,6 +47,12 @@ public interface WriteExcel {
                                  String filePath,
                                  XSSFWorkbook workbook);
 
+    public Workbook writeAreaSum(List<Integer> oldAreas,
+                                 List<Integer> newAreas,
+                                 int roundingDifference,
+                                 String filePath,
+                                 XSSFWorkbook workbook);
+
 
     public Workbook writeParcelsAffectedByDPRsInTemplate(List<Integer> orderedListOfParcelNumbersAffectedByDPRs,
                                                          String filePath,

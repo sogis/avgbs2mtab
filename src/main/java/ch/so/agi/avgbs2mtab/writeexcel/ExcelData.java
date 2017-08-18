@@ -274,29 +274,88 @@ public class ExcelData implements WriteExcel {
     }
 
 
+    @Override
+    public XSSFWorkbook writeAreaSum(List<Integer> oldAreas,
+                                 List<Integer> newAreas,
+                                 int roundingDifference,
+                                 String filePath,
+                                 XSSFWorkbook workbook){
+
+        Integer sumOldAreas = null;
+        Integer sumNewAreas = null;
+
+        for (int area : oldAreas){
+            sumOldAreas += area;
+        }
+        for (int area : newAreas){
+            sumNewAreas += area;
+        }
+
+        if (sumOldAreas != sumNewAreas + roundingDifference){
+            throw new Avgbs2MtabException("The sum of the old areas does not equal with the sum of the new areas.");
+        }
+
+        Integer numberOfOldParcels = oldAreas.size();
+        Integer numberOfNewParcels = newAreas.size();
+
+        try {
+            OutputStream ExcelFile = new FileOutputStream(filePath);
+            XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
+
+
+            Row row = xlsxSheet.getRow(5 + 2 * numberOfNewParcels);
+            Cell cell = row.getCell(1 + numberOfOldParcels);
+            cell.setCellValue(sumOldAreas);
+
+            workbook.write(ExcelFile);
+            ExcelFile.close();
+
+        } catch (FileNotFoundException e){
+            throw new RuntimeException(e);
+        } catch (IOException e){
+            throw new RuntimeException(e);
+        }
+
+
+
+
+        return null;
+    }
+
 
     @Override
-    public XSSFWorkbook writeParcelsAffectedByDPRsInTemplate(List<Integer> orderedListOfParcelNumbersAffectedByDPRs, String filePath, XSSFWorkbook workbook) {
+    public XSSFWorkbook writeParcelsAffectedByDPRsInTemplate(List<Integer> orderedListOfParcelNumbersAffectedByDPRs,
+                                                             String filePath,
+                                                             XSSFWorkbook workbook) {
         return null;
     }
 
     @Override
-    public XSSFWorkbook writeDPRsInTemplate(List<String> orderedListOfDPRs, String filePath, XSSFWorkbook workbook) {
+    public XSSFWorkbook writeDPRsInTemplate(List<String> orderedListOfDPRs,
+                                            String filePath,
+                                            XSSFWorkbook workbook) {
         return null;
     }
 
     @Override
-    public XSSFWorkbook writeDPRInflowAndOutflows(int parcelNumberAffectedByDPR, int dpr, String filePath, XSSFWorkbook workbook) {
+    public XSSFWorkbook writeDPRInflowAndOutflows(int parcelNumberAffectedByDPR,
+                                                  int dpr,
+                                                  String filePath,
+                                                  XSSFWorkbook workbook) {
         return null;
     }
 
     @Override
-    public XSSFWorkbook writeNewDPRArea(int dpr, String filePath, XSSFWorkbook workbook) {
+    public XSSFWorkbook writeNewDPRArea(int dpr,
+                                        String filePath,
+                                        XSSFWorkbook workbook) {
         return null;
     }
 
     @Override
-    public XSSFWorkbook writeDPRRoundingDifference(int dpr, String filePath, XSSFWorkbook workbook) {
+    public XSSFWorkbook writeDPRRoundingDifference(int dpr,
+                                                   String filePath,
+                                                   XSSFWorkbook workbook) {
         return null;
     }
 }
