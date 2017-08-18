@@ -9,6 +9,7 @@ public class Avgbs2MtabException  extends RuntimeException {
         public static final String TYPE_NO_ACCESS_TO_FILE = "TYPE_NO_ACCESS_TO_FILE";
         public static final String TYPE_NO_ACCESS_TO_FOLDER = "TYPE_NO_ACCESS_TO_FOLDER";
         public static final String TYPE_VALIDATION_FAILED = "TYPE_VALIDATION_FAILED";
+        public static final String TYPE_MISSING_PARCEL_IN_EXCEL = "TYPE_MISSING_PARCEL_IN_EXCEL";
 
         private String type;
 
