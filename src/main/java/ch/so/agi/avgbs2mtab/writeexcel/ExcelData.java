@@ -4,10 +4,8 @@ import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.gradle.internal.impldep.aQute.bnd.build.Run;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -281,8 +279,8 @@ public class ExcelData implements WriteExcel {
                                  String filePath,
                                  XSSFWorkbook workbook){
 
-        Integer sumOldAreas = null;
-        Integer sumNewAreas = null;
+        Integer sumOldAreas = 0;
+        Integer sumNewAreas = 0;
 
         for (int area : oldAreas){
             sumOldAreas += area;
@@ -308,7 +306,7 @@ public class ExcelData implements WriteExcel {
             cell.setCellValue(sumOldAreas);
 
             workbook.write(ExcelFile);
-            ExcelFile.close();
+            //ExcelFile.close();
 
         } catch (FileNotFoundException e){
             throw new RuntimeException(e);
@@ -316,30 +314,77 @@ public class ExcelData implements WriteExcel {
             throw new RuntimeException(e);
         }
 
-
-
-
-        return null;
+        return workbook;
     }
 
 
     @Override
     public XSSFWorkbook writeParcelsAffectedByDPRsInTemplate(List<Integer> orderedListOfParcelNumbersAffectedByDPRs,
+                                                             int newParcelNumber,
                                                              String filePath,
                                                              XSSFWorkbook workbook) {
-        return null;
+
+        int indexOfParcelRow = newParcelNumber*2 + 8;
+
+        try {
+            OutputStream ExcelFile = new FileOutputStream(filePath);
+            XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
+
+            Row row =xlsxSheet.getRow(indexOfParcelRow + 2);
+
+            Integer column = 1;
+
+            for (Integer parcelNumber : orderedListOfParcelNumbersAffectedByDPRs){
+                Cell cell =row.getCell(column);
+                cell.setCellValue(parcelNumber);
+                column++;
+            }
+            workbook.write(ExcelFile);
+            ExcelFile.close();
+        } catch (FileNotFoundException e){
+            throw new RuntimeException(e);
+        } catch (IOException e){
+            throw new RuntimeException(e);
+        }
+        return workbook;
     }
 
     @Override
-    public XSSFWorkbook writeDPRsInTemplate(List<String> orderedListOfDPRs,
+    public XSSFWorkbook writeDPRsInTemplate(List<Integer> orderedListOfDPRs,
+                                            int newParcelNumber,
                                             String filePath,
                                             XSSFWorkbook workbook) {
-        return null;
+
+        int indexOfParcelRow = newParcelNumber*2 + 12;
+
+        try {
+            OutputStream ExcelFile = new FileOutputStream(filePath);
+            XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
+
+
+            Integer rowIndex = indexOfParcelRow;
+
+            for (Integer dpr : orderedListOfDPRs){
+                Row row = xlsxSheet.getRow(rowIndex);
+                Cell cell =row.getCell(0);
+                cell.setCellValue(dpr);
+                rowIndex++;
+                rowIndex++;
+            }
+            workbook.write(ExcelFile);
+            ExcelFile.close();
+        } catch (FileNotFoundException e){
+            throw new RuntimeException(e);
+        } catch (IOException e){
+            throw new RuntimeException(e);
+        }
+        return workbook;
     }
 
     @Override
     public XSSFWorkbook writeDPRInflowAndOutflows(int parcelNumberAffectedByDPR,
                                                   int dpr,
+                                                  int area,
                                                   String filePath,
                                                   XSSFWorkbook workbook) {
         return null;

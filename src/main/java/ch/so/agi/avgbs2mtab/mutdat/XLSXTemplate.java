@@ -1,7 +1,6 @@
 package ch.so.agi.avgbs2mtab.mutdat;
 
 import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
-import org.apache.poi.ss.formula.functions.Column;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
@@ -44,7 +43,8 @@ public class XLSXTemplate implements ExcelTemplate {
     }
 
     @Override
-    public XSSFWorkbook createParcelTable(XSSFWorkbook excelTemplate,String filePath, int newParcels, int oldParcels) {
+    public XSSFWorkbook createParcelTable(XSSFWorkbook excelTemplate,String filePath, int newParcels, int oldParcels,
+                                          int parcelsAffectedByDPR) {
 
         Sheet sheet = excelTemplate.getSheet("Mutationstabelle");
 
@@ -57,8 +57,18 @@ public class XLSXTemplate implements ExcelTemplate {
             sheet.addMergedRegion(new CellRangeAddress(0,0,1,oldParcels));
             sheet.addMergedRegion(new CellRangeAddress(1,1,1,oldParcels));
         }
+
+        if (oldParcels == 0 || newParcels == 0){
+            oldParcels = 1;
+            newParcels = 1;
+        }
+
+
         sheet.setColumnWidth(0,19*253);
-        sheet.setColumnWidth(oldParcels+1,14*253);
+        if (oldParcels >= parcelsAffectedByDPR) {
+            sheet.setColumnWidth(oldParcels + 1, 14 * 253);
+            sheet.setColumnWidth(oldParcels + 2, 14 * 253);
+        }
 
         for (int i = 0; i < (newParcels*2+5) + 1; i++){
             Row row =sheet.createRow(i);
@@ -220,8 +230,8 @@ public class XLSXTemplate implements ExcelTemplate {
                         if (i==newParcels*2+5-1){
 
                             cell = row.createCell(c);
-                            XSSFCellStyle newStyle = getStyleForCell("", border_bottom,
-                                    border_top, "thick", "thick", 0, excelTemplate);
+                            XSSFCellStyle newStyle = getStyleForCell("", "thick",
+                                    "", "thick", "thick", 0, excelTemplate);
                             cell.setCellStyle(newStyle);
                             cell.setCellValue("Rundungsdifferenz");
 
@@ -263,7 +273,7 @@ public class XLSXTemplate implements ExcelTemplate {
 
 
         try {
-            FileOutputStream out = new FileOutputStream(new File("/home/barpastu/Documents/test.xlsx"));
+            FileOutputStream out = new FileOutputStream(new File(filePath));
             excelTemplate.write(out);
             //out.close();
         } catch (FileNotFoundException e){
@@ -277,8 +287,249 @@ public class XLSXTemplate implements ExcelTemplate {
     }
 
     @Override
-    public XSSFWorkbook createDPRTable(XSSFWorkbook excelTemplate, int parcels, int dpr) {
-        return null;
+    public XSSFWorkbook createDPRTable(XSSFWorkbook excelTemplate, String filePath, int parcels, int dpr,
+                                       int newParcels, int oldParcels) {
+
+        if (newParcels == 0 ){
+            newParcels = 1;
+        } else if (oldParcels == 0){
+            oldParcels = 1;
+        }
+
+        if (dpr==0){
+            dpr = 1;
+            parcels = 1;
+        }
+
+        int rowStartIndex = (9 + 2 * newParcels - 1);
+
+        Sheet sheet = excelTemplate.getSheet("Mutationstabelle");
+
+        if (parcels > oldParcels) {
+            sheet.setColumnWidth(parcels+1,14*253);
+            sheet.setColumnWidth(parcels+2,14*253);
+        }
+
+        Cell cell;
+
+        if (parcels>1){
+            sheet.addMergedRegion(new CellRangeAddress(rowStartIndex, rowStartIndex,1, parcels));
+            sheet.addMergedRegion(new CellRangeAddress(rowStartIndex + 1,rowStartIndex + 1,
+                    1, parcels));
+        }
+        sheet.addMergedRegion((new CellRangeAddress(rowStartIndex + 1, rowStartIndex + 2,
+                parcels + 1, parcels + 1)));
+
+
+        for (int i = rowStartIndex; i < (rowStartIndex + 3 + 2 * dpr); i++) {
+            Row row = sheet.createRow(i);
+            if (i == rowStartIndex) {
+                for (int c = 1; c <= parcels; c++) {
+                    cell = row.createCell(c);
+                    cell.setCellValue("Liegenschaften");
+                    if (c == 1) {
+                        if (parcels == 1) {
+                            XSSFCellStyle newStyle = getStyleForCell("lightGray", "",
+                                    "thick", "thick", "thick", 0, excelTemplate);
+                            cell.setCellStyle(newStyle);
+                        } else if (parcels > 1) {
+                            XSSFCellStyle newStyle = getStyleForCell("lightGray", "",
+                                    "thick", "thick", "", 0, excelTemplate);
+                            cell.setCellStyle(newStyle);
+                        }
+                    } else if (c == parcels && parcels != 1) {
+                        XSSFCellStyle newStyle = getStyleForCell("lightGray", "",
+                                "thick", "", "thick", 0, excelTemplate);
+                        cell.setCellStyle(newStyle);
+                    } else {
+                        XSSFCellStyle newStyle = getStyleForCell("lightGray", "",
+                                "thick", "", "", 0, excelTemplate);
+                        cell.setCellStyle(newStyle);
+                    }
+                }
+                row.setHeight((short) 600);
+
+
+            } else if (i == rowStartIndex + 1) {
+                for (int c = 0; c <= parcels + 2; c++){
+                    cell = row.createCell(c);
+
+                    if (c==0){
+                        XSSFCellStyle newStyle = getStyleForCell("lightGray", "thin",
+                                "thick", "thick", "thick", 0, excelTemplate);
+                        newStyle.setVerticalAlignment(VerticalAlignment.BOTTOM);
+                        cell.setCellStyle(newStyle);
+                        cell.setCellValue("Selbst. Recht");
+
+                    } else if (c==1) {
+                        if (parcels == 1) {
+                            XSSFCellStyle newStyle = getStyleForCell("lightGray", "thin",
+                                    "thin", "thick", "thin", 0, excelTemplate);
+                            cell.setCellStyle(newStyle);
+                        } else if (parcels > 1) {
+                            XSSFCellStyle newStyle = getStyleForCell("lightGray", "thin",
+                                    "thin", "thick", "thin", 0, excelTemplate);
+                            cell.setCellStyle(newStyle);
+                        }
+                        cell.setCellValue("Grundstück-Nr.");
+                    } else if (c==parcels && parcels!=1){
+                        XSSFCellStyle newStyle = getStyleForCell("lightGray", "thin",
+                                "thin", "thin", "thin", 0, excelTemplate);
+                        cell.setCellStyle(newStyle);
+                    } else if (c<parcels) {
+                        XSSFCellStyle newStyle = getStyleForCell("lightGray", "thin",
+                                "thin", "thin", "thin", 0, excelTemplate);
+                        cell.setCellStyle(newStyle);
+                    } else if (c==parcels+1){
+                        XSSFCellStyle newStyle = getStyleForCell("lightGray", "",
+                                "thick", "thin", "thick", 0, excelTemplate);
+                        cell.setCellStyle(newStyle);
+                        if (parcels >= oldParcels) {
+                            cell.setCellValue("Rundungs-differenz");
+                        } else {
+                            cell.setCellValue("Rundungsdifferenz");
+                        }
+                    }else if (c==parcels + 2){
+                        XSSFCellStyle newStyle = getStyleForCell("lightGray", "thin",
+                                "thick", "thick", "thick", 0, excelTemplate);
+                        cell.setCellStyle(newStyle);
+                        cell.setCellValue("Selbst. Recht Fläche");
+                    }
+                }
+
+
+                row.setHeight((short) 600);
+            } else if (i == rowStartIndex + 2) {
+                for (int c = 0; c <= parcels + 2; c++) {
+                    cell = row.createCell(c);
+
+                    if (c == 0) {
+                        XSSFCellStyle newStyle = getStyleForCell("lightGray", "thick",
+                                "thin", "thick", "thick", 0, excelTemplate);
+                        newStyle.setVerticalAlignment(VerticalAlignment.BOTTOM);
+                        cell.setCellStyle(newStyle);
+                        cell.setCellValue("Grundstück-Nr.");
+
+                    } else if (c == 1) {
+                        XSSFCellStyle newStyle = getStyleForCell("", "thick", "thin",
+                                "thick", "thin", 2, excelTemplate);cell.setCellStyle(newStyle);
+                    } else if (c <= parcels && parcels != 1) {
+                        XSSFCellStyle newStyle = getStyleForCell("", "thick",
+                                "thin", "thin", "thin", 2, excelTemplate);
+                        cell.setCellStyle(newStyle);
+                    } else if (c == parcels + 1) {
+                        XSSFCellStyle newStyle = getStyleForCell("lightGray", "thick",
+                                "", "thin", "thick", 0, excelTemplate);
+                        cell.setCellStyle(newStyle);
+                    } else if (c == parcels + 2) {
+                        XSSFCellStyle newStyle = getStyleForCell("lightGray", "thick",
+                                "thin", "thick", "thick", 0, excelTemplate);
+                        cell.setCellStyle(newStyle);
+                        cell.setCellValue("[m2]");
+                    }
+                }
+
+
+                row.setHeight((short) 600);
+            }  else {
+                String border_bottom;
+                String border_top;
+
+                if ((i-rowStartIndex) % 2 == 0){
+                    border_bottom = "thin";
+                    border_top = "";
+                } else {
+                    border_bottom = "";
+                    border_top = "thin";
+                }
+                for (int c = 0; c <= parcels + 2; c++) {
+                    cell = row.createCell(c);
+
+                    if (c == 0) {
+                        if (i==dpr * 2 + rowStartIndex + 2){
+
+                            cell = row.createCell(c);
+                            XSSFCellStyle newStyle = getStyleForCell("", "thick",
+                                "", "thick", "thick", 2, excelTemplate);
+                            cell.setCellStyle(newStyle);
+
+                        } else {
+                            XSSFCellStyle newStyle = getStyleForCell("", border_bottom,
+                                    border_top, "thick", "thick", 2, excelTemplate);
+                            cell.setCellStyle(newStyle);
+                        }
+
+                    } else if (c == 1) {
+                        if (i==dpr * 2 + rowStartIndex + 2){
+
+                            cell = row.createCell(c);
+                            XSSFCellStyle newStyle = getStyleForCell("", "thick",
+                                    "", "thick", "thin", 2, excelTemplate);
+                            cell.setCellStyle(newStyle);
+
+                        } else {
+                            XSSFCellStyle newStyle = getStyleForCell("", border_bottom,
+                                    border_top, "thick", "thin", 2, excelTemplate);
+                            cell.setCellStyle(newStyle);
+                        }
+                    } else if (c <= parcels && parcels != 1) {
+                        if (i==dpr * 2 + rowStartIndex + 2){
+
+                            cell = row.createCell(c);
+                            XSSFCellStyle newStyle = getStyleForCell("", "thick",
+                                    "", "thin", "thin", 2, excelTemplate);
+                            cell.setCellStyle(newStyle);
+
+                        } else {
+                            XSSFCellStyle newStyle = getStyleForCell("", border_bottom,
+                                    border_top, "thin", "thin", 2, excelTemplate);
+                            cell.setCellStyle(newStyle);
+                        }
+                    } else if (c == parcels + 1) {
+                        if (i==dpr * 2 + rowStartIndex + 2){
+
+                            cell = row.createCell(c);
+                            XSSFCellStyle newStyle = getStyleForCell("", "thick",
+                                    "", "thin", "thick", 2, excelTemplate);
+                            cell.setCellStyle(newStyle);
+
+                        } else {
+                            XSSFCellStyle newStyle = getStyleForCell("", border_bottom,
+                                    border_top, "thin", "thick", 2, excelTemplate);
+                            cell.setCellStyle(newStyle);
+                        }
+                    } else if (c == parcels + 2) {
+                        if (i==dpr * 2 + rowStartIndex + 2){
+
+                            cell = row.createCell(c);
+                            XSSFCellStyle newStyle = getStyleForCell("", "thick",
+                                    "", "thick", "thick", 2, excelTemplate);
+                            cell.setCellStyle(newStyle);
+
+                        } else {
+                            XSSFCellStyle newStyle = getStyleForCell("", border_bottom,
+                                    border_top, "thick", "thick", 2, excelTemplate);
+                            cell.setCellStyle(newStyle);
+                        }
+                    }
+                }
+            }
+        }
+
+
+        try {
+
+            //todo: change path
+            FileOutputStream out = new FileOutputStream(new File("/home/barpastu/Documents/test.xlsx"));
+            excelTemplate.write(out);
+            //out.close();
+        } catch (FileNotFoundException e){
+
+        } catch (IOException e) {
+
+        }
+
+        return (XSSFWorkbook) excelTemplate;
     }
 
 

@@ -8,7 +8,9 @@ public interface ExcelTemplate {
 
     public XSSFWorkbook createWorkbook(String filePath);
 
-    public XSSFWorkbook createParcelTable(XSSFWorkbook excelTemplate, String filePath, int newParcels, int oldParcels);
+    public XSSFWorkbook createParcelTable(XSSFWorkbook excelTemplate, String filePath, int newParcels, int oldParcels,
+                                          int parcelsAffectedByDPR);
 
-    public XSSFWorkbook createDPRTable(XSSFWorkbook excelTemplate, int parcels, int dpr);
+    public XSSFWorkbook createDPRTable(XSSFWorkbook excelTemplate, String filePath, int parcels, int dpr,
+                                       int newParcels, int oldParcels);
 }

@@ -1,13 +1,6 @@
 package ch.so.agi.avgbs2mtab.writeexcel;
 
-
-import com.sun.xml.internal.ws.api.pipe.FiberContextSwitchInterceptor;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.util.CellReference;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.util.List;
@@ -55,15 +48,18 @@ public interface WriteExcel {
 
 
     public Workbook writeParcelsAffectedByDPRsInTemplate(List<Integer> orderedListOfParcelNumbersAffectedByDPRs,
+                                                         int newParcelNumber,
                                                          String filePath,
                                                          XSSFWorkbook workbook);
 
-    public Workbook writeDPRsInTemplate(List<String> orderedListOfDPRs,
+    public Workbook writeDPRsInTemplate(List<Integer> orderedListOfDPRs,
+                                        int newParcelNumber,
                                         String filePath,
                                         XSSFWorkbook workbook);
 
     public Workbook writeDPRInflowAndOutflows(int parcelNumberAffectedByDPR,
                                               int dpr,
+                                              int area,
                                               String filePath,
                                               XSSFWorkbook workbook);
 

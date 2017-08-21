@@ -1,10 +1,9 @@
 package ch.so.agi.avgbs2mtab.mutdat;
 
 import ch.so.agi.avgbs2mtab.writeexcel.ExcelData;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.*;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,165 +28,60 @@ public class XLSXTemplateTest {
 
         try {
             xlsxTemplate.createWorkbook(filePath);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
     }
 
-
     @Test
-    public void OldParcelsCorrectlyWrittenToExcel() throws Exception {
-
+    public void CorrectStyledCellsInExcel() throws Exception {
         File excelFile = folder.newFile("test.xlsx");
         String filePath = excelFile.getAbsolutePath();
 
         XLSXTemplate xlsxTemplate = new XLSXTemplate();
-        ExcelData excelData = new ExcelData();
-
 
         List<Integer> oldParcels = generateOldParcels();
         List<Integer> newParcels = generateNewParcels();
+        List<Integer> parcels = generateParcels();
+        List<Integer> dpr = generateDPR();
 
         try {
             XSSFWorkbook newWorkbook = xlsxTemplate.createWorkbook(filePath);
-            newWorkbook = xlsxTemplate.createParcelTable(newWorkbook,filePath, newParcels.size(),oldParcels.size());
-            newWorkbook = excelData.writeOldParcelsInTemplate(oldParcels, filePath, newWorkbook);
-            Assert.assertTrue(checkOldParcels(newWorkbook));
+            newWorkbook = xlsxTemplate.createParcelTable(newWorkbook, filePath, newParcels.size(), oldParcels.size(), parcels.size());
+            newWorkbook = xlsxTemplate.createDPRTable(newWorkbook, filePath, parcels.size(), dpr.size(),
+                    newParcels.size(), oldParcels.size());
 
-        } catch (Exception e){
-            throw new RuntimeException(e);
-        }
+            Assert.assertTrue(checkStylingOfExcelCells(newWorkbook));
 
-    }
-
-    @Test
-    public void NewParcelsCorrectlyWrittenToExcel() throws Exception {
-
-        File excelFile = folder.newFile("test.xlsx");
-        String filePath = excelFile.getAbsolutePath();
-
-        XLSXTemplate xlsxTemplate = new XLSXTemplate();
-        ExcelData excelData = new ExcelData();
-
-        try {
-            XSSFWorkbook newWorkbook = insertParcels(filePath,xlsxTemplate,excelData);
-            Assert.assertTrue(checkNewParcels(newWorkbook));
-
-        } catch (Exception e){
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    @Test
-    public void OutflowsCorrectlyWrittenToExcel() throws Exception{
-        File excelFile = folder.newFile("test.xlsx");
-        String filePath = excelFile.getAbsolutePath();
-
-        XLSXTemplate xlsxTemplate = new XLSXTemplate();
-        ExcelData excelData = new ExcelData();
-
-        try {
-            XSSFWorkbook newWorkbook = insertParcels(filePath,xlsxTemplate,excelData);
-            newWorkbook = insertInflowAndOutflows(filePath, newWorkbook, excelData);
-            Assert.assertTrue(checkInflowsOutflows(newWorkbook));
-
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Test
-    public void InsertRoundingDifferencesCorrectly() throws Exception{
+    public void CorrectStyledCellsInExcelWithoutAnyParcelsAndDPRs() throws Exception {
         File excelFile = folder.newFile("test.xlsx");
         String filePath = excelFile.getAbsolutePath();
 
         XLSXTemplate xlsxTemplate = new XLSXTemplate();
-        ExcelData excelData = new ExcelData();
+
+        int oldParcels = 0;
+        int newParcels = 0;
+        int parcels = 0;
+        int dpr = 0;
 
         try {
-            XSSFWorkbook newWorkbook = insertParcels(filePath,xlsxTemplate,excelData);
+            XSSFWorkbook newWorkbook = xlsxTemplate.createWorkbook(filePath);
+            newWorkbook = xlsxTemplate.createParcelTable(newWorkbook, filePath, newParcels, oldParcels, parcels);
+            newWorkbook = xlsxTemplate.createDPRTable(newWorkbook, filePath, parcels, dpr,
+                    newParcels, oldParcels);
 
-            newWorkbook = insertRoundingDifferences(filePath, newWorkbook, excelData);
+            Assert.assertTrue(checkStylingOfExcelCellsWithoutAnyParcelsAndDPRs(newWorkbook));
 
-            Assert.assertTrue(checkRoundingDifferences(newWorkbook));
-
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Test
-    public void CalculateOldAreasCorrectly() throws Exception {
-        File excelFile = folder.newFile("test.xlsx");
-        String filePath = excelFile.getAbsolutePath();
-
-        XLSXTemplate xlsxTemplate = new XLSXTemplate();
-        ExcelData excelData = new ExcelData();
-
-        try {
-            XSSFWorkbook newWorkbook = insertParcels(filePath,xlsxTemplate,excelData);
-
-
-
-            newWorkbook = excelData.writeOldArea(695,areasOldParcels695(),-1,filePath, newWorkbook);
-            newWorkbook = excelData.writeOldArea(696,areasOldParcels696(),0,filePath, newWorkbook);
-            newWorkbook = excelData.writeOldArea(697,areasOldParcels697(),-1,filePath, newWorkbook);
-
-
-            Assert.assertTrue(checkOldAreas(newWorkbook));
-
-        } catch (Exception e){
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    @Test
-    public void CalculateNewAreasCorrectly() throws Exception {
-        File excelFile = folder.newFile("test.xlsx");
-        String filePath = excelFile.getAbsolutePath();
-
-        XLSXTemplate xlsxTemplate = new XLSXTemplate();
-        ExcelData excelData = new ExcelData();
-
-
-        try {
-            XSSFWorkbook newWorkbook = insertParcels(filePath,xlsxTemplate,excelData);
-
-            newWorkbook = excelData.writeAreaSum(oldAreas(),newAreas(),-1, filePath, newWorkbook);
-
-
-            Assert.assertTrue(checkSumOfAreas(newWorkbook));
-
-        } catch (Exception e){
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    @Test
-    public void CalculateSumOfAreasCorrectly() throws Exception {
-        File excelFile = folder.newFile("test.xlsx");
-        String filePath = excelFile.getAbsolutePath();
-
-        XLSXTemplate xlsxTemplate = new XLSXTemplate();
-        ExcelData excelData = new ExcelData();
-
-
-        try {
-            XSSFWorkbook newWorkbook = insertParcels(filePath,xlsxTemplate,excelData);
-
-            newWorkbook = insertNewAreas(filePath, newWorkbook, excelData);
-
-
-            Assert.assertTrue(checkNewAreas(newWorkbook));
-
-        } catch (Exception e){
-            throw new RuntimeException(e);
-        }
-
     }
 
     private List<Integer> generateOldParcels() {
@@ -202,7 +96,7 @@ public class XLSXTemplateTest {
         return oldparcels;
     }
 
-    private List <Integer> generateNewParcels() {
+    private List<Integer> generateNewParcels() {
         List<Integer> newParcels = new ArrayList<>();
         newParcels.add(695);
         newParcels.add(696);
@@ -215,323 +109,262 @@ public class XLSXTemplateTest {
         return newParcels;
     }
 
-    private boolean checkOldParcels(XSSFWorkbook workbook){
+    private List<Integer> generateParcels() {
+        List<Integer> parcels = new ArrayList<>();
+        parcels.add(2174);
+        parcels.add(2175);
+        parcels.add(2176);
+        parcels.add(2174);
+        parcels.add(2175);
+        parcels.add(2176);
+        parcels.add(2174);
+        parcels.add(2175);
+        parcels.add(2176);
+
+        return parcels;
+    }
+
+    private List<Integer> generateDPR() {
+        List<Integer> dpr = new ArrayList<>();
+        dpr.add(40053);
+        dpr.add(15828);
+
+        return dpr;
+    }
+
+    private boolean checkStylingOfExcelCells(XSSFWorkbook workbook) {
+
         XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
 
-        boolean allOldParcelsAreCorrect = true;
+        boolean allCellsAreCorrectlyStyled = true;
 
-        Row row = xlsxSheet.getRow(2);
-        for (Cell cell : row){
-            if (cell.getColumnIndex()== 1){
-                if(cell.getNumericCellValue()!=695){
-                    allOldParcelsAreCorrect = false;
+        XSSFColor lightGray = new XSSFColor(new java.awt.Color(217, 217, 217));
+
+        for (int i = 0; i < 20; i++) {
+            XSSFRow row = xlsxSheet.getRow(i);
+            if (i == 0) {
+                for (int c = 1; c <= 6; c++) {
+                    XSSFCell cell = row.getCell(c);
+                    if (!cell.getCellStyle().getFillForegroundXSSFColor().equals(lightGray)) {
+                        allCellsAreCorrectlyStyled = false;
+                    }
                 }
-            } else if (cell.getColumnIndex()== 2) {
-                if (cell.getNumericCellValue() != 696) {
-                    allOldParcelsAreCorrect = false;
+            } else if (i == 1) {
+                for (int c = 0; c <= 6 + 1; c++) {
+                    XSSFCell cell = row.getCell(c);
+                    if (!cell.getCellStyle().getFillForegroundXSSFColor().equals(lightGray)) {
+                        allCellsAreCorrectlyStyled = false;
+                    }
                 }
-            } else if (cell.getColumnIndex()== 3) {
-                if (cell.getNumericCellValue() != 697) {
-                    allOldParcelsAreCorrect = false;
-                }
-            } else if (cell.getColumnIndex()== 4) {
-                if (cell.getNumericCellValue() != 701) {
-                    allOldParcelsAreCorrect = false;
-                }
-            }  else if (cell.getColumnIndex()== 5) {
-                if (cell.getNumericCellValue() != 870) {
-                    allOldParcelsAreCorrect = false;
-                }
-            } else if (cell.getColumnIndex()== 6) {
-                if (cell.getNumericCellValue() != 874) {
-                    allOldParcelsAreCorrect = false;
-                }
-            }
-        }
-        return allOldParcelsAreCorrect;
-    }
 
-    private XSSFWorkbook insertParcels(String filePath, XLSXTemplate xlsxTemplate, ExcelData excelData) {
-
-        List<Integer> oldParcels = generateOldParcels();
-        List<Integer> newParcels = generateNewParcels();
-
-        XSSFWorkbook newWorkbook = xlsxTemplate.createWorkbook(filePath);
-        newWorkbook = xlsxTemplate.createParcelTable(newWorkbook,filePath, newParcels.size(),oldParcels.size());
-        newWorkbook = excelData.writeOldParcelsInTemplate(oldParcels, filePath, newWorkbook);
-        newWorkbook = excelData.writeNewParcelsInTemplate(newParcels, filePath, newWorkbook);
-
-        return newWorkbook;
-
-    }
-
-    private boolean checkNewParcels(XSSFWorkbook workbook){
-        XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
-
-        boolean allNewParcelsAreCorrect = true;
-
-        for (int i = 1; i <= 7; i++){
-            Row row = xlsxSheet.getRow(2 + 2*i);
-            Cell cell = row.getCell(0);
-
-            if (i == 1) {
-                if(cell.getNumericCellValue()!=695){
-                    allNewParcelsAreCorrect = false;
-                }
-            } else if (i == 2){
-                if(cell.getNumericCellValue()!=696){
-                    allNewParcelsAreCorrect = false;
-                }
-            } else if (i == 3){
-                if(cell.getNumericCellValue()!=697){
-                    allNewParcelsAreCorrect = false;
-                }
-            } else if (i == 4){
-                if(cell.getNumericCellValue()!=701){
-                    allNewParcelsAreCorrect = false;
-                }
-            } else if (i == 5){
-                if(cell.getNumericCellValue()!=870){
-                    allNewParcelsAreCorrect = false;
-                }
-            } else if (i == 6){
-                if(cell.getNumericCellValue()!=874){
-                    allNewParcelsAreCorrect = false;
-                }
-            } else if (i == 7){
-                if(cell.getNumericCellValue()!=4004){
-                    allNewParcelsAreCorrect = false;
-                }
-            }
-        }
-
-        return allNewParcelsAreCorrect;
-    }
-
-    private XSSFWorkbook insertInflowAndOutflows(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData) {
-        newWorkbook = excelData.writeInflowAndOutflows(695, 695,416,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(696, 696,507,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(697, 697,687,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(696, 701,1,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(697, 701,1,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(701, 701,1112,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(870, 870,611,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(874, 874,1939,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(695, 4004,242,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(696, 4004,100,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(697, 4004,129,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(701, 4004,1,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(870, 4004,39,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(874, 4004,81,filePath,newWorkbook);
-
-        return newWorkbook;
-    }
-
-    private boolean checkInflowsOutflows(XSSFWorkbook workbook){
-        XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
-
-        boolean allInflowsAndOutflowsAreCorrect = true;
-
-        for (int i = 1; i <= 7; i++) {
-            Row row = xlsxSheet.getRow(2 + 2 * i);
-            if (i == 1) {
-                Cell cell = row.getCell(1);
-                if (cell.getNumericCellValue() != 416) {
-                    allInflowsAndOutflowsAreCorrect = false;
-                }
             } else if (i == 2) {
-                Cell cell = row.getCell(2);
-                if (cell.getNumericCellValue() != 507) {
-                    allInflowsAndOutflowsAreCorrect = false;
+                XSSFCell cell = row.getCell(0);
+                if (!cell.getCellStyle().getFillForegroundXSSFColor().equals(lightGray) ||
+                        !cell.getCellStyle().getBorderBottomEnum().equals(BorderStyle.THICK) ||
+                        !cell.getCellStyle().getBorderTopEnum().equals(BorderStyle.THIN) ||
+                        !cell.getCellStyle().getBorderLeftEnum().equals(BorderStyle.THICK) ||
+                        !cell.getCellStyle().getBorderRightEnum().equals(BorderStyle.THICK) ||
+                        cell.getCellStyle().getIndention() != 0 ||
+                        !cell.getCellStyle().getFont().getFontName().equals("Arial") ||
+                        cell.getCellStyle().getFont().getFontHeightInPoints() != 11 ||
+                        !cell.getCellStyle().getAlignmentEnum().equals(HorizontalAlignment.CENTER) ||
+                        !cell.getCellStyle().getVerticalAlignmentEnum().equals(VerticalAlignment.CENTER) ||
+                        !cell.getStringCellValue().equals("Grundstück-Nr.")) {
+                    allCellsAreCorrectlyStyled = false;
                 }
-            } else if (i == 3) {
-                Cell cell = row.getCell(3);
-                if (cell.getNumericCellValue() != 687) {
-                    allInflowsAndOutflowsAreCorrect = false;
+
+                cell = row.getCell(1);
+                if (cell.getCellStyle().getFillForegroundXSSFColor() != null ||
+                        !cell.getCellStyle().getBorderBottomEnum().equals(BorderStyle.THICK) ||
+                        !cell.getCellStyle().getBorderTopEnum().equals(BorderStyle.THIN) ||
+                        !cell.getCellStyle().getBorderLeftEnum().equals(BorderStyle.THICK) ||
+                        !cell.getCellStyle().getBorderRightEnum().equals(BorderStyle.THIN) ||
+                        cell.getCellStyle().getIndention() != 2 ||
+                        !cell.getCellStyle().getFont().getFontName().equals("Arial") ||
+                        cell.getCellStyle().getFont().getFontHeightInPoints() != 11 ||
+                        !cell.getCellStyle().getAlignmentEnum().equals(HorizontalAlignment.RIGHT) ||
+                        !cell.getCellStyle().getVerticalAlignmentEnum().equals(VerticalAlignment.BOTTOM)) {
+                    allCellsAreCorrectlyStyled = false;
                 }
-            } else if (i == 4) {
-                if (row.getCell(2).getNumericCellValue() != 1 ||
-                        row.getCell(3).getNumericCellValue() != 1 ||
-                        row.getCell(4).getNumericCellValue() != 1112) {
-                    allInflowsAndOutflowsAreCorrect = false;
-                }
-            } else if (i == 5) {
-                Cell cell = row.getCell(5);
-                if (cell.getNumericCellValue() != 611) {
-                    allInflowsAndOutflowsAreCorrect = false;
-                }
+
             } else if (i == 6) {
-                Cell cell = row.getCell(6);
-                if (cell.getNumericCellValue() != 1939) {
-                    allInflowsAndOutflowsAreCorrect = false;
+                XSSFCell cell = row.getCell(3);
+                if (cell.getCellStyle().getFillForegroundXSSFColor() != null ||
+                        !cell.getCellStyle().getBorderBottomEnum().equals(BorderStyle.THIN) ||
+                        !cell.getCellStyle().getBorderTopEnum().equals(BorderStyle.NONE) ||
+                        !cell.getCellStyle().getBorderLeftEnum().equals(BorderStyle.THIN) ||
+                        !cell.getCellStyle().getBorderRightEnum().equals(BorderStyle.THIN) ||
+                        cell.getCellStyle().getIndention() != 2 ||
+                        !cell.getCellStyle().getFont().getFontName().equals("Arial") ||
+                        cell.getCellStyle().getFont().getFontHeightInPoints() != 11 ||
+                        !cell.getCellStyle().getAlignmentEnum().equals(HorizontalAlignment.RIGHT) ||
+                        !cell.getCellStyle().getVerticalAlignmentEnum().equals(VerticalAlignment.BOTTOM)) {
+                    allCellsAreCorrectlyStyled = false;
                 }
-            } else if (i == 7) {
-                if (row.getCell(1).getNumericCellValue() != 242 ||
-                        row.getCell(2).getNumericCellValue() != 100 ||
-                        row.getCell(3).getNumericCellValue() != 129 ||
-                        row.getCell(4).getNumericCellValue() != 1 ||
-                        row.getCell(5).getNumericCellValue() != 39 ||
-                        row.getCell(6).getNumericCellValue() != 81) {
-                    allInflowsAndOutflowsAreCorrect = false;
+
+
+            } else if (i == 18) {
+                XSSFCell cell = row.getCell(0);
+                if (cell.getCellStyle().getFillForegroundXSSFColor() != null ||
+                        !cell.getCellStyle().getBorderBottomEnum().equals(BorderStyle.THICK) ||
+                        !cell.getCellStyle().getBorderTopEnum().equals(BorderStyle.NONE) ||
+                        !cell.getCellStyle().getBorderLeftEnum().equals(BorderStyle.THICK) ||
+                        !cell.getCellStyle().getBorderRightEnum().equals(BorderStyle.THICK) ||
+                        cell.getCellStyle().getIndention() != 0 ||
+                        !cell.getCellStyle().getFont().getFontName().equals("Arial") ||
+                        cell.getCellStyle().getFont().getFontHeightInPoints() != 11 ||
+                        !cell.getCellStyle().getAlignmentEnum().equals(HorizontalAlignment.RIGHT) ||
+                        !cell.getCellStyle().getVerticalAlignmentEnum().equals(VerticalAlignment.BOTTOM) ||
+                        !cell.getStringCellValue().equals("Rundungsdifferenz")) {
+                    allCellsAreCorrectlyStyled = false;
                 }
+
             }
         }
 
-        return allInflowsAndOutflowsAreCorrect;
-    }
-
-    private XSSFWorkbook insertRoundingDifferences(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData){
-        newWorkbook = excelData.writeRoundingDifference(695, -1, filePath, newWorkbook);
-        newWorkbook = excelData.writeRoundingDifference(697, -1, filePath, newWorkbook);
-        newWorkbook = excelData.writeRoundingDifference(701, 1, filePath, newWorkbook);
-        return newWorkbook;
-    }
-
-
-    private boolean checkRoundingDifferences(XSSFWorkbook workbook){
-        XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
-
-        boolean allRoundingDifferencesAreCorrect = true;
-
-        Row row = xlsxSheet.getRow(18);
-
-        if(row.getCell(1).getNumericCellValue() != -1 ||
-                row.getCell(3).getNumericCellValue() != -1 ||
-                row.getCell(4).getNumericCellValue() != 1){
-            allRoundingDifferencesAreCorrect = false;
+        if (!xlsxSheet.getMergedRegions().contains(new CellRangeAddress(0, 0, 1, 6)) ||
+                !xlsxSheet.getMergedRegions().contains(new CellRangeAddress(1, 1, 1, 6))) {
+            allCellsAreCorrectlyStyled = false;
         }
-        return allRoundingDifferencesAreCorrect;
+
+        return allCellsAreCorrectlyStyled;
+
     }
 
-    private List<Integer> areasOldParcels695(){
-        List<Integer> areas = new ArrayList<>();
-        areas.add(416);
-        areas.add(242);
-        return areas;
-    }
+    private boolean checkStylingOfExcelCellsWithoutAnyParcelsAndDPRs(XSSFWorkbook workbook) {
 
-    private List<Integer> areasOldParcels696(){
-        List<Integer> areas = new ArrayList<>();
-        areas.add(507);
-        areas.add(1);
-        areas.add(100);
-        return areas;
-    }
-    private List<Integer> areasOldParcels697(){
-        List<Integer> areas = new ArrayList<>();
-        areas.add(687);
-        areas.add(1);
-        areas.add(129);
-        return areas;
-    }
-
-    private boolean checkOldAreas(XSSFWorkbook workbook) {
         XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
 
-        boolean allOldAreasAreCorrect = true;
+        boolean allCellsAreCorrectlyStyled = true;
 
-        Row row = xlsxSheet.getRow(19);
+        XSSFColor lightGray = new XSSFColor(new java.awt.Color(217, 217, 217));
 
-        if (row.getCell(1).getNumericCellValue() != 657 ||
-                row.getCell(2).getNumericCellValue() != 608 ||
-                row.getCell(3).getNumericCellValue() != 816) {
-            allOldAreasAreCorrect = false;
-        }
-        return allOldAreasAreCorrect;
-    }
-
-    private XSSFWorkbook insertNewAreas(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData) {
-
-
-        newWorkbook = excelData.writeNewArea(695, 416, filePath, newWorkbook);
-        newWorkbook = excelData.writeNewArea(696, 507, filePath, newWorkbook);
-        newWorkbook = excelData.writeNewArea(697, 687, filePath, newWorkbook);
-        newWorkbook = excelData.writeNewArea(701, 1114, filePath, newWorkbook);
-        newWorkbook = excelData.writeNewArea(870, 611, filePath, newWorkbook);
-        newWorkbook = excelData.writeNewArea(874, 1939, filePath, newWorkbook);
-        newWorkbook = excelData.writeNewArea(4004, 592, filePath, newWorkbook);
-
-        return newWorkbook;
-    }
-
-    private boolean checkNewAreas(XSSFWorkbook workbook){
-        XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
-
-        boolean allNewAreasAreCorrect = true;
-
-        for (int i = 1; i <= 7; i++){
-            Row row = xlsxSheet.getRow(2+2*i);
-            if (i == 1) {
-                if (row.getCell(7).getNumericCellValue() != 416) {
-                    allNewAreasAreCorrect = false;
+        for (int i = 0; i <= 14; i++) {
+            XSSFRow row = xlsxSheet.getRow(i);
+            if (i == 0) {
+                int c = 1;
+                XSSFCell cell = row.getCell(c);
+                if (!cell.getCellStyle().getFillForegroundXSSFColor().equals(lightGray)) {
+                    allCellsAreCorrectlyStyled = false;
                 }
-            } else if (i == 2){
-                if (row.getCell(7).getNumericCellValue() != 507) {
-                    allNewAreasAreCorrect = false;
+            } else if (i == 1) {
+                for (int c = 0; c <= 1 + 1; c++) {
+                    XSSFCell cell = row.getCell(c);
+                    if (!cell.getCellStyle().getFillForegroundXSSFColor().equals(lightGray)) {
+                        allCellsAreCorrectlyStyled = false;
+                    }
                 }
-            } else if (i == 3){
-                if (row.getCell(7).getNumericCellValue() != 687) {
-                    allNewAreasAreCorrect = false;
+
+            } else if (i == 2) {
+                XSSFCell cell = row.getCell(0);
+                if (!cell.getCellStyle().getFillForegroundXSSFColor().equals(lightGray) ||
+                        !cell.getCellStyle().getBorderBottomEnum().equals(BorderStyle.THICK) ||
+                        !cell.getCellStyle().getBorderTopEnum().equals(BorderStyle.THIN) ||
+                        !cell.getCellStyle().getBorderLeftEnum().equals(BorderStyle.THICK) ||
+                        !cell.getCellStyle().getBorderRightEnum().equals(BorderStyle.THICK) ||
+                        cell.getCellStyle().getIndention() != 0 ||
+                        !cell.getCellStyle().getFont().getFontName().equals("Arial") ||
+                        cell.getCellStyle().getFont().getFontHeightInPoints() != 11 ||
+                        !cell.getCellStyle().getAlignmentEnum().equals(HorizontalAlignment.CENTER) ||
+                        !cell.getCellStyle().getVerticalAlignmentEnum().equals(VerticalAlignment.CENTER)) {
+                    allCellsAreCorrectlyStyled = false;
                 }
-            } else if (i == 4){
-                if (row.getCell(7).getNumericCellValue() != 1114) {
-                    allNewAreasAreCorrect = false;
+
+                cell = row.getCell(1);
+                if (cell.getCellStyle().getFillForegroundXSSFColor() != null ||
+                        !cell.getCellStyle().getBorderBottomEnum().equals(BorderStyle.THICK) ||
+                        !cell.getCellStyle().getBorderTopEnum().equals(BorderStyle.THIN) ||
+                        !cell.getCellStyle().getBorderLeftEnum().equals(BorderStyle.THICK) ||
+                        !cell.getCellStyle().getBorderRightEnum().equals(BorderStyle.THICK) ||
+                        cell.getCellStyle().getIndention() != 2 ||
+                        !cell.getCellStyle().getFont().getFontName().equals("Arial") ||
+                        cell.getCellStyle().getFont().getFontHeightInPoints() != 11 ||
+                        !cell.getCellStyle().getAlignmentEnum().equals(HorizontalAlignment.RIGHT) ||
+                        !cell.getCellStyle().getVerticalAlignmentEnum().equals(VerticalAlignment.BOTTOM)) {
+                    allCellsAreCorrectlyStyled = false;
                 }
-            }  else if (i == 5){
-                if (row.getCell(7).getNumericCellValue() != 611) {
-                    allNewAreasAreCorrect = false;
+
+            } else if (i == 4) {
+                XSSFCell cell = row.getCell(1);
+                if (cell.getCellStyle().getFillForegroundXSSFColor() != null ||
+                        !cell.getCellStyle().getBorderBottomEnum().equals(BorderStyle.THIN) ||
+                        !cell.getCellStyle().getBorderTopEnum().equals(BorderStyle.NONE) ||
+                        !cell.getCellStyle().getBorderLeftEnum().equals(BorderStyle.THICK) ||
+                        !cell.getCellStyle().getBorderRightEnum().equals(BorderStyle.THICK) ||
+                        cell.getCellStyle().getIndention() != 2 ||
+                        !cell.getCellStyle().getFont().getFontName().equals("Arial") ||
+                        cell.getCellStyle().getFont().getFontHeightInPoints() != 11 ||
+                        !cell.getCellStyle().getAlignmentEnum().equals(HorizontalAlignment.RIGHT) ||
+                        !cell.getCellStyle().getVerticalAlignmentEnum().equals(VerticalAlignment.BOTTOM)) {
+                    allCellsAreCorrectlyStyled = false;
                 }
-            }  else if (i == 6){
-                if (row.getCell(7).getNumericCellValue() != 1939) {
-                    allNewAreasAreCorrect = false;
+
+
+            } else if (i == 6) {
+                XSSFCell cell = row.getCell(0);
+                if (cell.getCellStyle().getFillForegroundXSSFColor() != null ||
+                        !cell.getCellStyle().getBorderBottomEnum().equals(BorderStyle.THICK) ||
+                        !cell.getCellStyle().getBorderTopEnum().equals(BorderStyle.NONE) ||
+                        !cell.getCellStyle().getBorderLeftEnum().equals(BorderStyle.THICK) ||
+                        !cell.getCellStyle().getBorderRightEnum().equals(BorderStyle.THICK) ||
+                        cell.getCellStyle().getIndention() != 0 ||
+                        !cell.getCellStyle().getFont().getFontName().equals("Arial") ||
+                        cell.getCellStyle().getFont().getFontHeightInPoints() != 11 ||
+                        !cell.getCellStyle().getAlignmentEnum().equals(HorizontalAlignment.RIGHT) ||
+                        !cell.getCellStyle().getVerticalAlignmentEnum().equals(VerticalAlignment.BOTTOM)) {
+                    allCellsAreCorrectlyStyled = false;
                 }
-            }  else if (i == 7){
-                if (row.getCell(7).getNumericCellValue() != 592) {
-                    allNewAreasAreCorrect = false;
+
+            } else if (i == 11) {
+                for (int c = 0; c <= 1 + 2; c++) {
+                    XSSFCell cell = row.getCell(c);
+                    if (!cell.getCellStyle().getFillForegroundXSSFColor().equals(lightGray)) {
+                        allCellsAreCorrectlyStyled = false;
+                    }
                 }
+            } else if (i == 14) {
+                XSSFCell cell = row.getCell(1);
+                if (cell.getCellStyle().getFillForegroundXSSFColor() != null ||
+                        !cell.getCellStyle().getBorderBottomEnum().equals(BorderStyle.THICK) ||
+                        !cell.getCellStyle().getBorderTopEnum().equals(BorderStyle.NONE) ||
+                        !cell.getCellStyle().getBorderLeftEnum().equals(BorderStyle.THICK) ||
+                        !cell.getCellStyle().getBorderRightEnum().equals(BorderStyle.THIN) ||
+                        cell.getCellStyle().getIndention() != 2 ||
+                        !cell.getCellStyle().getFont().getFontName().equals("Arial") ||
+                        cell.getCellStyle().getFont().getFontHeightInPoints() != 11 ||
+                        !cell.getCellStyle().getAlignmentEnum().equals(HorizontalAlignment.RIGHT) ||
+                        !cell.getCellStyle().getVerticalAlignmentEnum().equals(VerticalAlignment.BOTTOM)) {
+                    allCellsAreCorrectlyStyled = false;
+                }
+
             }
         }
 
-        return allNewAreasAreCorrect;
-
-    }
-
-    private List<Integer> oldAreas() {
-        List<Integer> areas = new ArrayList<>();
-        areas.add(657);
-        areas.add(608);
-        areas.add(816);
-        areas.add(1114);
-        areas.add(650);
-        areas.add(2020);
-
-        return areas;
-    }
-
-    private List<Integer> newAreas() {
-        List<Integer> areas = new ArrayList<>();
-        areas.add(416);
-        areas.add(507);
-        areas.add(687);
-        areas.add(1114);
-        areas.add(611);
-        areas.add(1939);
-        areas.add(592);
-
-        return areas;
-    }
-
-    private boolean checkSumOfAreas(XSSFWorkbook workbook) {
-        XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
-
-        boolean sumOfAreasIsCorrect = true;
-
-        Row row = xlsxSheet.getRow(19);
-        Cell cell = row.getCell(7);
-        if (cell.getNumericCellValue() != 5865) {
-            sumOfAreasIsCorrect = false;
+        if (!xlsxSheet.getMergedRegions().contains(new CellRangeAddress(11, 12, 2, 2))) {
+            allCellsAreCorrectlyStyled = false;
         }
 
-        return sumOfAreasIsCorrect;
+        if (!xlsxSheet.getRow(0).getCell(1).getStringCellValue().equals("Alte Liegenschaften") ||
+                !xlsxSheet.getRow(1).getCell(0).getStringCellValue().equals("Neue Liegenschaften") ||
+                !xlsxSheet.getRow(1).getCell(1).getStringCellValue().equals("Grundstück-Nr.") ||
+                !xlsxSheet.getRow(1).getCell(2).getStringCellValue().equals("Neue Fläche") ||
+                !xlsxSheet.getRow(2).getCell(0).getStringCellValue().equals("Grundstück-Nr.") ||
+                !xlsxSheet.getRow(2).getCell(2).getStringCellValue().equals("[m2]") ||
+                !xlsxSheet.getRow(6).getCell(0).getStringCellValue().equals("Rundungsdifferenz") ||
+                !xlsxSheet.getRow(7).getCell(0).getStringCellValue().equals("Alte Fläche [m2]") ||
+                !xlsxSheet.getRow(10).getCell(1).getStringCellValue().equals("Liegenschaften") ||
+                !xlsxSheet.getRow(11).getCell(0).getStringCellValue().equals("Selbst. Recht") ||
+                !xlsxSheet.getRow(11).getCell(1).getStringCellValue().equals("Grundstück-Nr.") ||
+                !xlsxSheet.getRow(11).getCell(2).getStringCellValue().equals("Rundungs-differenz") ||
+                !xlsxSheet.getRow(11).getCell(3).getStringCellValue().equals("Selbst. Recht Fläche") ||
+                !xlsxSheet.getRow(12).getCell(0).getStringCellValue().equals("Grundstück-Nr.") ||
+                !xlsxSheet.getRow(12).getCell(3).getStringCellValue().equals("[m2]")) {
+            allCellsAreCorrectlyStyled = false;
+        }
+
+
+        return allCellsAreCorrectlyStyled;
+
     }
 }
+
