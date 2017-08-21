@@ -7,8 +7,8 @@ import ch.so.agi.avgbs2mtab.readxtf.ReadXtf;
 /**
  * Main class
  */
-public class main {
-    public void main(String inputfile, String outputfilename) {
+public class Main {
+    public void runConversion(String inputfile, String outputfilename) {
 
         ParcelContainer parceldump = new ParcelContainer();
         DPRContainer dprdump = new DPRContainer();
