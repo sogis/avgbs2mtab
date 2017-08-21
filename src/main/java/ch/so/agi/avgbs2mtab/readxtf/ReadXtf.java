@@ -121,7 +121,7 @@ public class ReadXtf {
                                 for (Object key : internalmap.keySet()) {
                                     String fromparcelref = key.toString();
                                     Integer area = Integer.parseInt(internalmap.get(key).toString());
-                                    drpdump.setDRPWithAdditions(parcelnumber,fromparcelref,area);
+                                    drpdump.setDPRWithAdditions(parcelnumber,fromparcelref,area);
                                 }
                                 drpdump.setDPRNumberAndRef(parcelref,parcelnumber);
                                 drpdump.setDPRNewArea(parcelnumber,newarea);
