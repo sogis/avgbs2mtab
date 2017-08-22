@@ -8,10 +8,10 @@ public interface DataExtractionDPR {
 
     public List<Integer> getNewDPRs();
 
-    public int getAddedAreaDPR(int parcelNumberAffectedByDPR, int dpr);
+    public Integer getAddedAreaDPR(int parcelNumberAffectedByDPR, int dpr);
 
-    public int getNewAreaDPR(int dpr);
+    public Integer getNewAreaDPR(int dpr);
 
-    public int getRoundingDifferenceDPR(int dpr);
+    public Integer getRoundingDifferenceDPR(int dpr);
 
 }

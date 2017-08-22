@@ -117,20 +117,24 @@ public class ReadXtfTest {
         List<Integer> oldparcels = parceldump.getOldParcelNumbers();
         int gotareafromoldparcel = parceldump.getAddedArea(1273,1864);
         int restarea = parceldump.getRestAreaOfParcel(1273);
-        System.out.println("Number of New Parcels = "+numberofnewparcels);
-        System.out.println("Number of Old Parcels = "+numberofoldparcels);
-        System.out.println("New Parcels: "+newparcels);
-        System.out.println("Old Parcels: "+oldparcels);
-        System.out.println("Area that Parcel 1273 got from Parcel 1864 should be 69: "+gotareafromoldparcel);
-        System.out.println("RestArea From Parcel 1273 Should be 352: "+restarea);
+        assertTrue(numberofnewparcels==3);
+        assertTrue(numberofoldparcels==2);
+        List<Integer> newparcelsasitshouldbe = Arrays.asList(1273,1864,1973);
+        List<Integer> oldparcelsasitshouldbe = Arrays.asList(1273,1864);
+        assertTrue(newparcels.containsAll(newparcelsasitshouldbe) && newparcels.size()==newparcelsasitshouldbe.size());
+        assertTrue(oldparcels.containsAll(oldparcelsasitshouldbe) && oldparcels.size()==oldparcelsasitshouldbe.size());
+        assertTrue(gotareafromoldparcel==69);
+        assertTrue(restarea==352);
         int numberofdprs = dprdump.getNumberOfDPRs();
         int numberofareasafected = dprdump.getNumberOfParcelsAffectedByDPRs();
         List<Integer> parcelsaffectedbydprsa = dprdump.getParcelsAffectedByDPRs();
         List<Integer> newdprs = dprdump.getNewDPRs();
-        System.out.println("Number of DPRs = "+numberofdprs);
-        System.out.println("Number of Parcels affected by DPRs = "+numberofareasafected);
-        System.out.println("New DPRs: "+newdprs);
-        System.out.println("Affected Parcels: "+parcelsaffectedbydprsa);
+        assertTrue(numberofdprs==1);
+        assertTrue(numberofareasafected==1);
+        List<Integer> newdprsastheyshouldbe = Arrays.asList(1941);
+        List<Integer> parcelsaffectedasitshouldbe = Arrays.asList(1864);
+        assertTrue(newdprs.containsAll(newdprsastheyshouldbe) && newdprs.size()==newdprsastheyshouldbe.size());
+        assertTrue(parcelsaffectedbydprsa.containsAll(parcelsaffectedasitshouldbe) && parcelsaffectedbydprsa.size()==parcelsaffectedasitshouldbe.size());
     }
 
 

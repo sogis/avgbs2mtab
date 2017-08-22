@@ -40,7 +40,7 @@ public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtracti
     ///////////////////////////////////////////////////////
 
     @Override
-    public int getNumberOfDPRs() {
+    public Integer getNumberOfDPRs() {
         int numberofdprs = map.size();
         //Addiere noch die gelöschten dazu....
         int i = 0;
@@ -54,7 +54,7 @@ public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtracti
     }
 
     @Override
-    public int getNumberOfParcelsAffectedByDPRs() {
+    public Integer getNumberOfParcelsAffectedByDPRs() {
         int numberofparcelsaffected = affectedparcelsmap.size();
         return numberofparcelsaffected;
     }
@@ -84,7 +84,7 @@ public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtracti
     }
 
     @Override
-    public int getAddedAreaDPR(int parcelNumberAffectedByDPR, int dpr) {
+    public Integer getAddedAreaDPR(int parcelNumberAffectedByDPR, int dpr) {
         Map<String,Integer> innerdprmap = map.get(dpr);
         String ref = getKeyFromValue(numberandrefmap,parcelNumberAffectedByDPR);
         int addedarea = innerdprmap.get(ref);
@@ -92,13 +92,13 @@ public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtracti
     }
 
     @Override
-    public int getNewAreaDPR(int dpr) {
+    public Integer getNewAreaDPR(int dpr) {
         int newarea = newareamap.get(dpr);
         return newarea;
     }
 
     @Override
-    public int getRoundingDifferenceDPR(int dpr) {
+    public Integer getRoundingDifferenceDPR(int dpr) {
         int sumaddedareas = 0;
         Map<String, Integer> internalmap = map.get(dpr);
         for(String key : internalmap.keySet()) {

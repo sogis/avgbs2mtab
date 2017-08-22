@@ -2,7 +2,7 @@ package ch.so.agi.avgbs2mtab.mutdat;
 
 public interface MetadataOfDPRMutation {
 
-    public int getNumberOfDPRs();
+    public Integer getNumberOfDPRs();
 
-    public int getNumberOfParcelsAffectedByDPRs();
+    public Integer getNumberOfParcelsAffectedByDPRs();
 }

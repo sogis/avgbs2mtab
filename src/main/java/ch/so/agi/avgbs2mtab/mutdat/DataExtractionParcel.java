@@ -8,12 +8,12 @@ public interface DataExtractionParcel {
 
     public List<Integer> getNewParcelNumbers();
 
-    public int getAddedArea(int oldParcelNumber, int newParcelNumber);
+    public Integer getAddedArea(int oldParcelNumber, int newParcelNumber);
 
-    public int getNewArea(int newParcelNumber);
+    public Integer getNewArea(int newParcelNumber);
 
-    public int getRoundingDifference(int oldParcelNumber);
+    public Integer getRoundingDifference(int oldParcelNumber);
 
-    public int getRestAreaOfParcel(int oldParcelNumber);
+    public Integer getRestAreaOfParcel(int oldParcelNumber);
 
 }

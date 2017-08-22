@@ -87,38 +87,38 @@ public class ParcelContainer implements SetParcel,MetadataOfParcelMutation, Data
     }
 
     @Override
-    public int getAddedArea(int newparcel, int oldparcel) {
+    public Integer getAddedArea(int newparcel, int oldparcel) {
         Map addmap = map.get(newparcel);
         Integer areaadded = (Integer) addmap.get(oldparcel);
         return areaadded;
     }
 
     @Override
-    public int getNewArea(int newParcelNumber) {
+    public Integer getNewArea(int newParcelNumber) {
         int newarea = parcelnewareamap.get(newParcelNumber);
         return newarea;
     }
 
     @Override
-    public int getRoundingDifference(int oldParcelNumber) {
-        int roundingdifference = parcelroundingdifferencemap.get(oldParcelNumber);
+    public Integer getRoundingDifference(int oldParcelNumber) {
+        Integer roundingdifference = parcelroundingdifferencemap.get(oldParcelNumber);
         return roundingdifference;
     }
 
     @Override
-    public int getNumberOfOldParcels() {
+    public Integer getNumberOfOldParcels() {
         int numberofoldparcels = parcelrestareamap.size();
         return numberofoldparcels;
     }
 
     @Override
-    public int getNumberOfNewParcels() {
+    public Integer getNumberOfNewParcels() {
         int numberofnewparcels = parcelnewareamap.size();
         return numberofnewparcels;
     }
 
     @Override
-    public int getRestAreaOfParcel(int oldParcelNumber) {
+    public Integer getRestAreaOfParcel(int oldParcelNumber) {
         int restarea = parcelrestareamap.get(oldParcelNumber);
         return restarea;
     }
