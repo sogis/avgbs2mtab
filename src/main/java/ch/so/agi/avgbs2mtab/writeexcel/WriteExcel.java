@@ -1,8 +1,8 @@
 package ch.so.agi.avgbs2mtab.writeexcel;
 
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -12,62 +12,67 @@ public interface WriteExcel {
                                                   String filePath,
                                                   XSSFWorkbook workbook);
 
-    public Workbook writeNewParcelsInTemplate(List<Integer> orderedListOfNewParcelNumbers,
+    public XSSFWorkbook writeNewParcelsInTemplate(List<Integer> orderedListOfNewParcelNumbers,
                                               String filePath,
                                               XSSFWorkbook workbook);
 
-    public Workbook writeInflowAndOutflows(int oldParcelNumber,
+    public XSSFWorkbook writeInflowAndOutflows(int oldParcelNumber,
                                            int newParcelNumber,
                                            int area,
                                            String filePath,
                                            XSSFWorkbook workbook);
 
-    public Workbook writeNewArea(int newParcelNumber,
+    public XSSFWorkbook writeNewArea(int newParcelNumber,
                                  int area,
                                  String filePath,
                                  XSSFWorkbook workbook);
 
-    public Workbook writeRoundingDifference(int oldParcelNumber,
+    public XSSFWorkbook writeRoundingDifference(int oldParcelNumber,
                                             int roundingDifference,
                                             String filePath,
                                             XSSFWorkbook workbook);
 
 
 
-    public Workbook writeOldArea(int oldParcelNumber,
-                                 List<Integer> areaOutflowsOfOldParcelNumber,
+    public XSSFWorkbook writeOldArea(int oldParcelNumber,
+                                 int oldArea,
                                  int roundingDifference,
                                  String filePath,
                                  XSSFWorkbook workbook);
 
-    public Workbook writeAreaSum(List<Integer> oldAreas,
+    public XSSFWorkbook writeAreaSum(HashMap<Integer, Integer> oldAreas,
                                  List<Integer> newAreas,
                                  int roundingDifference,
                                  String filePath,
                                  XSSFWorkbook workbook);
 
 
-    public Workbook writeParcelsAffectedByDPRsInTemplate(List<Integer> orderedListOfParcelNumbersAffectedByDPRs,
+    public XSSFWorkbook writeParcelsAffectedByDPRsInTemplate(List<Integer> orderedListOfParcelNumbersAffectedByDPRs,
                                                          int newParcelNumber,
                                                          String filePath,
                                                          XSSFWorkbook workbook);
 
-    public Workbook writeDPRsInTemplate(List<Integer> orderedListOfDPRs,
+    public XSSFWorkbook writeDPRsInTemplate(List<Integer> orderedListOfDPRs,
                                         int newParcelNumber,
                                         String filePath,
                                         XSSFWorkbook workbook);
 
-    public Workbook writeDPRInflowAndOutflows(int parcelNumberAffectedByDPR,
+    public XSSFWorkbook writeDPRInflowAndOutflows(int parcelNumberAffectedByDPR,
                                               int dpr,
                                               int area,
+                                              int newParcelNumber,
                                               String filePath,
                                               XSSFWorkbook workbook);
 
-    public Workbook writeNewDPRArea(int dpr,
+    public XSSFWorkbook writeNewDPRArea(int dpr,
+                                    int area,
+                                    int newParcelNumber,
                                     String filePath,
                                     XSSFWorkbook workbook);
 
-    public Workbook writeDPRRoundingDifference(int dpr,
+    public XSSFWorkbook writeDPRRoundingDifference(int dpr,
+                                               int roundingDifference,
+                                               int newParcelNumber,
                                                String filePath,
                                                XSSFWorkbook workbook);
 

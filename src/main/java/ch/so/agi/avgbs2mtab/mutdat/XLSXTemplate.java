@@ -13,6 +13,25 @@ import java.nio.file.Paths;
 
 public class XLSXTemplate implements ExcelTemplate {
 
+    public XSSFWorkbook createExcelTemplate (String filePath) {
+        ParcelContainer parcelContainer = new ParcelContainer();
+        DPRContainer dprContainer = new DPRContainer();
+
+        Integer numberOfNewParcels = parcelContainer.getNumberOfNewParcels();
+        Integer numberOfOldParcels = parcelContainer.getNumberOfOldParcels();
+
+        Integer numberOfParcelsAffectedByDPRs = dprContainer.getNumberOfParcelsAffectedByDPRs();
+        Integer numberOfDPRs = dprContainer.getNumberOfDPRs();
+
+        XSSFWorkbook workbook = createWorkbook(filePath);
+        workbook = createParcelTable(workbook, filePath, numberOfNewParcels, numberOfOldParcels,
+                numberOfParcelsAffectedByDPRs);
+        workbook = createDPRTable(workbook, filePath, numberOfParcelsAffectedByDPRs, numberOfDPRs,
+                numberOfNewParcels, numberOfOldParcels);
+
+        return workbook;
+    }
+
     @Override
     public XSSFWorkbook createWorkbook(String filePath) {
 
@@ -447,11 +466,15 @@ public class XLSXTemplate implements ExcelTemplate {
                             XSSFCellStyle newStyle = getStyleForCell("", "thick",
                                 "", "thick", "thick", 2, excelTemplate);
                             cell.setCellStyle(newStyle);
+                            cell.setCellType(CellType.STRING);
 
                         } else {
                             XSSFCellStyle newStyle = getStyleForCell("", border_bottom,
                                     border_top, "thick", "thick", 2, excelTemplate);
                             cell.setCellStyle(newStyle);
+                            if (border_bottom.equals("thin")){
+                                cell.setCellType(CellType.STRING);
+                            }
                         }
 
                     } else if (c == 1) {
@@ -515,7 +538,7 @@ public class XLSXTemplate implements ExcelTemplate {
         try {
 
             //todo: change path
-            FileOutputStream out = new FileOutputStream(new File("/home/barpastu/Documents/test.xlsx"));
+            FileOutputStream out = new FileOutputStream(new File(filePath));
             excelTemplate.write(out);
             //out.close();
         } catch (FileNotFoundException e){

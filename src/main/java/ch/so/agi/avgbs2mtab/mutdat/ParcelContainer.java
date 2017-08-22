@@ -8,7 +8,6 @@ import java.util.*;
 public class ParcelContainer implements SetParcel, MetadataOfParcelMutation, DataExtractionParcel {
 
     Map<Integer,Map> map=new Hashtable<Integer,Map>(); //Haupt Map
-    Map<Integer,Integer> parcelmap = new Hashtable<>(); //Maps der Zugänge der jeweiligen neuen Parzelle innerhalb der Haupt Map.
     Map<Integer,Integer> parcelnewareamap = new Hashtable<>(); //Map mit den neuen Flächen
     Map<Integer,Integer> parcelrestareamap = new Hashtable<>(); //Map mit den Rest Flächen (Diagonale
     Map<Integer,Integer> parcelroundingdifferencemap = new Hashtable<>(); //Map mit den Rundungsdifferenzen
@@ -21,8 +20,9 @@ public class ParcelContainer implements SetParcel, MetadataOfParcelMutation, Dat
     public void setParcelAddition(int newparcelnumber, int oldparcelnumber, int area) {
         //Versuch die Parcelmap aus der main-map zu holen und füge den neuen Wert hinzu. Hat es noch keine Parcelmap von dieser Parzelle, dann leg eine neue an.
         //Schlussendlich füge die Parcemap (neu oder alt) wieder zur main-map hinzu.
+        Map<Integer,Integer> parcelmap = new Hashtable<>(); //Maps der Zugänge der jeweiligen neuen Parzelle innerhalb der Haupt Map.
         if (map.get(newparcelnumber) != null) {
-            Map parcelmap = map.get(newparcelnumber);
+            parcelmap = map.get(newparcelnumber);
             parcelmap.put(oldparcelnumber,area);
         } else {
             parcelmap.put(oldparcelnumber,area);
