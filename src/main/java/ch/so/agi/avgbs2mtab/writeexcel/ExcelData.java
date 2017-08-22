@@ -62,12 +62,8 @@ public class ExcelData implements WriteExcel {
             workbook = writeOldArea(oldParcel, oldArea, roundingDifference, filePath, workbook);
         }
 
-        for (int newParcel : orderedListOfNewParcelNumbers){
-            workbook = workbook;
-
-            workbook = writeAreaSum(oldAreaHashMap, getAllNewAreas(orderedListOfNewParcelNumbers, parcelContainer),
-                    calculateRoundingDifference(orderedListOfOldParcelNumbers, parcelContainer), filePath, workbook);
-        }
+        workbook = writeAreaSum(oldAreaHashMap, getAllNewAreas(orderedListOfNewParcelNumbers, parcelContainer),
+                calculateRoundingDifference(orderedListOfOldParcelNumbers, parcelContainer), filePath, workbook);
 
         return workbook;
     }
@@ -382,7 +378,7 @@ public class ExcelData implements WriteExcel {
             cell.setCellValue(sumOldAreas);
 
             workbook.write(ExcelFile);
-            //ExcelFile.close();
+            ExcelFile.close();
 
         } catch (IOException e){
             throw new RuntimeException(e);
