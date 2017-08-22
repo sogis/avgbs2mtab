@@ -1,5 +1,7 @@
 package ch.so.agi.avgbs2mtab.writeexcel;
 
+import ch.so.agi.avgbs2mtab.mutdat.DPRContainer;
+import ch.so.agi.avgbs2mtab.mutdat.ParcelContainer;
 import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -9,14 +11,100 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class ExcelData implements WriteExcel {
+
+
+    public XSSFWorkbook fillValuesIntoParcelTable (String filePath, XSSFWorkbook workbook){
+
+        ParcelContainer parcelContainer = new ParcelContainer();
+
+        Integer area = null;
+
+        List<Integer> orderedListOfOldParcelNumbers = parcelContainer.getOldParcelNumbers();
+        List<Integer> orderedListOfNewParcelNumbers = parcelContainer.getNewParcelNumbers();
+
+        workbook = writeOldParcelsInTemplate(orderedListOfOldParcelNumbers, filePath, workbook);
+        workbook = writeNewParcelsInTemplate(orderedListOfNewParcelNumbers, filePath, workbook);
+
+        for (int oldParcel : orderedListOfOldParcelNumbers) {
+            for (int newParcel : orderedListOfNewParcelNumbers) {
+                if (oldParcel != newParcel) {
+                    area = parcelContainer.getAddedArea(newParcel, oldParcel);
+                } else {
+                    area = parcelContainer.getRestAreaOfParcel(oldParcel);
+                }
+                workbook = writeInflowAndOutflows(oldParcel, newParcel, area, filePath, workbook);
+            }
+        }
+
+        for (int oldParcel : orderedListOfOldParcelNumbers) {
+            int roundingDifference = parcelContainer.getRoundingDifference(oldParcel);
+            workbook = writeRoundingDifference(oldParcel, roundingDifference, filePath, workbook);
+        }
+
+        for (int newParcel : orderedListOfNewParcelNumbers){
+            int newArea = parcelContainer.getNewArea(newParcel);
+            workbook = writeNewArea(newParcel, newArea, filePath, workbook);
+        }
+
+
+        HashMap<Integer, Integer> oldAreaHashMap = getAllOldAreas(orderedListOfNewParcelNumbers,
+                orderedListOfOldParcelNumbers, parcelContainer);
+
+        for (int oldParcel : orderedListOfOldParcelNumbers) {
+            Integer oldArea = oldAreaHashMap.get(oldParcel);
+            Integer roundingDifference = parcelContainer.getRoundingDifference(oldParcel);
+            workbook = writeOldArea(oldParcel, oldArea, roundingDifference, filePath, workbook);
+        }
+
+        workbook = writeAreaSum(oldAreaHashMap, getAllNewAreas(orderedListOfNewParcelNumbers, parcelContainer),
+                calculateRoundingDifference(orderedListOfOldParcelNumbers, parcelContainer), filePath, workbook);
+
+        return workbook;
+    }
+
+    public XSSFWorkbook fillValuesIntoDPRTable (String filePath, XSSFWorkbook workbook) {
+
+        DPRContainer dprContainer = new DPRContainer();
+        ParcelContainer parcelContainer = new ParcelContainer();
+
+        List<Integer> orderedListOfParcelNumbers = dprContainer.getParcelsAffectedByDPRs();
+        List<Integer> orderedListOfDPRs = dprContainer.getNewDPRs();
+
+        Integer numberOfNewParcelsInParcelTable = parcelContainer.getNumberOfNewParcels();
+
+        workbook = writeParcelsAffectedByDPRsInTemplate(orderedListOfParcelNumbers, numberOfNewParcelsInParcelTable,
+                filePath, workbook);
+        workbook = writeDPRsInTemplate( orderedListOfDPRs, numberOfNewParcelsInParcelTable, filePath, workbook);
+
+        for (int parcel : orderedListOfParcelNumbers) {
+            for (int dpr : orderedListOfDPRs) {
+                Integer area = dprContainer.getAddedAreaDPR(parcel, dpr);
+                workbook = writeDPRInflowAndOutflows(parcel, dpr, area, numberOfNewParcelsInParcelTable, filePath,
+                        workbook);
+            }
+        }
+
+        for (int dpr : orderedListOfDPRs) {
+            Integer roundingDifference = dprContainer.getRoundingDifferenceDPR(dpr);
+            workbook = writeDPRRoundingDifference(dpr, roundingDifference, numberOfNewParcelsInParcelTable, filePath,
+                    workbook);
+        }
+
+        for (int dpr : orderedListOfDPRs) {
+            Integer newArea = dprContainer.getNewAreaDPR(dpr);
+            workbook = writeNewDPRArea(dpr, newArea, numberOfNewParcelsInParcelTable, filePath, workbook);
+        }
+
+
+
+        return workbook;
+    }
 
     @Override
     public XSSFWorkbook writeOldParcelsInTemplate(List<Integer> orderedListOfOldParcelNumbers, String filePath, XSSFWorkbook workbook) {
@@ -36,8 +124,6 @@ public class ExcelData implements WriteExcel {
             }
             workbook.write(ExcelFile);
             ExcelFile.close();
-        } catch (FileNotFoundException e){
-            throw new RuntimeException(e);
         } catch (IOException e){
             throw new RuntimeException(e);
         }
@@ -61,8 +147,6 @@ public class ExcelData implements WriteExcel {
 
             workbook.write(ExcelFile);
             ExcelFile.close();
-        } catch (FileNotFoundException e){
-            throw new RuntimeException(e);
         } catch (IOException e){
             throw new RuntimeException(e);
         }
@@ -113,8 +197,6 @@ public class ExcelData implements WriteExcel {
 
             workbook.write(ExcelFile);
             ExcelFile.close();
-        } catch (FileNotFoundException e){
-            throw new RuntimeException(e);
         } catch (IOException e){
             throw new RuntimeException(e);
         }
@@ -160,8 +242,6 @@ public class ExcelData implements WriteExcel {
 
             workbook.write(ExcelFile);
             ExcelFile.close();
-        } catch (FileNotFoundException e){
-            throw new RuntimeException(e);
         } catch (IOException e){
             throw new RuntimeException(e);
         }
@@ -205,8 +285,6 @@ public class ExcelData implements WriteExcel {
 
             workbook.write(ExcelFile);
             ExcelFile.close();
-        } catch (FileNotFoundException e){
-            throw new RuntimeException(e);
         } catch (IOException e){
             throw new RuntimeException(e);
         }
@@ -217,20 +295,12 @@ public class ExcelData implements WriteExcel {
 
     @Override
     public XSSFWorkbook writeOldArea(int oldParcelNumber,
-                                     List<Integer> areaOutflowsOfOldParcelNumber,
+                                     int oldArea,
                                      int roundingDifference,
                                      String filePath,
                                      XSSFWorkbook workbook){
-        Integer sum = 0;
-        for(Integer area : areaOutflowsOfOldParcelNumber){
-            sum += area;
-        }
-        if (sum==0){
-            throw new Avgbs2MtabException("Something went wrong with the calculation of the old area of parcel "
-                    + oldParcelNumber);
-        } else {
-            sum += roundingDifference;
-        }
+        Integer sum;
+        sum = oldArea + roundingDifference;
 
 
         Integer columnOldParcelNumber = null;
@@ -265,8 +335,6 @@ public class ExcelData implements WriteExcel {
 
             workbook.write(ExcelFile);
             ExcelFile.close();
-        } catch (FileNotFoundException e){
-            throw new RuntimeException(e);
         } catch (IOException e){
             throw new RuntimeException(e);
         }
@@ -275,7 +343,7 @@ public class ExcelData implements WriteExcel {
 
 
     @Override
-    public XSSFWorkbook writeAreaSum(List<Integer> oldAreas,
+    public XSSFWorkbook writeAreaSum(HashMap<Integer, Integer> oldAreas,
                                  List<Integer> newAreas,
                                  int roundingDifference,
                                  String filePath,
@@ -284,8 +352,10 @@ public class ExcelData implements WriteExcel {
         Integer sumOldAreas = 0;
         Integer sumNewAreas = 0;
 
-        for (int area : oldAreas){
-            sumOldAreas += area;
+        Iterator hashmapIterator = oldAreas.entrySet().iterator();
+        while(hashmapIterator.hasNext()) {
+            Map.Entry pair = (Map.Entry)hashmapIterator.next();
+            sumOldAreas += (int) pair.getValue();
         }
         for (int area : newAreas){
             sumNewAreas += area;
@@ -308,15 +378,60 @@ public class ExcelData implements WriteExcel {
             cell.setCellValue(sumOldAreas);
 
             workbook.write(ExcelFile);
-            //ExcelFile.close();
+            ExcelFile.close();
 
-        } catch (FileNotFoundException e){
-            throw new RuntimeException(e);
         } catch (IOException e){
             throw new RuntimeException(e);
         }
 
         return workbook;
+    }
+
+    private List<Integer> getAllNewAreas (List<Integer> orderedListOfNewParcelNumbers, ParcelContainer parcelContainer) {
+
+        List<Integer> newAreaList = new ArrayList<>();
+
+        for (int newParcel : orderedListOfNewParcelNumbers) {
+            newAreaList.add(parcelContainer.getNewArea(newParcel));
+        }
+
+        return newAreaList;
+    }
+
+    private HashMap<Integer, Integer> getAllOldAreas(List<Integer> orderedListOfNewParcelNumbers,
+                                         List<Integer> orderedListOfOldParcelNumbers, ParcelContainer parcelContainer) {
+
+        HashMap<Integer, Integer> oldAreaHashMap = new HashMap<>();
+        Integer oldArea = null;
+        Integer area = null;
+
+        for (int oldParcel : orderedListOfOldParcelNumbers) {
+            for (int newParcel : orderedListOfNewParcelNumbers) {
+                if (oldParcel != newParcel) {
+                    area = parcelContainer.getAddedArea(newParcel, oldParcel);
+                } else {
+                    area = parcelContainer.getRestAreaOfParcel(oldParcel);
+                }
+                oldArea =+ area;
+            }
+            oldAreaHashMap.put(oldParcel, oldArea);
+        }
+
+        return oldAreaHashMap;
+
+    }
+
+    private Integer calculateRoundingDifference(List<Integer> orderedListOfOldParcelNumbers,
+                                                ParcelContainer parcelContainer) {
+
+        Integer roundingDifference = null;
+
+        for (int oldParcel : orderedListOfOldParcelNumbers) {
+            roundingDifference += parcelContainer.getRoundingDifference(oldParcel);
+        }
+
+        return roundingDifference;
+
     }
 
 
@@ -343,8 +458,6 @@ public class ExcelData implements WriteExcel {
             }
             workbook.write(ExcelFile);
             ExcelFile.close();
-        } catch (FileNotFoundException e){
-            throw new RuntimeException(e);
         } catch (IOException e){
             throw new RuntimeException(e);
         }
@@ -375,8 +488,6 @@ public class ExcelData implements WriteExcel {
             }
             workbook.write(ExcelFile);
             ExcelFile.close();
-        } catch (FileNotFoundException e){
-            throw new RuntimeException(e);
         } catch (IOException e){
             throw new RuntimeException(e);
         }
@@ -432,18 +543,11 @@ public class ExcelData implements WriteExcel {
             } else {
                 XSSFRow rowFlows = xlsxSheet.getRow(indexDPR);
                 XSSFCell cellFlows = rowFlows.getCell(indexParcel);
-                if (area != 0) {
-                    cellFlows.setCellValue(area);
-                } else {
-                    cellFlows.setCellType(CellType.STRING);
-                    cellFlows.setCellValue("gelöscht");
-                }
+                cellFlows.setCellValue(area);
             }
 
             workbook.write(ExcelFile);
             ExcelFile.close();
-        } catch (FileNotFoundException e){
-            throw new RuntimeException(e);
         } catch (IOException e){
             throw new RuntimeException(e);
         }
@@ -457,8 +561,8 @@ public class ExcelData implements WriteExcel {
                                         String filePath,
                                         XSSFWorkbook workbook) {
 
-        /*Integer rowDPRNumber = null;
-        Integer columnParcelNumber = null;
+        Integer rowDPRNumber = null;
+        Integer columnNewArea = null;
 
         int indexOfParcelRow = newParcelNumber*2 + 10;
         int lastRow = workbook.getSheet("Mutationstabelle").getLastRowNum();
@@ -476,59 +580,81 @@ public class ExcelData implements WriteExcel {
                     int dprNumber = Integer.parseInt(dprString.substring(1, (dprStringLength-1)));
                     if (dprNumber == dpr){
                         rowDPRNumber = cell1.getRowIndex();
-                        columnParcelNumber = (int) rowDPRNumber.
+                        columnNewArea = (int) row1.getLastCellNum()-1;
                         break;
                     }
                 }
             }
 
 
-
-
-            Iterator<Row> rowIterator = xlsxSheet.iterator();
-            rowIterator.next();
-            while(rowIterator.hasNext()){
-                Row row1 = rowIterator.next();
-                Cell cell1 = row1.getCell(0);
-                if (cell1.getCellTypeEnum() == CellType.NUMERIC){
-                    if (cell1.getNumericCellValue() == newParcelNumber){
-                        rowNewParcelNumber = cell1.getRowIndex();
-                        try {
-                            columnNewParcelNumber = (int) row1.getLastCellNum()-1;
-                        } catch (Exception e){
-                            throw new Avgbs2MtabException("Could not found last row");
-                        }
-                        break;
-                    }
-                }
-            }
-
-            if (rowNewParcelNumber==null || columnNewParcelNumber==null){
-                throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, "The new parcel "
-                        + newParcelNumber + " could not be found in the excel.");
+            if (rowDPRNumber==null || columnNewArea==null){
+                throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, "The DPR "
+                        + dpr + " could not be found in the excel.");
             } else {
-                Row rowFlows = xlsxSheet.getRow(rowNewParcelNumber);
-                Cell cellFlows = rowFlows.getCell(columnNewParcelNumber);
-                cellFlows.setCellValue(area);
+                Row rowFlows = xlsxSheet.getRow(rowDPRNumber);
+                Cell cellFlows = rowFlows.getCell(columnNewArea);
+                if (area > 0) {
+                    cellFlows.setCellValue(area);
+                } else {
+                    cellFlows.setCellValue("gelöscht");
+                }
             }
 
             workbook.write(ExcelFile);
             ExcelFile.close();
-        } catch (FileNotFoundException e){
-            throw new RuntimeException(e);
-        } catch (IOException e){
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return workbook;*/
-        return null;
+        return workbook;
     }
 
     @Override
     public XSSFWorkbook writeDPRRoundingDifference(int dpr,
                                                    int roundingDifference,
-                                                   int newParcelnumber,
+                                                   int newParcelNumber,
                                                    String filePath,
                                                    XSSFWorkbook workbook) {
-        return null;
+
+        Integer rowDPRNumber = null;
+        Integer columnRoundingDifference = null;
+
+        int indexOfParcelRow = newParcelNumber*2 + 10;
+        int lastRow = workbook.getSheet("Mutationstabelle").getLastRowNum();
+
+        try {
+            OutputStream ExcelFile = new FileOutputStream(filePath);
+            XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
+
+            for (int i = indexOfParcelRow + 2; i <= lastRow; i++){
+                Row row1 = xlsxSheet.getRow(i);
+                Cell cell1 = row1.getCell(0);
+                if (cell1.getCellTypeEnum() == CellType.STRING){
+                    String dprString = cell1.getStringCellValue();
+                    int dprStringLength = dprString.length();
+                    int dprNumber = Integer.parseInt(dprString.substring(1, (dprStringLength-1)));
+                    if (dprNumber == dpr){
+                        rowDPRNumber = cell1.getRowIndex();
+                        columnRoundingDifference = (int) row1.getLastCellNum()-2;
+                        break;
+                    }
+                }
+            }
+
+
+            if (rowDPRNumber==null || columnRoundingDifference==null){
+                throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, "The DPR "
+                        + newParcelNumber + " could not be found in the excel.");
+            } else {
+                Row rowFlows = xlsxSheet.getRow(rowDPRNumber);
+                Cell cellFlows = rowFlows.getCell(columnRoundingDifference);
+                cellFlows.setCellValue(roundingDifference);
+            }
+
+            workbook.write(ExcelFile);
+            ExcelFile.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return workbook;
     }
 }
