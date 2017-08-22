@@ -10,6 +10,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ExcelDataTest {
@@ -112,9 +113,9 @@ public class ExcelDataTest {
 
 
 
-            newWorkbook = excelData.writeOldArea(695,areasOldParcels695(),-1,filePath, newWorkbook);
-            newWorkbook = excelData.writeOldArea(696,areasOldParcels696(),0,filePath, newWorkbook);
-            newWorkbook = excelData.writeOldArea(697,areasOldParcels697(),-1,filePath, newWorkbook);
+            newWorkbook = excelData.writeOldArea(695,658,-1,filePath, newWorkbook);
+            newWorkbook = excelData.writeOldArea(696,608,0,filePath, newWorkbook);
+            newWorkbook = excelData.writeOldArea(697,817,-1,filePath, newWorkbook);
 
 
             Assert.assertTrue(checkOldAreas(newWorkbook));
@@ -242,6 +243,58 @@ public class ExcelDataTest {
             newWorkbook =insertDPRFlows(filePath, newWorkbook, excelData);
 
             Assert.assertTrue(checkFlows(newWorkbook));
+
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void writeNewAreasCorrectlyInDPRTable() throws Exception {
+
+        File excelFile = folder.newFile("test.xlsx");
+        String filePath = excelFile.getAbsolutePath();
+        //String filePath = "/home/barpastu/Documents/test.xlsx";
+
+
+        XLSXTemplate xlsxTemplate = new XLSXTemplate();
+        ExcelData excelData = new ExcelData();
+
+        try {
+
+            XSSFWorkbook newWorkbook = insertDPR(filePath,xlsxTemplate, excelData);
+            newWorkbook = insertDPRFlows(filePath, newWorkbook, excelData);
+            newWorkbook = insertNewDPRAreas(filePath, newWorkbook, excelData);
+
+
+            Assert.assertTrue(checkDPRNewArea(newWorkbook));
+
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    @Test
+    public void writeRoundingDifferencesCorrectlyInDPRTable() throws Exception {
+
+        File excelFile = folder.newFile("test.xlsx");
+        String filePath = excelFile.getAbsolutePath();
+
+
+        XLSXTemplate xlsxTemplate = new XLSXTemplate();
+        ExcelData excelData = new ExcelData();
+
+        try {
+
+            XSSFWorkbook newWorkbook = insertDPR(filePath,xlsxTemplate, excelData);
+            newWorkbook = insertDPRFlows(filePath, newWorkbook, excelData);
+            newWorkbook = insertNewDPRAreas(filePath, newWorkbook, excelData);
+            newWorkbook = insertDPRRoundingDifferences(filePath, newWorkbook, excelData);
+
+
+            Assert.assertTrue(checkDPRRoundingDifferences(newWorkbook));
 
         } catch (Exception e){
             throw new RuntimeException(e);
@@ -485,27 +538,7 @@ public class ExcelDataTest {
         return allRoundingDifferencesAreCorrect;
     }
 
-    private List<Integer> areasOldParcels695(){
-        List<Integer> areas = new ArrayList<>();
-        areas.add(416);
-        areas.add(242);
-        return areas;
-    }
 
-    private List<Integer> areasOldParcels696(){
-        List<Integer> areas = new ArrayList<>();
-        areas.add(507);
-        areas.add(1);
-        areas.add(100);
-        return areas;
-    }
-    private List<Integer> areasOldParcels697(){
-        List<Integer> areas = new ArrayList<>();
-        areas.add(687);
-        areas.add(1);
-        areas.add(129);
-        return areas;
-    }
 
     private boolean checkOldAreas(XSSFWorkbook workbook) {
         XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
@@ -578,14 +611,14 @@ public class ExcelDataTest {
 
     }
 
-    private List<Integer> oldAreas() {
-        List<Integer> areas = new ArrayList<>();
-        areas.add(657);
-        areas.add(608);
-        areas.add(816);
-        areas.add(1114);
-        areas.add(650);
-        areas.add(2020);
+    private HashMap<Integer, Integer> oldAreas() {
+        HashMap<Integer, Integer> areas = new HashMap<>();
+        areas.put(695, 657);
+        areas.put(696, 608);
+        areas.put(697, 816);
+        areas.put(701, 1114);
+        areas.put(870, 650);
+        areas.put(874, 2020);
 
         return areas;
     }
@@ -699,6 +732,50 @@ public class ExcelDataTest {
         }
 
         return allFlowsAreCorrect;
+    }
+
+    private XSSFWorkbook insertNewDPRAreas(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData) {
+
+        Integer numberNewParcels = generateNewParcels().size();
+        newWorkbook = excelData.writeNewDPRArea(40053,3660, numberNewParcels, filePath, newWorkbook);
+        newWorkbook = excelData.writeNewDPRArea(15828,0, numberNewParcels, filePath, newWorkbook);
+
+        return newWorkbook;
+    }
+
+    private boolean checkDPRNewArea(XSSFWorkbook workbook) {
+        XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
+
+        boolean allNewAreasAreCorrect = true;
+
+        if (xlsxSheet.getRow(26).getCell(5).getNumericCellValue()!=3660 ||
+                !xlsxSheet.getRow(28).getCell(5).getStringCellValue().equals("gelöscht")) {
+            allNewAreasAreCorrect = false;
+        }
+
+        return allNewAreasAreCorrect;
+    }
+
+    private XSSFWorkbook insertDPRRoundingDifferences(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData) {
+
+        Integer numberNewParcels = generateNewParcels().size();
+
+        newWorkbook = excelData.writeDPRRoundingDifference(40053, -1, numberNewParcels,
+                filePath, newWorkbook);
+
+        return newWorkbook;
+    }
+
+    private boolean checkDPRRoundingDifferences(XSSFWorkbook workbook){
+        XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
+
+        boolean allRoundingDifferencesAreCorrect = true;
+
+        if (xlsxSheet.getRow(26).getCell(4).getNumericCellValue()!=-1) {
+            allRoundingDifferencesAreCorrect = false;
+        }
+
+        return allRoundingDifferencesAreCorrect;
     }
 }
 

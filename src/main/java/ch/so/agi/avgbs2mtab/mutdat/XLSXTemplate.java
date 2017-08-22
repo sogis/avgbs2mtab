@@ -13,6 +13,25 @@ import java.nio.file.Paths;
 
 public class XLSXTemplate implements ExcelTemplate {
 
+    public XSSFWorkbook createExcelTemplate (String filePath) {
+        ParcelContainer parcelContainer = new ParcelContainer();
+        DPRContainer dprContainer = new DPRContainer();
+
+        Integer numberOfNewParcels = parcelContainer.getNumberOfNewParcels();
+        Integer numberOfOldParcels = parcelContainer.getNumberOfOldParcels();
+
+        Integer numberOfParcelsAffectedByDPRs = dprContainer.getNumberOfParcelsAffectedByDPRs();
+        Integer numberOfDPRs = dprContainer.getNumberOfDPRs();
+
+        XSSFWorkbook workbook = createWorkbook(filePath);
+        workbook = createParcelTable(workbook, filePath, numberOfNewParcels, numberOfOldParcels,
+                numberOfParcelsAffectedByDPRs);
+        workbook = createDPRTable(workbook, filePath, numberOfParcelsAffectedByDPRs, numberOfDPRs,
+                numberOfNewParcels, numberOfOldParcels);
+
+        return workbook;
+    }
+
     @Override
     public XSSFWorkbook createWorkbook(String filePath) {
 
