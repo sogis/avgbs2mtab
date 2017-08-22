@@ -60,14 +60,19 @@ public interface WriteExcel {
     public Workbook writeDPRInflowAndOutflows(int parcelNumberAffectedByDPR,
                                               int dpr,
                                               int area,
+                                              int newParcelNumber,
                                               String filePath,
                                               XSSFWorkbook workbook);
 
     public Workbook writeNewDPRArea(int dpr,
+                                    int area,
+                                    int newParcelNumber,
                                     String filePath,
                                     XSSFWorkbook workbook);
 
     public Workbook writeDPRRoundingDifference(int dpr,
+                                               int roundingDifference,
+                                               int newParcelNumber,
                                                String filePath,
                                                XSSFWorkbook workbook);
 

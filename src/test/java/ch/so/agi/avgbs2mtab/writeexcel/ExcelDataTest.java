@@ -205,9 +205,8 @@ public class ExcelDataTest {
     @Test
     public void writeAllDPRsCorrectlyInDPRTable() throws Exception {
 
-        /*File excelFile = folder.newFile("test.xlsx");
-        String filePath = excelFile.getAbsolutePath();*/
-        String filePath = "/home/barpastu/Documents/test.xlsx";
+        File excelFile = folder.newFile("test.xlsx");
+        String filePath = excelFile.getAbsolutePath();
 
 
         XLSXTemplate xlsxTemplate = new XLSXTemplate();
@@ -217,7 +216,32 @@ public class ExcelDataTest {
 
             XSSFWorkbook newWorkbook = insertDPR(filePath,xlsxTemplate, excelData);
 
-            //Assert.assertTrue(checkParcels(newWorkbook));
+            Assert.assertTrue(checkDPRs(newWorkbook));
+
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    @Test
+    public void writeAllFlowsCorrectlyInDPRTable() throws Exception {
+
+        File excelFile = folder.newFile("test.xlsx");
+        String filePath = excelFile.getAbsolutePath();
+        //String filePath = "/home/barpastu/Documents/test.xlsx";
+
+
+        XLSXTemplate xlsxTemplate = new XLSXTemplate();
+        ExcelData excelData = new ExcelData();
+
+        try {
+
+            XSSFWorkbook newWorkbook = insertDPR(filePath,xlsxTemplate, excelData);
+            newWorkbook =insertDPRFlows(filePath, newWorkbook, excelData);
+
+            Assert.assertTrue(checkFlows(newWorkbook));
 
         } catch (Exception e){
             throw new RuntimeException(e);
@@ -636,6 +660,45 @@ public class ExcelDataTest {
 
         return newWorkbook;
 
+    }
+
+    private boolean checkDPRs(XSSFWorkbook workbook){
+        XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
+
+        boolean allDPRsAreCorrect = true;
+
+        if (!xlsxSheet.getRow(26).getCell(0).getStringCellValue().equals("(40053)") ||
+                !xlsxSheet.getRow(28).getCell(0).getStringCellValue().equals("(15828)")){
+            allDPRsAreCorrect = false;
+        }
+        return allDPRsAreCorrect;
+    }
+
+    private XSSFWorkbook insertDPRFlows(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData) {
+        Integer numberNewParcels = generateNewParcels().size();
+        newWorkbook = excelData.writeDPRInflowAndOutflows(2174, 40053,1175,
+                numberNewParcels,filePath,newWorkbook);
+        newWorkbook = excelData.writeDPRInflowAndOutflows(2175, 40053,2481,
+                numberNewParcels,filePath,newWorkbook);
+        newWorkbook = excelData.writeDPRInflowAndOutflows(2176, 40053,5,
+                numberNewParcels,filePath,newWorkbook);
+
+        return newWorkbook;
+    }
+
+    private boolean checkFlows(XSSFWorkbook workbook){
+        XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
+
+        boolean allFlowsAreCorrect = true;
+        Row row = xlsxSheet.getRow(26);
+
+        if(row.getCell(1).getNumericCellValue() != 1175 ||
+                row.getCell(2).getNumericCellValue() != 2481 ||
+                row.getCell(3).getNumericCellValue() != 5){
+            allFlowsAreCorrect = false;
+        }
+
+        return allFlowsAreCorrect;
     }
 }
 

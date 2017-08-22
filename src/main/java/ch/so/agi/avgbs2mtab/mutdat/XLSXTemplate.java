@@ -452,11 +452,15 @@ public class XLSXTemplate implements ExcelTemplate {
                             XSSFCellStyle newStyle = getStyleForCell("", "thick",
                                 "", "thick", "thick", 2, excelTemplate);
                             cell.setCellStyle(newStyle);
+                            cell.setCellType(CellType.STRING);
 
                         } else {
                             XSSFCellStyle newStyle = getStyleForCell("", border_bottom,
                                     border_top, "thick", "thick", 2, excelTemplate);
                             cell.setCellStyle(newStyle);
+                            if (border_bottom.equals("thin")){
+                                cell.setCellType(CellType.STRING);
+                            }
                         }
 
                     } else if (c == 1) {
@@ -520,7 +524,7 @@ public class XLSXTemplate implements ExcelTemplate {
         try {
 
             //todo: change path
-            FileOutputStream out = new FileOutputStream(new File("/home/barpastu/Documents/test.xlsx"));
+            FileOutputStream out = new FileOutputStream(new File(filePath));
             excelTemplate.write(out);
             //out.close();
         } catch (FileNotFoundException e){

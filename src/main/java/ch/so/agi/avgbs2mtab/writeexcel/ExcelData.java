@@ -4,6 +4,8 @@ import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -324,13 +326,13 @@ public class ExcelData implements WriteExcel {
                                                              String filePath,
                                                              XSSFWorkbook workbook) {
 
-        int indexOfParcelRow = newParcelNumber*2 + 8;
+        int indexOfParcelRow = newParcelNumber*2 + 10;
 
         try {
             OutputStream ExcelFile = new FileOutputStream(filePath);
             XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
 
-            Row row =xlsxSheet.getRow(indexOfParcelRow + 2);
+            Row row =xlsxSheet.getRow(indexOfParcelRow);
 
             Integer column = 1;
 
@@ -355,19 +357,19 @@ public class ExcelData implements WriteExcel {
                                             String filePath,
                                             XSSFWorkbook workbook) {
 
-        int indexOfParcelRow = newParcelNumber*2 + 12;
+        int indexOfDPRRow = newParcelNumber*2 + 12;
 
         try {
             OutputStream ExcelFile = new FileOutputStream(filePath);
             XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
 
 
-            Integer rowIndex = indexOfParcelRow;
+            Integer rowIndex = indexOfDPRRow;
 
             for (Integer dpr : orderedListOfDPRs){
-                Row row = xlsxSheet.getRow(rowIndex);
-                Cell cell =row.getCell(0);
-                cell.setCellValue(dpr);
+                XSSFRow row = xlsxSheet.getRow(rowIndex);
+                XSSFCell cell =row.getCell(0);
+                cell.setCellValue("(" + dpr + ")");
                 rowIndex++;
                 rowIndex++;
             }
@@ -385,20 +387,146 @@ public class ExcelData implements WriteExcel {
     public XSSFWorkbook writeDPRInflowAndOutflows(int parcelNumberAffectedByDPR,
                                                   int dpr,
                                                   int area,
+                                                  int newParcelNumber,
                                                   String filePath,
                                                   XSSFWorkbook workbook) {
-        return null;
+
+        Integer indexParcel= null;
+        Integer indexDPR = null;
+
+        int indexOfParcelRow = newParcelNumber*2 + 10;
+        int lastRow = workbook.getSheet("Mutationstabelle").getLastRowNum();
+
+
+        try {
+            OutputStream ExcelFile = new FileOutputStream(filePath);
+            XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
+
+            Row row = xlsxSheet.getRow(indexOfParcelRow);
+            for (Cell cell : row){
+                if (cell.getCellTypeEnum() == CellType.NUMERIC){
+                    if (cell.getNumericCellValue() == parcelNumberAffectedByDPR){
+                        indexParcel = cell.getColumnIndex();
+                        break;
+                    }
+                }
+            }
+
+            for (int i = indexOfParcelRow + 2; i <= lastRow; i++){
+                Row row1 = xlsxSheet.getRow(i);
+                Cell cell1 = row1.getCell(0);
+                if (cell1.getCellTypeEnum() == CellType.STRING){
+                    String dprString = cell1.getStringCellValue();
+                    int dprStringLength = dprString.length();
+                    int dprNumber = Integer.parseInt(dprString.substring(1, (dprStringLength-1)));
+                    if (dprNumber == dpr){
+                        indexDPR = cell1.getRowIndex();
+                        break;
+                    }
+                }
+            }
+
+            if (indexParcel==null || indexDPR==null){
+                throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, "Either the parcel "
+                        + parcelNumberAffectedByDPR + " or the DPR " + dpr + " could not be found in the excel.");
+            } else {
+                XSSFRow rowFlows = xlsxSheet.getRow(indexDPR);
+                XSSFCell cellFlows = rowFlows.getCell(indexParcel);
+                if (area != 0) {
+                    cellFlows.setCellValue(area);
+                } else {
+                    cellFlows.setCellType(CellType.STRING);
+                    cellFlows.setCellValue("gelöscht");
+                }
+            }
+
+            workbook.write(ExcelFile);
+            ExcelFile.close();
+        } catch (FileNotFoundException e){
+            throw new RuntimeException(e);
+        } catch (IOException e){
+            throw new RuntimeException(e);
+        }
+        return workbook;
     }
 
     @Override
     public XSSFWorkbook writeNewDPRArea(int dpr,
+                                        int area,
+                                        int newParcelNumber,
                                         String filePath,
                                         XSSFWorkbook workbook) {
+
+        /*Integer rowDPRNumber = null;
+        Integer columnParcelNumber = null;
+
+        int indexOfParcelRow = newParcelNumber*2 + 10;
+        int lastRow = workbook.getSheet("Mutationstabelle").getLastRowNum();
+
+        try {
+            OutputStream ExcelFile = new FileOutputStream(filePath);
+            XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
+
+            for (int i = indexOfParcelRow + 2; i <= lastRow; i++){
+                Row row1 = xlsxSheet.getRow(i);
+                Cell cell1 = row1.getCell(0);
+                if (cell1.getCellTypeEnum() == CellType.STRING){
+                    String dprString = cell1.getStringCellValue();
+                    int dprStringLength = dprString.length();
+                    int dprNumber = Integer.parseInt(dprString.substring(1, (dprStringLength-1)));
+                    if (dprNumber == dpr){
+                        rowDPRNumber = cell1.getRowIndex();
+                        columnParcelNumber = (int) rowDPRNumber.
+                        break;
+                    }
+                }
+            }
+
+
+
+
+            Iterator<Row> rowIterator = xlsxSheet.iterator();
+            rowIterator.next();
+            while(rowIterator.hasNext()){
+                Row row1 = rowIterator.next();
+                Cell cell1 = row1.getCell(0);
+                if (cell1.getCellTypeEnum() == CellType.NUMERIC){
+                    if (cell1.getNumericCellValue() == newParcelNumber){
+                        rowNewParcelNumber = cell1.getRowIndex();
+                        try {
+                            columnNewParcelNumber = (int) row1.getLastCellNum()-1;
+                        } catch (Exception e){
+                            throw new Avgbs2MtabException("Could not found last row");
+                        }
+                        break;
+                    }
+                }
+            }
+
+            if (rowNewParcelNumber==null || columnNewParcelNumber==null){
+                throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, "The new parcel "
+                        + newParcelNumber + " could not be found in the excel.");
+            } else {
+                Row rowFlows = xlsxSheet.getRow(rowNewParcelNumber);
+                Cell cellFlows = rowFlows.getCell(columnNewParcelNumber);
+                cellFlows.setCellValue(area);
+            }
+
+            workbook.write(ExcelFile);
+            ExcelFile.close();
+        } catch (FileNotFoundException e){
+            throw new RuntimeException(e);
+        } catch (IOException e){
+            throw new RuntimeException(e);
+        }
+        return workbook;*/
         return null;
     }
 
     @Override
     public XSSFWorkbook writeDPRRoundingDifference(int dpr,
+                                                   int roundingDifference,
+                                                   int newParcelnumber,
                                                    String filePath,
                                                    XSSFWorkbook workbook) {
         return null;
