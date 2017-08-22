@@ -35,18 +35,23 @@ public class ReadXtf {
         readValues(xtffilepath, parcelmetadatamap, drpmetadatamap);
     }
 
+    /**
+     * Main Method. Loop over Baskets and start the transfer of Parcel- and DPR-Values.
+     * @param xtffilepath
+     * @param parcelmetadatamap
+     * @param drpmetadatamap
+     */
     private void readValues(String xtffilepath, HashMap<String,String> parcelmetadatamap, HashMap<String, HashMap> drpmetadatamap) {
         try{
-            // open xml file
+            //Get Parcel-Information
             ioxReader=new ch.interlis.iom_j.xtf.XtfReader(new java.io.File(xtffilepath));
-            // loop threw baskets
             IoxEvent event;
             while(true){
                 event=ioxReader.read();;
                 if(event instanceof ObjectEvent){
                 }else if(event instanceof StartBasketEvent){
                     StartBasketEvent se=(StartBasketEvent)event;
-                    //Hier beginnt das eigentliche Auslesen der Parzellen!
+                    //Main Parcel-Value-Function
                     transferParcelAndNewArea(se, parcelmetadatamap);
                     ///////////////////////////////////////
                 }else if(event instanceof EndBasketEvent){
@@ -61,6 +66,7 @@ public class ReadXtf {
                 }else {
                 }
             }
+            //Get DPR-Information
             ioxReader=new ch.interlis.iom_j.xtf.XtfReader(new java.io.File(xtffilepath));
             IoxEvent event3;
             while(true){
@@ -68,7 +74,7 @@ public class ReadXtf {
                 if(event3 instanceof ObjectEvent){
                 }else if(event3 instanceof StartBasketEvent){
                     StartBasketEvent se=(StartBasketEvent)event3;
-                    //Hier beginnt das eigentliche Auslesen der DRPs!
+                    //Main DPR-Value-Function
                     transferDRP(se, drpmetadatamap);
                     ///////////////////////////////////////
                 }else if(event3 instanceof EndBasketEvent){
@@ -84,7 +90,7 @@ public class ReadXtf {
                 }
             }
         }catch(Exception e){
-            System.out.println("FEHLER 1");
+            System.out.println("Error reading Values");
             throw new RuntimeException(e);
         }
         finally{

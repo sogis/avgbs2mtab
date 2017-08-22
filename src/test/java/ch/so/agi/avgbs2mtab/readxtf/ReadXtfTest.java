@@ -102,6 +102,32 @@ public class ReadXtfTest {
         assertTrue(newarea==0);
     }
 
+    @Test
+    public void readComplexFile() throws Exception {
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
+        xtfreader.readFile("/home/bjsvwsch/codebasis_test/komplex_test.xml");
+        int numberofnewparcels = parceldump.getNumberOfNewParcels();
+        int numberofoldparcels = parceldump.getNumberOfOldParcels();
+        List<Integer> newparcels = parceldump.getNewParcelNumbers();
+        List<Integer> oldparcels = parceldump.getOldParcelNumbers();
+        int gotareafromoldparcel = parceldump.getAddedArea(1273,1864);
+        int restarea = parceldump.getRestAreaOfParcel(1273);
+        System.out.println("Number of New Parcels = "+numberofnewparcels);
+        System.out.println("Number of Old Parcels = "+numberofoldparcels);
+        System.out.println("New Parcels: "+newparcels);
+        System.out.println("Old Parcels: "+oldparcels);
+        System.out.println("Area that Parcel 1273 got from Parcel 1864 should be 69: "+gotareafromoldparcel);
+        System.out.println("RestArea From Parcel 1273 Should be 352: "+restarea);
+        int numberofdprs = dprdump.getNumberOfDPRs();
+        int numberofareasafected = dprdump.getNumberOfParcelsAffectedByDPRs();
+        List<Integer> parcelsaffectedbydprsa = dprdump.getParcelsAffectedByDPRs();
+        List<Integer> newdprs = dprdump.getNewDPRs();
+        System.out.println("Number of DPRs = "+numberofdprs);
+        System.out.println("Number of Parcels affected by DPRs = "+numberofareasafected);
+        System.out.println("New DPRs: "+newdprs);
+        System.out.println("Affected Parcels: "+parcelsaffectedbydprsa);
+    }
+
 
 
 }
