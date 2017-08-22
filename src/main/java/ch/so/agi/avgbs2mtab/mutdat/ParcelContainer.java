@@ -74,7 +74,19 @@ public class ParcelContainer implements SetParcel,MetadataOfParcelMutation, Data
 
     @Override
     public List<Integer> getOldParcelNumbers() {
-        Map<Integer,Integer> sortedmap = new TreeMap<>(parcelrestareamap); //sortiert die Map der grösse der keys nach
+        HashMap<Integer,Integer> oldparcelmap = new HashMap<>();
+        //Add all parcelnumbers in the inner-map from the main map to the oldparcelmap
+        for(Integer key : map.keySet()) {
+            Map internalmap = map.get(key);
+            for(Object keyoldparcels : internalmap.keySet()) {
+                oldparcelmap.put((Integer) keyoldparcels,(Integer) keyoldparcels);
+            }
+        }
+        //Add also all parcelnumbers from parcelrestareamap to the oldparcelmap
+        for(Integer key : parcelrestareamap.keySet()) {
+            oldparcelmap.put(key,key);
+        }
+        Map<Integer,Integer> sortedmap = new TreeMap<>(oldparcelmap); //sortiert die Map der grösse der keys nach
         List<Integer> oldparcelnumbers = new ArrayList<>(sortedmap.keySet());
         return oldparcelnumbers;
     }
@@ -107,13 +119,13 @@ public class ParcelContainer implements SetParcel,MetadataOfParcelMutation, Data
 
     @Override
     public Integer getNumberOfOldParcels() {
-        int numberofoldparcels = parcelrestareamap.size();
+        int numberofoldparcels = getOldParcelNumbers().size();
         return numberofoldparcels;
     }
 
     @Override
     public Integer getNumberOfNewParcels() {
-        int numberofnewparcels = parcelnewareamap.size();
+        int numberofnewparcels = getNewParcelNumbers().size();
         return numberofnewparcels;
     }
 

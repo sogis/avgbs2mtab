@@ -5,6 +5,7 @@ import ch.interlis.iox.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import ch.so.agi.avgbs2mtab.mutdat.SetDPR;
 import ch.so.agi.avgbs2mtab.mutdat.SetParcel;
@@ -23,6 +24,9 @@ public class ReadXtf {
     private SetParcel parceldump;
     private SetDPR drpdump;
 
+    private static final Logger LOGGER = Logger.getLogger( ReadXtf.class.getName() );
+
+
     public ReadXtf(SetParcel parceldump, SetDPR drpdump) {
 
         this.parceldump = parceldump;
@@ -30,6 +34,7 @@ public class ReadXtf {
     }
 
     public void readFile(String xtffilepath) {
+        //LOGGER.log()
         HashMap<String,String> parcelmetadatamap = readParcelMetadata(xtffilepath);
         HashMap<String,HashMap> drpmetadatamap = readDRPMetadata(xtffilepath);
         readValues(xtffilepath, parcelmetadatamap, drpmetadatamap);

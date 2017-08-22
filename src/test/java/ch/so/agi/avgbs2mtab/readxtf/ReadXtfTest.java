@@ -137,6 +137,20 @@ public class ReadXtfTest {
         assertTrue(parcelsaffectedbydprsa.containsAll(parcelsaffectedasitshouldbe) && parcelsaffectedbydprsa.size()==parcelsaffectedasitshouldbe.size());
     }
 
+    @Test
+    public void oensingentest() throws Exception {
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
+        ClassLoader classLoader = getClass().getClassLoader();
+        xtfreader.readFile(classLoader.getResource("SO0200002407_4002_20150807.xtf").getPath());
+        List<Integer> newparcels = parceldump.getNewParcelNumbers();
+        List<Integer> oldparcels = parceldump.getOldParcelNumbers();
+        int numberofoldparcels = parceldump.getNumberOfOldParcels();
+        System.out.println("newparcels = " + newparcels);
+        System.out.println("oldparcels = " + oldparcels);
+        System.out.println("Number of old parcels = "+numberofoldparcels);
+    }
+
+
 
 
 }
