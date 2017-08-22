@@ -21,7 +21,8 @@ public class ReadXtfTest {
     @Test
     public void readFile1() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
-        xtfreader.readFile("/home/bjsvwsch/codebasis_test/test.xml");
+        ClassLoader classLoader = getClass().getClassLoader();
+        xtfreader.readFile(classLoader.getResource("SO0200002407_4003_20150807.xtf").getPath());
         int addedarea = parceldump.getAddedArea(90154,748);
         int numberofnewparcels = parceldump.getNumberOfNewParcels();
         int numberofoldparcels = parceldump.getNumberOfOldParcels();
@@ -44,7 +45,8 @@ public class ReadXtfTest {
     @Test
     public void readFile2() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
-        xtfreader.readFile("/home/bjsvwsch/codebasis_test/test2.xml");
+        ClassLoader classLoader = getClass().getClassLoader();
+        xtfreader.readFile(classLoader.getResource("SO0200002407_4004_20150810.xtf").getPath());
         int addedarea = parceldump.getAddedArea(4004,695);
         int numberofnewparcels = parceldump.getNumberOfNewParcels();
         int numberofoldparcels = parceldump.getNumberOfOldParcels();
@@ -68,7 +70,8 @@ public class ReadXtfTest {
     @Test
     public void readFileWithDPR() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
-        xtfreader.readFile("/home/bjsvwsch/codebasis_test/test_mit_dpr.xml");
+        ClassLoader classLoader = getClass().getClassLoader();
+        xtfreader.readFile(classLoader.getResource("SO0200002407_40051_20150811.xtf").getPath());
         int numberofdprs = dprdump.getNumberOfDPRs();
         int numberofareasafected = dprdump.getNumberOfParcelsAffectedByDPRs();
         List<Integer> parcelsaffectedbydprs = dprdump.getParcelsAffectedByDPRs();
@@ -90,7 +93,8 @@ public class ReadXtfTest {
     @Test
     public void readFileWithDeleteDRP() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
-        xtfreader.readFile("/home/bjsvwsch/codebasis_test/test_loeschen_dpr.xml");
+        ClassLoader classLoader = getClass().getClassLoader();
+        xtfreader.readFile(classLoader.getResource("SO0200002407_40061_20150814.xtf").getPath());
         int numberofdprs = dprdump.getNumberOfDPRs();
         List<Integer> parcelsaffectedbydprsa = dprdump.getParcelsAffectedByDPRs();
         List<Integer> newdprs = dprdump.getNewDPRs();
@@ -105,7 +109,8 @@ public class ReadXtfTest {
     @Test
     public void readComplexFile() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
-        xtfreader.readFile("/home/bjsvwsch/codebasis_test/komplex_test.xml");
+        ClassLoader classLoader = getClass().getClassLoader();
+        xtfreader.readFile(classLoader.getResource("SO0200002427_809_20170529.xtf").getPath());
         int numberofnewparcels = parceldump.getNumberOfNewParcels();
         int numberofoldparcels = parceldump.getNumberOfOldParcels();
         List<Integer> newparcels = parceldump.getNewParcelNumbers();
