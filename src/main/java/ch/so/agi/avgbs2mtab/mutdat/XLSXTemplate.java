@@ -21,25 +21,20 @@ public class XLSXTemplate implements ExcelTemplate {
 
         Path xlsxFilePath = Paths.get(pathWithoutFilename);
 
-        if (Files.isWritable(xlsxFilePath)){
-            try {
-                OutputStream ExcelFile = new FileOutputStream(filePath);
-                XSSFWorkbook workbook = new XSSFWorkbook();
-                XSSFSheet xlsxSheet = workbook.createSheet("Mutationstabelle");
-                workbook.write(ExcelFile);
 
-                return workbook;
+        try {
+            OutputStream ExcelFile = new FileOutputStream(filePath);
+            XSSFWorkbook workbook = new XSSFWorkbook();
+            XSSFSheet xlsxSheet = workbook.createSheet("Mutationstabelle");
+            workbook.write(ExcelFile);
 
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_NO_ACCESS_TO_FOLDER,
-                    "Can not write in directory: " + filePath);
+            return workbook;
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
     }
 
     @Override

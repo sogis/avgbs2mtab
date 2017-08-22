@@ -6,8 +6,9 @@ public class Avgbs2MtabException  extends RuntimeException {
         public static final String TYPE_WRONG_EXTENSION = "TYPE_WRONG_EXTENSION";
         public static final String TYPE_NO_XML_STYLING = "TYPE_NO_XML_STYLING";
         public static final String TYPE_NOT_MATCHING_TRANSFERDATA = "TYPE_NOT_MATCHING_TRANSFERDATA";
-        public static final String TYPE_NO_ACCESS_TO_FILE = "TYPE_NO_ACCESS_TO_FILE";
-        public static final String TYPE_NO_ACCESS_TO_FOLDER = "TYPE_NO_ACCESS_TO_FOLDER";
+        public static final String TYPE_FILE_NOT_READABLE = "TYPE_FILE_NOT_READABLE";
+        public static final String TYPE_FOLDER_NOT_WRITEABLE = "TYPE_FOLDER_NOT_WRITEABLE";
+        public static final String TYPE_FILE_EXISTS = "TYPE_FILE_EXISTS";
         public static final String TYPE_VALIDATION_FAILED = "TYPE_VALIDATION_FAILED";
         public static final String TYPE_MISSING_PARCEL_IN_EXCEL = "TYPE_MISSING_PARCEL_IN_EXCEL";
 
