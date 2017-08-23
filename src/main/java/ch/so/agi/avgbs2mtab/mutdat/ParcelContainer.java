@@ -101,7 +101,10 @@ public class ParcelContainer implements SetParcel,MetadataOfParcelMutation, Data
     @Override
     public Integer getAddedArea(int newparcel, int oldparcel) {
         Map addmap = map.get(newparcel);
-        Integer areaadded = (Integer) addmap.get(oldparcel);
+        Integer areaadded = null;
+        if (addmap!=null) {
+            areaadded = (Integer) addmap.get(oldparcel);
+        }
         return areaadded;
     }
 

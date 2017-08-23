@@ -27,9 +27,11 @@ public class IntegrationTests {
     @Test
     public void testWithSQLFileThrowsException() throws Exception {
         File sqlFile = createFileWithoutXTFExtension();
+        Main main = new Main();
 
         try{
-            //Main-Aufruf mit sqlFile
+            main.runConversion(sqlFile.getAbsolutePath(), "Test.xlsx");
+
         } catch (Avgbs2MtabException e) {
             Assert.assertEquals("TYPE_WRONG_EXTENSION", e.getType());
         }
@@ -41,8 +43,9 @@ public class IntegrationTests {
     @Test
     public void testWithXTFFileWithoutXMLStructureThrowsException() throws Exception {
         File xtfFile = createFileWithXTFExtensionAndNoXMLStructure();
+        Main main = new Main();
         try {
-            //Main-Aufruf mit xtfFile
+            main.runConversion(xtfFile.getAbsolutePath(), "Test.xlsx");
         } catch (Avgbs2MtabException e) {
             Assert.assertEquals("TYPE_NO_XML_STYLING", e.getType());
         }
@@ -53,10 +56,11 @@ public class IntegrationTests {
     @Ignore
     @Test
     public void testWithXTFFileOfAnotherModellThrowsException() throws Exception{
+        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File wrongModellXtf = new File(classLoader.getResource("wrong_Modell.xtf").getFile());
         try {
-            //Main-Aufruf mit wrongModellXtf
+            main.runConversion(wrongModellXtf.getAbsolutePath(), "Test.xlsx");
         } catch (Avgbs2MtabException e) {
             Assert.assertEquals("TYPE_NOT_MATCHING_TRANSFERDATA", e.getType());
         }
@@ -65,9 +69,10 @@ public class IntegrationTests {
     @Ignore
     @Test
     public void NoPermissionToReadXTFFileThrowsException() throws Exception {
+        Main main = new Main();
         File xtfFile = createNonReadableXTFFile();
         try {
-            //Main-Aufruf mit xtfFile
+            main.runConversion(xtfFile.getAbsolutePath(), "Test.xlsx");
         } catch (Avgbs2MtabException e) {
             Assert.assertEquals("TYPE_NO_ACCESS_TO_FILE", e.getType());
         }
@@ -77,10 +82,11 @@ public class IntegrationTests {
     @Ignore
     @Test
     public void NoPermissionToWriteXLSXFileThrowsException() throws Exception{
+        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_4002_20150807.xtf").getFile());
         try {
-            //Main-Aufruf mit xtfFile und Pfad, wo nicht geschrieben werden kann
+            main.runConversion(xtfFile.getAbsolutePath(), "Test.xlsx");
         } catch (Avgbs2MtabException e){
             Assert.assertEquals("TYPE_NO_ACCESS_TO_FOLDER", e.getType());
         }
@@ -89,10 +95,11 @@ public class IntegrationTests {
     @Ignore
     @Test
     public void xtfFailedValidationThrowsException() throws Exception{
+        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_4001_20150806_defekt.xtf").getFile());
         try {
-            //Main-Aufruf mit xtfFile
+            main.runConversion(xtfFile.getAbsolutePath(), "Test.xlsx");
         } catch (Avgbs2MtabException e) {
             Assert.assertEquals("TYPE_VALIDATION_FAILED", e.getType());
         }
@@ -121,15 +128,15 @@ public class IntegrationTests {
 
 
     //Parzelle geändert (Zugang), Parzelle gelöscht (an bestehende Parzellen)
-    @Ignore
     @Test
     public void correctValuesWrittenInExcelAtTransferAreaTo1OldParcels() throws Exception {
+        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_4002_20150807.xtf").getFile());
 
-        //Main-Aufruf mit xtfFile
+        main.runConversion(xtfFile.getAbsolutePath(), "Test.xlsx");
 
-        InputStream ExcelFileToRead = new FileInputStream("C:\\Test.xlsx");
+        InputStream ExcelFileToRead = new FileInputStream("Test.xlsx");
         XSSFWorkbook  wb = new XSSFWorkbook(ExcelFileToRead);
         XSSFSheet xlsxSheet = wb.getSheetAt(0);
 
@@ -153,15 +160,15 @@ public class IntegrationTests {
     }
 
     //Neue Parzelle (Teile von bestehendenParzellen), Parzelle geändert (Teilabgang)
-    @Ignore
     @Test
     public void correctValuesWrittenInExcelAtNewParcelsFrom1OldParcel() throws Exception {
+        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_4001_20150806.xtf").getFile());
 
-        //Main-Aufruf mit xtfFile
+        main.runConversion(xtfFile.getAbsolutePath(), "Test1.xlsx");
 
-        InputStream ExcelFileToRead = new FileInputStream("C:\\Test.xlsx");
+        InputStream ExcelFileToRead = new FileInputStream("Test1.xlsx");
         XSSFWorkbook  wb = new XSSFWorkbook(ExcelFileToRead);
         XSSFSheet xlsxSheet = wb.getSheetAt(0);
 
@@ -187,15 +194,15 @@ public class IntegrationTests {
     }
 
 
-    @Ignore
     @Test
     public void correctValuesWrittenInExcelAtNewDPR() throws Exception {
+        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_40051_20150811.xtf").getFile());
 
-        //Main-Aufruf mit xtfFile
+        main.runConversion(xtfFile.getAbsolutePath(), "Test2.xlsx");
 
-        InputStream ExcelFileToRead = new FileInputStream("C:\\Test.xlsx");
+        InputStream ExcelFileToRead = new FileInputStream("Test2.xlsx");
         XSSFWorkbook  wb = new XSSFWorkbook(ExcelFileToRead);
         XSSFSheet xlsxSheet = wb.getSheetAt(0);
 
@@ -217,15 +224,15 @@ public class IntegrationTests {
 
     }
 
-    @Ignore
     @Test
     public void correctValuesWrittenInExcelAtDeleteDPR() throws Exception {
+        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_40061_20150814.xtf").getFile());
 
-        //Main-Aufruf mit xtfFile
+        main.runConversion(xtfFile.getAbsolutePath(), "Test3.xlsx");
 
-        InputStream ExcelFileToRead = new FileInputStream("C:\\Test.xlsx");
+        InputStream ExcelFileToRead = new FileInputStream("Test3.xlsx");
         XSSFWorkbook  wb = new XSSFWorkbook(ExcelFileToRead);
         XSSFSheet xlsxSheet = wb.getSheetAt(0);
 
@@ -244,14 +251,15 @@ public class IntegrationTests {
 
     }
 
-    @Ignore
+
     @Test
     public void correctValuesCalculatedInExcel() throws Exception {
+        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_4004_20150810.xtf").getFile());
 
-        //Main-Aufruf mit xtfFile
-        InputStream ExcelFileToRead = new FileInputStream("C:\\Test.xlsx");
+        main.runConversion(xtfFile.getAbsolutePath(), "Test4.xlsx");
+        InputStream ExcelFileToRead = new FileInputStream("Test4.xlsx");
         XSSFWorkbook  wb = new XSSFWorkbook(ExcelFileToRead);
         XSSFSheet xlsxSheet = wb.getSheetAt(0);
 
@@ -314,7 +322,9 @@ public class IntegrationTests {
 
                 Cell cell = cellIterator.next();
 
-                String key = CellReference.convertNumToColString(row.getRowNum()) + cell.getColumnIndex();
+                int rowNumber = row.getRowNum() + 1;
+
+                String key = CellReference.convertNumToColString(cell.getColumnIndex()) + rowNumber;
 
                 switch (cell.getCellTypeEnum()) {
                     case STRING:
@@ -344,7 +354,10 @@ public class IntegrationTests {
 
                 Cell cell = cellIterator.next();
 
-                String key = CellReference.convertNumToColString(row.getRowNum()) + cell.getColumnIndex();
+                int rowNumber = row.getRowNum() + 1;
+
+                String key = CellReference.convertNumToColString(cell.getColumnIndex()) + rowNumber;
+
 
                 switch (cell.getCellTypeEnum()) {
 
@@ -362,18 +375,22 @@ public class IntegrationTests {
 
     private HashMap<String, String> generateHashMapOfExpectedStringValuesOfSO0200002407_4002_20150807() {
         HashMap<String, String> expectedValuesString = new HashMap<>();
-        expectedValuesString.put("A2", "Neue Liegenschaft");
+        expectedValuesString.put("A2", "Neue Liegenschaften");
         expectedValuesString.put("A3", "Grundstück-Nr.");
-        expectedValuesString.put("A13", "Rundungsdifferenz");
-        expectedValuesString.put("A14", "Alte Fläche [m2]");
+        expectedValuesString.put("A7", "Rundungsdifferenz");
+        expectedValuesString.put("A8", "Alte Fläche [m2]");
 
         expectedValuesString.put("B1", "Alte Liegenschaften");
         expectedValuesString.put("B2", "Grundstück-Nr.");
 
-        expectedValuesString.put("E2", "Neue Fläche");
-        expectedValuesString.put("*3", "[m2]");
+        expectedValuesString.put("C1", "Alte Liegenschaften");
 
-        expectedValuesString.put("A12", "Selbst.Recht");
+        expectedValuesString.put("D1", "Alte Liegenschaften");
+
+        expectedValuesString.put("E2", "Neue Fläche");
+        expectedValuesString.put("E3", "[m2]");
+
+        expectedValuesString.put("A12", "Selbst. Recht");
         expectedValuesString.put("A13", "Grundstück-Nr.");
 
         expectedValuesString.put("B11", "Liegenschaften");
@@ -445,6 +462,7 @@ public class IntegrationTests {
             if(xlsxDataNumeric.get(key)==null){
                 allCheckedValuesAreCorrect = false;
             }
+
         }
         return allCheckedValuesAreCorrect;
     }
@@ -470,7 +488,7 @@ public class IntegrationTests {
             Double value = entry.getValue();
 
             if (expectedValuesNumeric.get(key)!=null) {
-                if (value != expectedValuesNumeric.get(key)) {
+                if (value.compareTo(expectedValuesNumeric.get(key))!=0) {
                     allCheckedValuesAreCorrect = false;
                 }
             } else {
@@ -489,12 +507,14 @@ public class IntegrationTests {
             String key = entry.getKey();
             String value = entry.getValue();
 
-            if (expectedValuesString.get(key) != null) {
-                if (value.equals(expectedValuesString.get(key))) {
+            if (value != null && !value.equals("")) {
+                if (expectedValuesString.get(key) != null) {
+                    if (!value.equals(expectedValuesString.get(key))) {
+                        allCheckedValuesAreCorrect = false;
+                    }
+                } else {
                     allCheckedValuesAreCorrect = false;
                 }
-            } else {
-                allCheckedValuesAreCorrect = false;
             }
 
         }
@@ -504,7 +524,7 @@ public class IntegrationTests {
 
     private HashMap<String, String> generateHashMapOfExpectedStringValuesOfSO0200002407_4001_20150806() {
         HashMap<String, String> expectedValuesString = new HashMap<>();
-        expectedValuesString.put("A2", "Neue Liegenschaft");
+        expectedValuesString.put("A2", "Neue Liegenschaften");
         expectedValuesString.put("A3", "Grundstück-Nr.");
         expectedValuesString.put("A13", "Rundungsdifferenz");
         expectedValuesString.put("A14", "Alte Fläche [m2]");
@@ -515,13 +535,13 @@ public class IntegrationTests {
         expectedValuesString.put("C2", "Neue Fläche");
         expectedValuesString.put("C3", "[m2]");
 
-        expectedValuesString.put("A18", "Selbst.Recht");
+        expectedValuesString.put("A18", "Selbst. Recht");
         expectedValuesString.put("A19", "Grundstück-Nr.");
 
         expectedValuesString.put("B17", "Liegenschaften");
         expectedValuesString.put("B18", "Grundstück-Nr.");
 
-        expectedValuesString.put("C18", "Rundungsdifferenz");
+        expectedValuesString.put("C18", "Rundungs-differenz");
 
         expectedValuesString.put("D18", "Selbst. Recht Fläche");
         expectedValuesString.put("D19", "[m2]");
@@ -550,6 +570,7 @@ public class IntegrationTests {
         expectedValuesNumeric.put("C7", (double) 453);
         expectedValuesNumeric.put("C9", (double) 460);
         expectedValuesNumeric.put("C11", (double) 402);
+        expectedValuesNumeric.put("C13", (double) -1);
         expectedValuesNumeric.put("C14", (double) 1950);
 
         return expectedValuesNumeric;
@@ -557,7 +578,7 @@ public class IntegrationTests {
 
     private HashMap<String, String> generateHashMapOfExpectedStringValuesOfSO0200002407_40051_20150811() {
         HashMap<String, String> expectedValuesString = new HashMap<>();
-        expectedValuesString.put("A2", "Neue Liegenschaft");
+        expectedValuesString.put("A2", "Neue Liegenschaften");
         expectedValuesString.put("A3", "Grundstück-Nr.");
         expectedValuesString.put("A7", "Rundungsdifferenz");
         expectedValuesString.put("A8", "Alte Fläche [m2]");
@@ -565,20 +586,22 @@ public class IntegrationTests {
         expectedValuesString.put("B1", "Alte Liegenschaften");
         expectedValuesString.put("B2", "Grundstück-Nr.");
 
-        expectedValuesString.put("D2", "Neue Fläche");
-        expectedValuesString.put("D3", "[m2]");
+        expectedValuesString.put("C2", "Neue Fläche");
+        expectedValuesString.put("C3", "[m2]");
 
-        expectedValuesString.put("A12", "Selbst.Recht");
+        expectedValuesString.put("A12", "Selbst. Recht");
         expectedValuesString.put("A13", "Grundstück-Nr.");
         expectedValuesString.put("A15", "(40051)");
 
         expectedValuesString.put("B11", "Liegenschaften");
         expectedValuesString.put("B12", "Grundstück-Nr.");
 
-        expectedValuesString.put("C12", "Rundungsdifferenz");
+        expectedValuesString.put("C11", "Liegenschaften");
 
-        expectedValuesString.put("D12", "Selbst. Recht Fläche");
-        expectedValuesString.put("D13", "[m2]");
+        expectedValuesString.put("D12", "Rundungs-differenz");
+
+        expectedValuesString.put("E12", "Selbst. Recht Fläche");
+        expectedValuesString.put("E13", "[m2]");
 
         return expectedValuesString;
 
@@ -601,7 +624,7 @@ public class IntegrationTests {
 
     private HashMap<String, String> generateHashMapOfExpectedStringValuesOfSO0200002407_40061_20150814() {
         HashMap<String, String> expectedValuesString = new HashMap<>();
-        expectedValuesString.put("A2", "Neue Liegenschaft");
+        expectedValuesString.put("A2", "Neue Liegenschaften");
         expectedValuesString.put("A3", "Grundstück-Nr.");
         expectedValuesString.put("A7", "Rundungsdifferenz");
         expectedValuesString.put("A8", "Alte Fläche [m2]");
@@ -609,21 +632,21 @@ public class IntegrationTests {
         expectedValuesString.put("B1", "Alte Liegenschaften");
         expectedValuesString.put("B2", "Grundstück-Nr.");
 
-        expectedValuesString.put("D2", "Neue Fläche");
-        expectedValuesString.put("D3", "[m2]");
+        expectedValuesString.put("C2", "Neue Fläche");
+        expectedValuesString.put("C3", "[m2]");
 
-        expectedValuesString.put("A12", "Selbst.Recht");
+        expectedValuesString.put("A12", "Selbst. Recht");
         expectedValuesString.put("A13", "Grundstück-Nr.");
         expectedValuesString.put("A15", "(40051)");
 
         expectedValuesString.put("B11", "Liegenschaften");
         expectedValuesString.put("B12", "Grundstück-Nr.");
-        expectedValuesString.put("B15", "gelöscht");
 
-        expectedValuesString.put("C12", "Rundungsdifferenz");
+        expectedValuesString.put("C12", "Rundungs-differenz");
 
         expectedValuesString.put("D12", "Selbst. Recht Fläche");
         expectedValuesString.put("D13", "[m2]");
+        expectedValuesString.put("D15", "gelöscht");
 
         return expectedValuesString;
 
@@ -647,18 +670,24 @@ public class IntegrationTests {
     private HashMap<String, String> generateHashMapOfExpectedStringValuesOfSO0200002407_4004_20150810() {
         HashMap<String, String> expectedValuesString = new HashMap<>();
 
-        expectedValuesString.put("A2", "Neue Liegenschaft");
+        expectedValuesString.put("A2", "Neue Liegenschaften");
         expectedValuesString.put("A3", "Grundstück-Nr.");
-        expectedValuesString.put("A7", "Rundungsdifferenz");
-        expectedValuesString.put("A8", "Alte Fläche [m2]");
+        expectedValuesString.put("A19", "Rundungsdifferenz");
+        expectedValuesString.put("A20", "Alte Fläche [m2]");
 
         expectedValuesString.put("B1", "Alte Liegenschaften");
         expectedValuesString.put("B2", "Grundstück-Nr.");
 
+        expectedValuesString.put("C1", "Alte Liegenschaften");
+        expectedValuesString.put("D1", "Alte Liegenschaften");
+        expectedValuesString.put("E1", "Alte Liegenschaften");
+        expectedValuesString.put("F1", "Alte Liegenschaften");
+        expectedValuesString.put("G1", "Alte Liegenschaften");
+
         expectedValuesString.put("H2", "Neue Fläche");
         expectedValuesString.put("H3", "[m2]");
 
-        expectedValuesString.put("A24", "Selbst.Recht");
+        expectedValuesString.put("A24", "Selbst. Recht");
         expectedValuesString.put("A25", "Grundstück-Nr.");
 
         expectedValuesString.put("B23", "Liegenschaften");

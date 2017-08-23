@@ -1,6 +1,7 @@
 package ch.so.agi.avgbs2mtab.mutdat;
 
 import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
+import ch.so.agi.avgbs2mtab.writeexcel.XlsxWriter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
@@ -13,15 +14,16 @@ import java.nio.file.Paths;
 
 public class XLSXTemplate implements ExcelTemplate {
 
-    public XSSFWorkbook createExcelTemplate (String filePath) {
-        ParcelContainer parcelContainer = new ParcelContainer();
-        DPRContainer dprContainer = new DPRContainer();
+    public XSSFWorkbook createExcelTemplate (String filePath,MetadataOfParcelMutation metadataOfParcelMutation,
+                                             MetadataOfDPRMutation metadataOfDPRMutation ) {
 
-        Integer numberOfNewParcels = parcelContainer.getNumberOfNewParcels();
-        Integer numberOfOldParcels = parcelContainer.getNumberOfOldParcels();
 
-        Integer numberOfParcelsAffectedByDPRs = dprContainer.getNumberOfParcelsAffectedByDPRs();
-        Integer numberOfDPRs = dprContainer.getNumberOfDPRs();
+
+        Integer numberOfNewParcels = metadataOfParcelMutation.getNumberOfNewParcels();
+        Integer numberOfOldParcels = metadataOfParcelMutation.getNumberOfOldParcels();
+
+        Integer numberOfParcelsAffectedByDPRs = metadataOfDPRMutation.getNumberOfParcelsAffectedByDPRs();
+        Integer numberOfDPRs = metadataOfDPRMutation.getNumberOfDPRs();
 
         XSSFWorkbook workbook = createWorkbook(filePath);
         workbook = createParcelTable(workbook, filePath, numberOfNewParcels, numberOfOldParcels,
@@ -316,6 +318,9 @@ public class XLSXTemplate implements ExcelTemplate {
         }
 
         if (dpr==0){
+            dpr = 1;
+            parcels = 1;
+        } else if (parcels == 0){
             dpr = 1;
             parcels = 1;
         }
