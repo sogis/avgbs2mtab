@@ -4,9 +4,13 @@ import ch.interlis.iom.IomObject;
 import ch.interlis.iox.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import ch.so.agi.avgbs2mtab.mutdat.DataExtractionParcel;
+import ch.so.agi.avgbs2mtab.mutdat.MetadataOfParcelMutation;
 import ch.so.agi.avgbs2mtab.mutdat.SetDPR;
 import ch.so.agi.avgbs2mtab.mutdat.SetParcel;
 
@@ -23,18 +27,20 @@ public class ReadXtf {
     private IoxReader ioxReader=null;
     private SetParcel parceldump;
     private SetDPR drpdump;
+    private DataExtractionParcel parcelmetadata;
 
     private static final Logger LOGGER = Logger.getLogger( ReadXtf.class.getName() );
 
 
-    public ReadXtf(SetParcel parceldump, SetDPR drpdump) {
+    public ReadXtf(SetParcel parceldump, SetDPR drpdump, DataExtractionParcel parcelmetadata) {
 
         this.parceldump = parceldump;
         this.drpdump = drpdump;
+        this.parcelmetadata = parcelmetadata;
     }
 
     public void readFile(String xtffilepath) {
-        //LOGGER.log()
+        LOGGER.log(Level.CONFIG,"Start reading the file");
         HashMap<String,String> parcelmetadatamap = readParcelMetadata(xtffilepath);
         HashMap<String,HashMap> drpmetadatamap = readDRPMetadata(xtffilepath);
         readValues(xtffilepath, parcelmetadatamap, drpmetadatamap);
@@ -140,14 +146,20 @@ public class ReadXtf {
                         }
                     }
                     if (aclass.equals(ILI_MUT + ".Liegenschaft") || aclass.equals(ILI_GRUDA_MUT + ".Liegenschaft")) {
-                        int parcelnumber = Integer.parseInt(iomObj.getattrobj("Nummer", 0).getattrvalue("Nummer"));
-                        String parcelref = iomObj.getobjectoid();
-                        drpdump.setDPRNumberAndRef(parcelref,parcelnumber);
+                        Integer numbercount = iomObj.getattrvaluecount("Nummer");
+                        for (int i = 0;i<numbercount;++i) {
+                            int parcelnumber = Integer.parseInt(iomObj.getattrobj("Nummer", i).getattrvalue("Nummer"));
+                            String parcelref = iomObj.getobjectoid();
+                            drpdump.setDPRNumberAndRef(parcelref, parcelnumber);
+                        }
                     }
                     if (aclass.equals(ILI_MUT + ".AVMutation") || aclass.equals(ILI_GRUDA_MUT + ".AVMutation")) {
-                        if (iomObj.getattrobj("geloeschteGrundstuecke",0) != null) {
-                            Integer nummer = Integer.parseInt(iomObj.getattrobj("geloeschteGrundstuecke",0).getattrvalue("Nummer"));
-                            drpdump.setDPRNewArea(nummer,0);
+                        Integer numberofdeletedparcels = iomObj.getattrvaluecount("geloeschteGrundstuecke");
+                        for(Integer i=0;i<numberofdeletedparcels;++i) {
+                            Integer nummer = Integer.parseInt(iomObj.getattrobj("geloeschteGrundstuecke", i).getattrvalue("Nummer"));
+                            if(!parcelmetadata.getOldParcelNumbers().contains(nummer)&&!parcelmetadata.getNewParcelNumbers().contains(nummer)) {
+                                drpdump.setDPRNewArea(nummer, 0);
+                            }
                         }
                     }
                 }else if(event instanceof EndBasketEvent){
