@@ -320,6 +320,9 @@ public class XLSXTemplate implements ExcelTemplate {
         if (dpr==0){
             dpr = 1;
             parcels = 1;
+        } else if (parcels == 0){
+            dpr = 1;
+            parcels = 1;
         }
 
         int rowStartIndex = (9 + 2 * newParcels - 1);

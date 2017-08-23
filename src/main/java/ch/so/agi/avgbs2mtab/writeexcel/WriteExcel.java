@@ -29,6 +29,7 @@ public interface WriteExcel {
 
     public XSSFWorkbook writeRoundingDifference(int oldParcelNumber,
                                             int roundingDifference,
+                                            int numberOfNewParcels,
                                             String filePath,
                                             XSSFWorkbook workbook);
 

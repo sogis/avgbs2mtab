@@ -516,9 +516,12 @@ public class ExcelDataTest {
     }
 
     private XSSFWorkbook insertRoundingDifferences(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData){
-        newWorkbook = excelData.writeRoundingDifference(695, -1, filePath, newWorkbook);
-        newWorkbook = excelData.writeRoundingDifference(697, -1, filePath, newWorkbook);
-        newWorkbook = excelData.writeRoundingDifference(701, 1, filePath, newWorkbook);
+        newWorkbook = excelData.writeRoundingDifference(695, -1, 7,
+                filePath, newWorkbook);
+        newWorkbook = excelData.writeRoundingDifference(697, -1, 7,
+                filePath, newWorkbook);
+        newWorkbook = excelData.writeRoundingDifference(701, 1, 7,
+                filePath, newWorkbook);
         return newWorkbook;
     }
 

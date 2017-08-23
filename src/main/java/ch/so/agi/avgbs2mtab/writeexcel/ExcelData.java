@@ -37,21 +37,26 @@ public class ExcelData implements WriteExcel {
                 } else {
                     area = dataExtractionParcel.getRestAreaOfParcel(oldParcel);
                 }
-                workbook = writeInflowAndOutflows(oldParcel, newParcel, area, filePath, workbook);
+                if (area != null) {
+                    workbook = writeInflowAndOutflows(oldParcel, newParcel, area, filePath, workbook);
+                }
             }
         }
 
         for (int oldParcel : orderedListOfOldParcelNumbers) {
-            Integer roundingDifference = dataExtractionParcel.getRoundingDifference(oldParcel);
-            if (roundingDifference != null) {
-                workbook = writeRoundingDifference(oldParcel, roundingDifference, filePath, workbook);
+            Integer roundingDifference =  dataExtractionParcel.getRoundingDifference(oldParcel);
+            if (roundingDifference != null && roundingDifference != 0) {
+                roundingDifference = - roundingDifference;
+                workbook = writeRoundingDifference(oldParcel, roundingDifference, orderedListOfNewParcelNumbers.size(),
+                        filePath, workbook);
             }
         }
 
 
-        workbook = writeSumOfRoundingDifference(orderedListOfNewParcelNumbers.size(), orderedListOfOldParcelNumbers.size(),
-                calculateRoundingDifference(orderedListOfOldParcelNumbers, dataExtractionParcel), filePath, workbook);
-
+        if (orderedListOfNewParcelNumbers.size() != 0 && orderedListOfOldParcelNumbers.size() != 0) {
+            workbook = writeSumOfRoundingDifference(orderedListOfNewParcelNumbers.size(), orderedListOfOldParcelNumbers.size(),
+                    calculateRoundingDifference(orderedListOfOldParcelNumbers, dataExtractionParcel), filePath, workbook);
+        }
 
 
         for (int newParcel : orderedListOfNewParcelNumbers){
@@ -62,23 +67,24 @@ public class ExcelData implements WriteExcel {
 
         HashMap<Integer, Integer> oldAreaHashMap = getAllOldAreas(orderedListOfNewParcelNumbers,
                 orderedListOfOldParcelNumbers, dataExtractionParcel);
+        System.out.println("###" + oldAreaHashMap);
 
         for (int oldParcel : orderedListOfOldParcelNumbers) {
             Integer oldArea = oldAreaHashMap.get(oldParcel);
             Integer roundingDifference = dataExtractionParcel.getRoundingDifference(oldParcel);
             if(roundingDifference==null) {
                 roundingDifference = 0;
+            } else {
+                roundingDifference = - roundingDifference;
             }
             workbook = writeOldArea(oldParcel, oldArea, roundingDifference, orderedListOfNewParcelNumbers.size(),
                     filePath, workbook);
         }
 
-        System.out.println(oldAreaHashMap.toString());
-        System.out.println(getAllNewAreas(orderedListOfNewParcelNumbers, dataExtractionParcel).toString());
-        System.out.println(calculateRoundingDifference(orderedListOfOldParcelNumbers, dataExtractionParcel));
-        System.out.println(filePath);
-        workbook = writeAreaSum(oldAreaHashMap, getAllNewAreas(orderedListOfNewParcelNumbers, dataExtractionParcel),
-                calculateRoundingDifference(orderedListOfOldParcelNumbers, dataExtractionParcel), filePath, workbook);
+        if (orderedListOfNewParcelNumbers.size() != 0 && orderedListOfOldParcelNumbers.size() != 0) {
+            workbook = writeAreaSum(oldAreaHashMap, getAllNewAreas(orderedListOfNewParcelNumbers, dataExtractionParcel),
+                    calculateRoundingDifference(orderedListOfOldParcelNumbers, dataExtractionParcel), filePath, workbook);
+        }
 
         return workbook;
     }
@@ -110,10 +116,12 @@ public class ExcelData implements WriteExcel {
         }
 
         for (int dpr : orderedListOfDPRs) {
-            System.out.println("%%%" + dpr);
             Integer roundingDifference = dataExtractionDPR.getRoundingDifferenceDPR(dpr);
-            workbook = writeDPRRoundingDifference(dpr, roundingDifference, numberOfNewParcelsInParcelTable, filePath,
-                    workbook);
+            if (roundingDifference != null && roundingDifference != 0) {
+                roundingDifference = -roundingDifference;
+                workbook = writeDPRRoundingDifference(dpr, roundingDifference, numberOfNewParcelsInParcelTable, filePath,
+                            workbook);
+            }
         }
 
         for (int dpr : orderedListOfDPRs) {
@@ -269,7 +277,8 @@ public class ExcelData implements WriteExcel {
     }
 
     @Override
-    public XSSFWorkbook writeRoundingDifference(int oldParcelNumber,int roundingDifference, String filePath, XSSFWorkbook workbook) {
+    public XSSFWorkbook writeRoundingDifference(int oldParcelNumber,int roundingDifference, int numberOfNewParcels,
+                                                String filePath, XSSFWorkbook workbook) {
 
         Integer columnOldParcelNumber = null;
         Integer rowOldParcelNumber = null;
@@ -289,7 +298,7 @@ public class ExcelData implements WriteExcel {
             }
 
             try {
-                rowOldParcelNumber = xlsxSheet.getLastRowNum() - 1;
+                rowOldParcelNumber = 5 + 2 * numberOfNewParcels - 1;
             } catch (Exception e){
                 throw new Avgbs2MtabException("Could not find last row in excel");
             }
@@ -325,9 +334,11 @@ public class ExcelData implements WriteExcel {
             OutputStream ExcelFile = new FileOutputStream(filePath);
             XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
 
-            Row row = xlsxSheet.getRow(rowNumber);
-            Cell cell = row.getCell(columnNumber);
-            cell.setCellValue(roundingDifferenceSum);
+            if (roundingDifferenceSum != 0) {
+                Row row = xlsxSheet.getRow(rowNumber);
+                Cell cell = row.getCell(columnNumber);
+                cell.setCellValue(roundingDifferenceSum);
+            }
 
             workbook.write(ExcelFile);
             ExcelFile.close();
@@ -406,15 +417,16 @@ public class ExcelData implements WriteExcel {
         for (Map.Entry<Integer, Integer> entry : oldAreas.entrySet()){
             sumOldAreas += entry.getValue();
         }
-        System.out.println("***" + oldAreas.toString());
+        sumOldAreas = sumOldAreas + roundingDifference;
 
         for (int area : newAreas){
             sumNewAreas += area;
         }
+        sumNewAreas = sumNewAreas + roundingDifference;
 
-        System.out.println(sumNewAreas);
-        System.out.println(sumOldAreas);
-        if (sumOldAreas + roundingDifference != sumNewAreas + roundingDifference){
+        System.out.println("____" + sumNewAreas);
+        System.out.println("----" + sumOldAreas);
+        if (!sumOldAreas.equals( sumNewAreas)){
             throw new Avgbs2MtabException("The sum of the old areas does not equal with the sum of the new areas.");
         }
 
@@ -455,12 +467,13 @@ public class ExcelData implements WriteExcel {
                                          List<Integer> orderedListOfOldParcelNumbers, DataExtractionParcel dataExtractionParcel) {
 
         HashMap<Integer, Integer> oldAreaHashMap = new HashMap<>();
-        Integer oldArea = null;
+        Integer oldArea;
         Integer area = null;
         System.out.println(orderedListOfNewParcelNumbers.toString());
         System.out.println(orderedListOfOldParcelNumbers.toString());
 
         for (int oldParcel : orderedListOfOldParcelNumbers) {
+            oldArea = null;
             System.out.println("old Parcel: " + oldParcel);
             for (int newParcel : orderedListOfNewParcelNumbers) {
                 System.out.println("new Parcel: " + newParcel);
@@ -469,10 +482,13 @@ public class ExcelData implements WriteExcel {
                 } else {
                     area = dataExtractionParcel.getRestAreaOfParcel(oldParcel);
                 }
-                if (oldArea != null) {
-                    oldArea += area;
-                } else {
-                    oldArea = area;
+
+                if (area != null) {
+                    if (oldArea != null) {
+                        oldArea += area;
+                    } else {
+                        oldArea = area;
+                    }
                 }
                 System.out.println("*-*" + oldArea);
             }
@@ -505,7 +521,7 @@ public class ExcelData implements WriteExcel {
             roundingDifference = 0;
         }
 
-        return roundingDifference;
+        return - roundingDifference;
 
     }
 
@@ -516,6 +532,9 @@ public class ExcelData implements WriteExcel {
                                                              String filePath,
                                                              XSSFWorkbook workbook) {
 
+        if (newParcelNumber == 0){
+            newParcelNumber = 1;
+        }
         int indexOfParcelRow = newParcelNumber*2 + 10;
 
         try {
@@ -545,7 +564,7 @@ public class ExcelData implements WriteExcel {
                                             String filePath,
                                             XSSFWorkbook workbook) {
 
-        int indexOfDPRRow = newParcelNumber*2 + 12;
+        int indexOfDPRRow = newParcelNumber*2 + 14;
 
         try {
             OutputStream ExcelFile = new FileOutputStream(filePath);
@@ -580,7 +599,13 @@ public class ExcelData implements WriteExcel {
         Integer indexParcel= null;
         Integer indexDPR = null;
 
-        int indexOfParcelRow = newParcelNumber*2 + 10;
+        if (newParcelNumber==0) {
+            newParcelNumber = 1;
+        }
+
+        int indexOfParcelRow = newParcelNumber * 2 + 10;
+
+        System.out.println(indexOfParcelRow);
         int lastRow = workbook.getSheet("Mutationstabelle").getLastRowNum();
 
 
@@ -591,8 +616,11 @@ public class ExcelData implements WriteExcel {
             Row row = xlsxSheet.getRow(indexOfParcelRow);
             for (Cell cell : row){
                 if (cell.getCellTypeEnum() == CellType.NUMERIC){
+                    System.out.println(cell.getNumericCellValue());
+                    System.out.println(parcelNumberAffectedByDPR);
                     if (cell.getNumericCellValue() == parcelNumberAffectedByDPR){
                         indexParcel = cell.getColumnIndex();
+                        System.out.println("indexParcel :" +indexParcel);
                         break;
                     }
                 }
@@ -605,8 +633,11 @@ public class ExcelData implements WriteExcel {
                     String dprString = cell1.getStringCellValue();
                     int dprStringLength = dprString.length();
                     int dprNumber = Integer.parseInt(dprString.substring(1, (dprStringLength-1)));
+                    System.out.println("dpr: " + dpr);
+                    System.out.println("dprNumber: " +dprNumber);
                     if (dprNumber == dpr){
                         indexDPR = cell1.getRowIndex();
+                        System.out.println(indexDPR);
                         break;
                     }
                 }
@@ -639,7 +670,11 @@ public class ExcelData implements WriteExcel {
         Integer rowDPRNumber = null;
         Integer columnNewArea = null;
 
+        if (newParcelNumber == 0){
+            newParcelNumber = 1;
+        }
         int indexOfParcelRow = newParcelNumber*2 + 10;
+
         int lastRow = workbook.getSheet("Mutationstabelle").getLastRowNum();
 
         try {
@@ -693,7 +728,11 @@ public class ExcelData implements WriteExcel {
         Integer rowDPRNumber = null;
         Integer columnRoundingDifference = null;
 
+        if (newParcelNumber == 0){
+            newParcelNumber = 1;
+        }
         int indexOfParcelRow = newParcelNumber*2 + 10;
+
         int lastRow = workbook.getSheet("Mutationstabelle").getLastRowNum();
 
         try {
