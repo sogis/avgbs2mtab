@@ -439,22 +439,18 @@ public class IntegrationTests {
         allCheckedValuesAreCorrect = checkIfAllExpectedNumericCellsHaveValues(expectedValuesNumeric,
                 xlsxDataNumeric,
                 allCheckedValuesAreCorrect);
-        System.out.println("1. : " + allCheckedValuesAreCorrect);
 
         allCheckedValuesAreCorrect = checkIfAllExpectedStringCellsHaveValues(expectedValuesString,
                 xlsxDataString,
                 allCheckedValuesAreCorrect);
-        System.out.println("2. : " + allCheckedValuesAreCorrect);
 
         allCheckedValuesAreCorrect = checkIfAllNumericValuesAreAsExpected(expectedValuesNumeric,
                 xlsxDataNumeric,
                 allCheckedValuesAreCorrect);
-        System.out.println("3. : " + allCheckedValuesAreCorrect);
 
         allCheckedValuesAreCorrect = checkIfAllStringValuesAreAsExpected(expectedValuesString,
                 xlsxDataString,
                 allCheckedValuesAreCorrect);
-        System.out.println("4. : " + allCheckedValuesAreCorrect);
 
         return allCheckedValuesAreCorrect;
     }
@@ -462,13 +458,9 @@ public class IntegrationTests {
     private boolean checkIfAllExpectedNumericCellsHaveValues(HashMap<String, Double> expectedValuesNumeric,
                                                             HashMap<String, Double> xlsxDataNumeric,
                                                      Boolean allCheckedValuesAreCorrect ) throws Exception {
-        System.out.println(xlsxDataNumeric);
         for (String key : expectedValuesNumeric.keySet()) {
-            System.out.println(key + " " );
-            System.out.println(xlsxDataNumeric.get(key));
             if(xlsxDataNumeric.get(key)==null){
                 allCheckedValuesAreCorrect = false;
-                System.out.println(allCheckedValuesAreCorrect);
             }
 
         }
@@ -480,11 +472,9 @@ public class IntegrationTests {
                                                             HashMap<String, String> xlsxDataString,
                                                             Boolean allCheckedValuesAreCorrect ) throws Exception {
         for (String key : expectedValuesString.keySet()) {
-            System.out.println(key + " " + expectedValuesString.get(key) + " " + xlsxDataString.get(key));
             if(xlsxDataString.get(key)==null){
                 allCheckedValuesAreCorrect = false;
             }
-            System.out.println(allCheckedValuesAreCorrect);
         }
         return allCheckedValuesAreCorrect;
     }
@@ -497,19 +487,13 @@ public class IntegrationTests {
             String key = entry.getKey();
             Double value = entry.getValue();
 
-            System.out.println(key);
-            System.out.println(value);
-            System.out.println(expectedValuesNumeric.get(key));
             if (expectedValuesNumeric.get(key)!=null) {
                 if (value.compareTo(expectedValuesNumeric.get(key))!=0) {
                     allCheckedValuesAreCorrect = false;
-                    System.out.println("hallo");
-                    System.out.println();
                 }
             } else {
                 allCheckedValuesAreCorrect = false;
             }
-            System.out.println(allCheckedValuesAreCorrect);
         }
 
         return allCheckedValuesAreCorrect;
@@ -523,22 +507,15 @@ public class IntegrationTests {
             String key = entry.getKey();
             String value = entry.getValue();
 
-            System.out.println(key);
-            System.out.println("." + value + ".");
-            System.out.println("." + expectedValuesString.get(key) + ".");
-
             if (value != null && !value.equals("")) {
                 if (expectedValuesString.get(key) != null) {
                     if (!value.equals(expectedValuesString.get(key))) {
                         allCheckedValuesAreCorrect = false;
-                        System.out.println("hier falle ich");
                     }
                 } else {
                     allCheckedValuesAreCorrect = false;
-                    System.out.println("askdlf");
                 }
             }
-            System.out.println("bla");
 
         }
 
@@ -682,12 +659,10 @@ public class IntegrationTests {
         allCheckedValuesAreCorrect = checkIfAllExpectedStringCellsHaveValues(expectedValuesString,
                 xlsxDataString,
                 allCheckedValuesAreCorrect);
-        System.out.println("1. " + allCheckedValuesAreCorrect);
 
         allCheckedValuesAreCorrect = checkIfAllStringValuesAreAsExpected(expectedValuesString,
                 xlsxDataString,
                 allCheckedValuesAreCorrect);
-        System.out.println("2. " + allCheckedValuesAreCorrect);
 
         return allCheckedValuesAreCorrect;
     }

@@ -67,7 +67,6 @@ public class ExcelData implements WriteExcel {
 
         HashMap<Integer, Integer> oldAreaHashMap = getAllOldAreas(orderedListOfNewParcelNumbers,
                 orderedListOfOldParcelNumbers, dataExtractionParcel);
-        System.out.println("###" + oldAreaHashMap);
 
         for (int oldParcel : orderedListOfOldParcelNumbers) {
             Integer oldArea = oldAreaHashMap.get(oldParcel);
@@ -97,8 +96,6 @@ public class ExcelData implements WriteExcel {
 
         List<Integer> orderedListOfParcelNumbers = dataExtractionDPR.getParcelsAffectedByDPRs();
         List<Integer> orderedListOfDPRs = dataExtractionDPR.getNewDPRs();
-
-        System.out.println("&&&&" + orderedListOfDPRs);
 
 
         Integer numberOfNewParcelsInParcelTable = metadataOfParcelMutation.getNumberOfNewParcels();
@@ -360,7 +357,6 @@ public class ExcelData implements WriteExcel {
                                      XSSFWorkbook workbook){
         Integer sum;
         sum = oldArea + roundingDifference;
-        System.out.println(oldParcelNumber + " " + sum);
 
 
         Integer columnOldParcelNumber = null;
@@ -389,9 +385,7 @@ public class ExcelData implements WriteExcel {
                         + oldParcelNumber + " could not be found in the excel.");
             } else {
                 Row rowFlows = xlsxSheet.getRow(rowOldParcelArea);
-                System.out.println(rowFlows.getRowNum());
                 Cell cellFlows = rowFlows.getCell(columnOldParcelNumber);
-                System.out.println(cellFlows.getColumnIndex());
                 cellFlows.setCellValue(sum);
             }
 
@@ -424,8 +418,6 @@ public class ExcelData implements WriteExcel {
         }
         sumNewAreas = sumNewAreas + roundingDifference;
 
-        System.out.println("____" + sumNewAreas);
-        System.out.println("----" + sumOldAreas);
         if (!sumOldAreas.equals( sumNewAreas)){
             throw new Avgbs2MtabException("The sum of the old areas does not equal with the sum of the new areas.");
         }
@@ -469,14 +461,10 @@ public class ExcelData implements WriteExcel {
         HashMap<Integer, Integer> oldAreaHashMap = new HashMap<>();
         Integer oldArea;
         Integer area = null;
-        System.out.println(orderedListOfNewParcelNumbers.toString());
-        System.out.println(orderedListOfOldParcelNumbers.toString());
 
         for (int oldParcel : orderedListOfOldParcelNumbers) {
             oldArea = null;
-            System.out.println("old Parcel: " + oldParcel);
             for (int newParcel : orderedListOfNewParcelNumbers) {
-                System.out.println("new Parcel: " + newParcel);
                 if (oldParcel != newParcel) {
                     area = dataExtractionParcel.getAddedArea(newParcel, oldParcel);
                 } else {
@@ -490,13 +478,11 @@ public class ExcelData implements WriteExcel {
                         oldArea = area;
                     }
                 }
-                System.out.println("*-*" + oldArea);
             }
             oldAreaHashMap.put(oldParcel, oldArea);
 
         }
 
-        System.out.println("----" + oldAreaHashMap);
         return oldAreaHashMap;
 
     }
@@ -605,7 +591,6 @@ public class ExcelData implements WriteExcel {
 
         int indexOfParcelRow = newParcelNumber * 2 + 10;
 
-        System.out.println(indexOfParcelRow);
         int lastRow = workbook.getSheet("Mutationstabelle").getLastRowNum();
 
 
@@ -616,11 +601,8 @@ public class ExcelData implements WriteExcel {
             Row row = xlsxSheet.getRow(indexOfParcelRow);
             for (Cell cell : row){
                 if (cell.getCellTypeEnum() == CellType.NUMERIC){
-                    System.out.println(cell.getNumericCellValue());
-                    System.out.println(parcelNumberAffectedByDPR);
                     if (cell.getNumericCellValue() == parcelNumberAffectedByDPR){
                         indexParcel = cell.getColumnIndex();
-                        System.out.println("indexParcel :" +indexParcel);
                         break;
                     }
                 }
@@ -633,11 +615,8 @@ public class ExcelData implements WriteExcel {
                     String dprString = cell1.getStringCellValue();
                     int dprStringLength = dprString.length();
                     int dprNumber = Integer.parseInt(dprString.substring(1, (dprStringLength-1)));
-                    System.out.println("dpr: " + dpr);
-                    System.out.println("dprNumber: " +dprNumber);
                     if (dprNumber == dpr){
                         indexDPR = cell1.getRowIndex();
-                        System.out.println(indexDPR);
                         break;
                     }
                 }
