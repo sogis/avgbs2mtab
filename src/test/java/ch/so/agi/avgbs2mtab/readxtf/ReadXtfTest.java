@@ -20,7 +20,7 @@ public class ReadXtfTest {
 
     @Test
     public void readFile1() throws Exception {
-        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
         ClassLoader classLoader = getClass().getClassLoader();
         xtfreader.readFile(classLoader.getResource("SO0200002407_4003_20150807.xtf").getPath());
         int addedarea = parceldump.getAddedArea(90154,748);
@@ -44,7 +44,7 @@ public class ReadXtfTest {
 
     @Test
     public void readFile2() throws Exception {
-        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
         ClassLoader classLoader = getClass().getClassLoader();
         xtfreader.readFile(classLoader.getResource("SO0200002407_4004_20150810.xtf").getPath());
         int addedarea = parceldump.getAddedArea(4004,695);
@@ -69,7 +69,7 @@ public class ReadXtfTest {
 
     @Test
     public void readFileWithDPR() throws Exception {
-        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
         ClassLoader classLoader = getClass().getClassLoader();
         xtfreader.readFile(classLoader.getResource("SO0200002407_40051_20150811.xtf").getPath());
         int numberofdprs = dprdump.getNumberOfDPRs();
@@ -92,7 +92,7 @@ public class ReadXtfTest {
 
     @Test
     public void readFileWithDeleteDRP() throws Exception {
-        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
         ClassLoader classLoader = getClass().getClassLoader();
         xtfreader.readFile(classLoader.getResource("SO0200002407_40061_20150814.xtf").getPath());
         int numberofdprs = dprdump.getNumberOfDPRs();
@@ -108,7 +108,7 @@ public class ReadXtfTest {
 
     @Test
     public void readComplexFile() throws Exception {
-        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
         ClassLoader classLoader = getClass().getClassLoader();
         xtfreader.readFile(classLoader.getResource("SO0200002427_809_20170529.xtf").getPath());
         int numberofnewparcels = parceldump.getNumberOfNewParcels();
@@ -139,18 +139,30 @@ public class ReadXtfTest {
 
     @Test
     public void oensingentest() throws Exception {
-        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
         ClassLoader classLoader = getClass().getClassLoader();
         xtfreader.readFile(classLoader.getResource("SO0200002407_4002_20150807.xtf").getPath());
         List<Integer> newparcels = parceldump.getNewParcelNumbers();
         List<Integer> oldparcels = parceldump.getOldParcelNumbers();
         int numberofoldparcels = parceldump.getNumberOfOldParcels();
-        System.out.println("newparcels = " + newparcels);
-        System.out.println("oldparcels = " + oldparcels);
-        System.out.println("Number of old parcels = "+numberofoldparcels);
+        List<Integer> newparcelsasitshouldbe = Arrays.asList(2199);
+        List<Integer> oldparcelsasitshouldbe = Arrays.asList(681,682,2199);
+        assertTrue(newparcels.containsAll(newparcelsasitshouldbe) && newparcels.size()==newparcelsasitshouldbe.size());
+        assertTrue(oldparcels.containsAll(oldparcelsasitshouldbe) && oldparcels.size()==oldparcelsasitshouldbe.size());
+        assertTrue(numberofoldparcels==3);
     }
 
-
+    @Test
+    public void readFileWithoutDRP() throws Exception {
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
+        ClassLoader classLoader = getClass().getClassLoader();
+        xtfreader.readFile(classLoader.getResource("SO0200002407_4002_20150807.xtf").getPath());
+        int numberofdprs = dprdump.getNumberOfDPRs();
+        List<Integer> parcelsaffectedbydprsa = dprdump.getParcelsAffectedByDPRs();
+        List<Integer> newdprs = dprdump.getNewDPRs();
+        System.out.println("number of DPRs: " + numberofdprs);
+        System.out.println("dprs: " + newdprs);
+    }
 
 
 }

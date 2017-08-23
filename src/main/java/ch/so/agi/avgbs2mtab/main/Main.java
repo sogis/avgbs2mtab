@@ -15,7 +15,7 @@ public class Main {
         DPRContainer dprdump = new DPRContainer();
         XlsxWriter xlsxWriter = new XlsxWriter();
 
-        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
         xtfreader.readFile(inputfile);
         xlsxWriter.writeXlsx(outputfilename);
 
