@@ -99,13 +99,13 @@ public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtracti
 
     @Override
     public Integer getRoundingDifferenceDPR(int dpr) {
-        int sumaddedareas = 0;
+        Integer sumaddedareas = 0;
         Map<String, Integer> internalmap = map.get(dpr);
         for(String key : internalmap.keySet()) {
-            int area = internalmap.get(key);
+            Integer area = internalmap.get(key);
             sumaddedareas += area;
         }
-        int roundingdiference = getNewAreaDPR(dpr)-sumaddedareas;
+        Integer roundingdiference = getNewAreaDPR(dpr)-sumaddedareas;
         return roundingdiference;
     }
 

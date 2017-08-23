@@ -113,9 +113,9 @@ public class ExcelDataTest {
 
 
 
-            newWorkbook = excelData.writeOldArea(695,658,-1,filePath, newWorkbook);
-            newWorkbook = excelData.writeOldArea(696,608,0,filePath, newWorkbook);
-            newWorkbook = excelData.writeOldArea(697,817,-1,filePath, newWorkbook);
+            newWorkbook = excelData.writeOldArea(695,658,-1, 7,filePath, newWorkbook);
+            newWorkbook = excelData.writeOldArea(696,608,0, 7, filePath, newWorkbook);
+            newWorkbook = excelData.writeOldArea(697,817,-1, 7, filePath, newWorkbook);
 
 
             Assert.assertTrue(checkOldAreas(newWorkbook));

@@ -27,9 +27,11 @@ public class IntegrationTests {
     @Test
     public void testWithSQLFileThrowsException() throws Exception {
         File sqlFile = createFileWithoutXTFExtension();
+        Main main = new Main();
 
         try{
-            //Main-Aufruf mit sqlFile
+           // main.runConversion(sqlFile.getAbsolutePath(), "C:\\Test.xlsx");
+
         } catch (Avgbs2MtabException e) {
             Assert.assertEquals("TYPE_WRONG_EXTENSION", e.getType());
         }
@@ -124,12 +126,14 @@ public class IntegrationTests {
     @Ignore
     @Test
     public void correctValuesWrittenInExcelAtTransferAreaTo1OldParcels() throws Exception {
+        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_4002_20150807.xtf").getFile());
 
         //Main-Aufruf mit xtfFile
+        main.runConversion(xtfFile.getAbsolutePath(), "Test.xlsx");
 
-        InputStream ExcelFileToRead = new FileInputStream("C:\\Test.xlsx");
+        InputStream ExcelFileToRead = new FileInputStream("Test.xlsx");
         XSSFWorkbook  wb = new XSSFWorkbook(ExcelFileToRead);
         XSSFSheet xlsxSheet = wb.getSheetAt(0);
 
@@ -156,12 +160,14 @@ public class IntegrationTests {
     @Ignore
     @Test
     public void correctValuesWrittenInExcelAtNewParcelsFrom1OldParcel() throws Exception {
+        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_4001_20150806.xtf").getFile());
 
         //Main-Aufruf mit xtfFile
+        main.runConversion(xtfFile.getAbsolutePath(), "Test1.xlsx");
 
-        InputStream ExcelFileToRead = new FileInputStream("C:\\Test.xlsx");
+        InputStream ExcelFileToRead = new FileInputStream("Test1.xlsx");
         XSSFWorkbook  wb = new XSSFWorkbook(ExcelFileToRead);
         XSSFSheet xlsxSheet = wb.getSheetAt(0);
 

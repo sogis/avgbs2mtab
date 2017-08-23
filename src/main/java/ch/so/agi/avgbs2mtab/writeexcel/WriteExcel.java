@@ -32,11 +32,17 @@ public interface WriteExcel {
                                             String filePath,
                                             XSSFWorkbook workbook);
 
+    public XSSFWorkbook writeSumOfRoundingDifference (int NumberOfNewParcels,
+                                                      int NumberOfOldParcels,
+                                                      int roundingDifferenceSum,
+                                                      String filePath,
+                                                      XSSFWorkbook workbook);
 
 
     public XSSFWorkbook writeOldArea(int oldParcelNumber,
                                  int oldArea,
                                  int roundingDifference,
+                                 int numberOfNewParcels,
                                  String filePath,
                                  XSSFWorkbook workbook);
 
