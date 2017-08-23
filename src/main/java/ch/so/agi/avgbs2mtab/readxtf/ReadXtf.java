@@ -3,6 +3,9 @@ package ch.so.agi.avgbs2mtab.readxtf;
 import ch.interlis.iom.IomObject;
 import ch.interlis.iox.*;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +16,8 @@ import ch.so.agi.avgbs2mtab.mutdat.DataExtractionParcel;
 import ch.so.agi.avgbs2mtab.mutdat.MetadataOfParcelMutation;
 import ch.so.agi.avgbs2mtab.mutdat.SetDPR;
 import ch.so.agi.avgbs2mtab.mutdat.SetParcel;
+import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
+import ch.so.agi.avgbs2mtab.util.FileExtension;
 
 /**
  * This Class contains methods to read xtf-files and write specific content to a hashtable
@@ -39,8 +44,9 @@ public class ReadXtf {
         this.parcelmetadata = parcelmetadata;
     }
 
-    public void readFile(String xtffilepath) {
+    public void readFile(String xtffilepath) throws IOException {
         LOGGER.log(Level.CONFIG,"Start reading the file");
+        checkfile(xtffilepath);
         HashMap<String,String> parcelmetadatamap = readParcelMetadata(xtffilepath);
         HashMap<String,HashMap> drpmetadatamap = readDRPMetadata(xtffilepath);
         readValues(xtffilepath, parcelmetadatamap, drpmetadatamap);
@@ -385,5 +391,31 @@ public class ReadXtf {
             }
         }
         return anteil;
+    }
+
+    public void checkfile(String filepath) throws IOException {
+        File file = new File(filepath);
+        if (!file.exists()) {
+            LOGGER.log(Level.WARNING,"File "+filepath+" not found!");
+            throw new IOException("File not found");
+        }
+        if (!file.canRead()) {
+            LOGGER.log(Level.WARNING,"Could not read File "+filepath);
+            throw new IOException("Can't read file "+filepath);
+        }
+        try {
+            FileReader fileReader = new FileReader(filepath);
+            fileReader.read();
+            fileReader.close();
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING,"Exception when checked file can read with message:"+e.getMessage(), e);
+            throw new IOException("Can't read file "+filepath);
+        }
+        String fileExtension = FileExtension.getFileExtension(file);
+        if (!fileExtension.equalsIgnoreCase("xtf")){
+            LOGGER.log(Level.WARNING,"File extension must be .xtf. Error at File: " + filepath);
+            throw new IOException("File extension must be .xtf. Error at File: " + filepath);
+        }
+        
     }
 }
