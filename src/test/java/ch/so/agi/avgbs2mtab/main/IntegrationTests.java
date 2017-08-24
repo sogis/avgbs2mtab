@@ -134,12 +134,11 @@ public class IntegrationTests {
         Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_4002_20150807.xtf").getFile());
+        String filePath = "Test.xlsx";
 
-        main.runConversion(xtfFile.getAbsolutePath(), "Test.xlsx");
+        main.runConversion(xtfFile.getAbsolutePath(), filePath);
 
-        InputStream ExcelFileToRead = new FileInputStream("Test.xlsx");
-        XSSFWorkbook  wb = new XSSFWorkbook(ExcelFileToRead);
-        XSSFSheet xlsxSheet = wb.getSheetAt(0);
+        XSSFSheet xlsxSheet = openExcelSheet(filePath);
 
         HashMap<String, Double> xlsxDataNumeric = generateHashMapFromNumericValuesInExcel(xlsxSheet);
         HashMap<String, String> xlsxDataString = generateHashMapFromStringValuesInExcel(xlsxSheet);
@@ -166,12 +165,11 @@ public class IntegrationTests {
         Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_4001_20150806.xtf").getFile());
+        String filePath = "Test1.xlsx";
 
-        main.runConversion(xtfFile.getAbsolutePath(), "Test1.xlsx");
+        main.runConversion(xtfFile.getAbsolutePath(), filePath);
 
-        InputStream ExcelFileToRead = new FileInputStream("Test1.xlsx");
-        XSSFWorkbook  wb = new XSSFWorkbook(ExcelFileToRead);
-        XSSFSheet xlsxSheet = wb.getSheetAt(0);
+        XSSFSheet xlsxSheet = openExcelSheet(filePath);
 
         HashMap<String, Double> xlsxDataNumeric = generateHashMapFromNumericValuesInExcel(xlsxSheet);
         HashMap<String, String> xlsxDataString = generateHashMapFromStringValuesInExcel(xlsxSheet);
@@ -200,12 +198,11 @@ public class IntegrationTests {
         Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_40051_20150811.xtf").getFile());
+        String filePath = "Test2.xlsx";
 
-        main.runConversion(xtfFile.getAbsolutePath(), "Test2.xlsx");
+        main.runConversion(xtfFile.getAbsolutePath(), filePath);
 
-        InputStream ExcelFileToRead = new FileInputStream("Test2.xlsx");
-        XSSFWorkbook  wb = new XSSFWorkbook(ExcelFileToRead);
-        XSSFSheet xlsxSheet = wb.getSheetAt(0);
+        XSSFSheet xlsxSheet = openExcelSheet(filePath);
 
         HashMap<String, Double> xlsxDataNumeric = generateHashMapFromNumericValuesInExcel(xlsxSheet);
         HashMap<String, String> xlsxDataString = generateHashMapFromStringValuesInExcel(xlsxSheet);
@@ -230,13 +227,11 @@ public class IntegrationTests {
         Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_40061_20150814.xtf").getFile());
+        String filePath = "Test3.xlsx";
 
-        main.runConversion(xtfFile.getAbsolutePath(), "Test3.xlsx");
+        main.runConversion(xtfFile.getAbsolutePath(), filePath);
 
-        InputStream ExcelFileToRead = new FileInputStream("Test3.xlsx");
-        XSSFWorkbook  wb = new XSSFWorkbook(ExcelFileToRead);
-        XSSFSheet xlsxSheet = wb.getSheetAt(0);
-
+        XSSFSheet xlsxSheet = openExcelSheet(filePath);
 
         HashMap<String, String> xlsxDataString = generateHashMapFromStringValuesInExcel(xlsxSheet);
 
@@ -258,11 +253,11 @@ public class IntegrationTests {
         Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_4004_20150810.xtf").getFile());
+        String filePath = "Test4.xlsx";
 
-        main.runConversion(xtfFile.getAbsolutePath(), "Test4.xlsx");
-        InputStream ExcelFileToRead = new FileInputStream("Test4.xlsx");
-        XSSFWorkbook  wb = new XSSFWorkbook(ExcelFileToRead);
-        XSSFSheet xlsxSheet = wb.getSheetAt(0);
+        main.runConversion(xtfFile.getAbsolutePath(), filePath);
+
+        XSSFSheet xlsxSheet = openExcelSheet(filePath);
 
         HashMap<String, Double> xlsxDataNumeric = generateHashMapFromNumericValuesInExcel(xlsxSheet);
         HashMap<String, String> xlsxDataString = generateHashMapFromStringValuesInExcel(xlsxSheet);
@@ -286,11 +281,11 @@ public class IntegrationTests {
         Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002427_809_20170529.xtf").getFile());
+        String filePath = "Test5.xlsx";
 
-        main.runConversion(xtfFile.getAbsolutePath(), "Test5.xlsx");
-        InputStream ExcelFileToRead = new FileInputStream("Test5.xlsx");
-        XSSFWorkbook  wb = new XSSFWorkbook(ExcelFileToRead);
-        XSSFSheet xlsxSheet = wb.getSheetAt(0);
+        main.runConversion(xtfFile.getAbsolutePath(), filePath);
+
+        XSSFSheet xlsxSheet = openExcelSheet(filePath);
 
         HashMap<String, Double> xlsxDataNumeric = generateHashMapFromNumericValuesInExcel(xlsxSheet);
         HashMap<String, String> xlsxDataString = generateHashMapFromStringValuesInExcel(xlsxSheet);
@@ -336,6 +331,7 @@ public class IntegrationTests {
         xtfFile.setReadable(false);
         return xtfFile;
     }
+
 
 
     private HashMap<String, String> generateHashMapFromStringValuesInExcel(XSSFSheet xlsxSheet) throws Exception {
@@ -551,6 +547,18 @@ public class IntegrationTests {
 
         return allCheckedValuesAreCorrect;
     }
+
+    private XSSFSheet openExcelSheet(String filePath) {
+        try {
+            InputStream ExcelFileToRead = new FileInputStream(filePath);
+            XSSFWorkbook wb = new XSSFWorkbook(ExcelFileToRead);
+            return wb.getSheetAt(0);
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+
+    }
+
 
     private HashMap<String, String> generateHashMapOfExpectedStringValuesOfSO0200002407_4001_20150806() {
         HashMap<String, String> expectedValuesString = new HashMap<>();
