@@ -1,6 +1,7 @@
 package ch.so.agi.avgbs2mtab.main;
 
 import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
+import ch.so.agi.avgbs2mtab.writeexcel.ExcelData;
 import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -278,6 +279,35 @@ public class IntegrationTests {
 
 
         Assert.assertTrue(allValuesAreCorrect);
+    }
+
+    @Test
+    public void correctValuesOfDPRsAndParcelsWrittenInExcel() throws Exception {
+        Main main = new Main();
+        ClassLoader classLoader = getClass().getClassLoader();
+        File xtfFile = new File(classLoader.getResource("SO0200002427_809_20170529.xtf").getFile());
+
+        main.runConversion(xtfFile.getAbsolutePath(), "Test5.xlsx");
+        InputStream ExcelFileToRead = new FileInputStream("Test5.xlsx");
+        XSSFWorkbook  wb = new XSSFWorkbook(ExcelFileToRead);
+        XSSFSheet xlsxSheet = wb.getSheetAt(0);
+
+        HashMap<String, Double> xlsxDataNumeric = generateHashMapFromNumericValuesInExcel(xlsxSheet);
+        HashMap<String, String> xlsxDataString = generateHashMapFromStringValuesInExcel(xlsxSheet);
+
+        HashMap<String, String> expectedValuesString =
+                generateHashMapOfExpectedStringValuesOfSO0200002427_809_20170529();
+        HashMap<String, Double> expectedValuesNumeric =
+                generateHashMapOfExpectedNumericValuesOfSO0200002427_809_20170529();
+
+        Boolean allValuesAreCorrect = checkIfValuesAreCorrect(expectedValuesNumeric,
+                xlsxDataNumeric,
+                expectedValuesString,
+                xlsxDataString);
+
+
+        Assert.assertTrue(allValuesAreCorrect);
+
     }
 
 
@@ -763,6 +793,69 @@ public class IntegrationTests {
 
 
         return expectedValuesNumeric;
+    }
+
+    private HashMap<String, String> generateHashMapOfExpectedStringValuesOfSO0200002427_809_20170529() {
+        HashMap<String, String> expectedValuesString = new HashMap<>();
+
+        expectedValuesString.put("A2", "Neue Liegenschaften");
+        expectedValuesString.put("A3", "Grundstück-Nr.");
+        expectedValuesString.put("A11", "Rundungsdifferenz");
+        expectedValuesString.put("A12", "Alte Fläche [m2]");
+
+        expectedValuesString.put("B1", "Alte Liegenschaften");
+        expectedValuesString.put("B2", "Grundstück-Nr.");
+
+        expectedValuesString.put("C1", "Alte Liegenschaften");
+
+        expectedValuesString.put("D2", "Neue Fläche");
+        expectedValuesString.put("D3", "[m2]");
+
+        expectedValuesString.put("A16", "Selbst. Recht");
+        expectedValuesString.put("A17", "Grundstück-Nr.");
+        expectedValuesString.put("A19", "(1941)");
+
+        expectedValuesString.put("B15", "Liegenschaften");
+        expectedValuesString.put("B16", "Grundstück-Nr.");
+
+        expectedValuesString.put("C16", "Rundungsdifferenz");
+
+        expectedValuesString.put("D16", "Selbst. Recht Fläche");
+        expectedValuesString.put("D17", "[m2]");
+
+        return expectedValuesString;
+    }
+
+    private HashMap<String, Double> generateHashMapOfExpectedNumericValuesOfSO0200002427_809_20170529() {
+        HashMap<String, Double> expectedValuesNumeric = new HashMap<>();
+
+        expectedValuesNumeric.put("A5", (double) 1273);
+        expectedValuesNumeric.put("A7", (double) 1864);
+        expectedValuesNumeric.put("A9", (double) 1973);
+
+        expectedValuesNumeric.put("B3", (double) 1273);
+        expectedValuesNumeric.put("B5", (double) 352);
+        expectedValuesNumeric.put("B9", (double) 2);
+        expectedValuesNumeric.put("B12", (double) 354);
+
+        expectedValuesNumeric.put("C3", (double) 1864);
+        expectedValuesNumeric.put("C5", (double) 69);
+        expectedValuesNumeric.put("C7", (double) 1238);
+        expectedValuesNumeric.put("C9", (double) 1434);
+        expectedValuesNumeric.put("C12", (double) 2741);
+
+        expectedValuesNumeric.put("D5", (double) 421);
+        expectedValuesNumeric.put("D7", (double) 1238);
+        expectedValuesNumeric.put("D9", (double) 1436);
+        expectedValuesNumeric.put("D12", (double) 3095);
+
+        expectedValuesNumeric.put("B17", (double) 1864);
+        expectedValuesNumeric.put("B19", (double) 1238);
+
+        expectedValuesNumeric.put("D19", (double) 1238);
+
+        return expectedValuesNumeric;
+
     }
 
 

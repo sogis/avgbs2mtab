@@ -22,7 +22,7 @@ public class ExcelData implements WriteExcel {
                                                    DataExtractionParcel dataExtractionParcel){
 
 
-        Integer area = null;
+        Integer area;
 
         List<Integer> orderedListOfOldParcelNumbers = dataExtractionParcel.getOldParcelNumbers();
         List<Integer> orderedListOfNewParcelNumbers = dataExtractionParcel.getNewParcelNumbers();
@@ -278,7 +278,7 @@ public class ExcelData implements WriteExcel {
                                                 String filePath, XSSFWorkbook workbook) {
 
         Integer columnOldParcelNumber = null;
-        Integer rowOldParcelNumber = null;
+        Integer rowOldParcelNumber;
 
         try {
             OutputStream ExcelFile = new FileOutputStream(filePath);
@@ -360,7 +360,7 @@ public class ExcelData implements WriteExcel {
 
 
         Integer columnOldParcelNumber = null;
-        Integer rowOldParcelArea = null;
+        Integer rowOldParcelArea;
 
         try {
             OutputStream ExcelFile = new FileOutputStream(filePath);
@@ -460,7 +460,7 @@ public class ExcelData implements WriteExcel {
 
         HashMap<Integer, Integer> oldAreaHashMap = new HashMap<>();
         Integer oldArea;
-        Integer area = null;
+        Integer area;
 
         for (int oldParcel : orderedListOfOldParcelNumbers) {
             oldArea = null;
@@ -550,7 +550,11 @@ public class ExcelData implements WriteExcel {
                                             String filePath,
                                             XSSFWorkbook workbook) {
 
-        int indexOfDPRRow = newParcelNumber*2 + 14;
+        if (newParcelNumber == 0){
+            newParcelNumber = 1;
+        }
+        int indexOfDPRRow = newParcelNumber*2 + 12;
+
 
         try {
             OutputStream ExcelFile = new FileOutputStream(filePath);
@@ -558,6 +562,7 @@ public class ExcelData implements WriteExcel {
 
 
             Integer rowIndex = indexOfDPRRow;
+
 
             for (Integer dpr : orderedListOfDPRs){
                 XSSFRow row = xlsxSheet.getRow(rowIndex);

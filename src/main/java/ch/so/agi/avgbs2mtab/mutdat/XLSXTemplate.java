@@ -1,7 +1,6 @@
 package ch.so.agi.avgbs2mtab.mutdat;
 
 import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
-import ch.so.agi.avgbs2mtab.writeexcel.XlsxWriter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
@@ -46,13 +45,11 @@ public class XLSXTemplate implements ExcelTemplate {
             try {
                 OutputStream ExcelFile = new FileOutputStream(filePath);
                 XSSFWorkbook workbook = new XSSFWorkbook();
-                XSSFSheet xlsxSheet = workbook.createSheet("Mutationstabelle");
+                workbook.createSheet("Mutationstabelle");
                 workbook.write(ExcelFile);
 
                 return workbook;
 
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -93,8 +90,16 @@ public class XLSXTemplate implements ExcelTemplate {
 
         for (int i = 0; i < (newParcels*2+5) + 1; i++){
             Row row =sheet.createRow(i);
+
+
+
+
+
             if (i==0) {
-                for (int c = 1; c <= oldParcels; c++){
+
+                stylingFirstParcelRow(row,oldParcels, excelTemplate);
+
+                /*for (int c = 1; c <= oldParcels; c++){
                     cell = row.createCell(c);
                     cell.setCellValue("Alte Liegenschaften");
 
@@ -108,7 +113,7 @@ public class XLSXTemplate implements ExcelTemplate {
                                     "thick", "thick", "", 0, excelTemplate);
                             cell.setCellStyle(newStyle);
                         }
-                    } else if (c==oldParcels && oldParcels!=1){
+                    } else if (c==oldParcels){
                         XSSFCellStyle newStyle = getStyleForCell("lightGray", "",
                                 "thick", "", "thick", 0, excelTemplate);
                         cell.setCellStyle(newStyle);
@@ -119,7 +124,7 @@ public class XLSXTemplate implements ExcelTemplate {
                     }
                 }
 
-                row.setHeight((short) 600);
+                row.setHeight((short) 600);*/
             } else if (i==1) {
                 for (int c = 0; c <= oldParcels +1; c++){
                     cell = row.createCell(c);
@@ -142,7 +147,7 @@ public class XLSXTemplate implements ExcelTemplate {
                             cell.setCellStyle(newStyle);
                         }
                         cell.setCellValue("Grundstück-Nr.");
-                    } else if (c==oldParcels && oldParcels!=1){
+                    } else if (c==oldParcels){
                         XSSFCellStyle newStyle = getStyleForCell("lightGray", "thin",
                                 "thin", "thin", "thick", 0, excelTemplate);
                         cell.setCellStyle(newStyle);
@@ -179,7 +184,7 @@ public class XLSXTemplate implements ExcelTemplate {
                                     "thin", "thick", "thin", 2, excelTemplate);
                             cell.setCellStyle(newStyle);
                         }
-                    } else if (c==oldParcels && oldParcels!=1){
+                    } else if (c==oldParcels){
                         XSSFCellStyle newStyle = getStyleForCell("", "thick",
                                 "thin", "thin", "thick",2,  excelTemplate);
                         cell.setCellStyle(newStyle);
@@ -216,7 +221,7 @@ public class XLSXTemplate implements ExcelTemplate {
                                     "thick", "thick", "thin", 0, excelTemplate);
                             cell.setCellStyle(newStyle);
                         }
-                    } else if (c == oldParcels && oldParcels != 1) {
+                    } else if (c == oldParcels) {
                         XSSFCellStyle newStyle = getStyleForCell("", "thick",
                                 "thick", "thin", "thick", 0, excelTemplate);
                         cell.setCellStyle(newStyle);
@@ -273,7 +278,7 @@ public class XLSXTemplate implements ExcelTemplate {
                                     border_top, "thick", "thin", 2, excelTemplate);
                             cell.setCellStyle(newStyle);
                         }
-                    } else if (c == oldParcels && oldParcels != 1) {
+                    } else if (c == oldParcels) {
                         XSSFCellStyle newStyle = getStyleForCell("", border_bottom,
                                 border_top, "thin", "thick", 2, excelTemplate);
                         cell.setCellStyle(newStyle);
@@ -297,13 +302,44 @@ public class XLSXTemplate implements ExcelTemplate {
             FileOutputStream out = new FileOutputStream(new File(filePath));
             excelTemplate.write(out);
             //out.close();
-        } catch (FileNotFoundException e){
 
         } catch (IOException e) {
+            throw new RuntimeException(e);
 
         }
 
-        return (XSSFWorkbook) excelTemplate;
+        return excelTemplate;
+
+    }
+
+    public void  stylingFirstParcelRow(Row row, int oldParcels, XSSFWorkbook excelTemplate) {
+        Cell cell;
+        for (int c = 1; c <= oldParcels; c++){
+            cell = row.createCell(c);
+            cell.setCellValue("Alte Liegenschaften");
+
+            if (c==1) {
+                if (oldParcels == 1) {
+                    XSSFCellStyle newStyle = getStyleForCell("lightGray", "",
+                            "thick", "thick", "thick", 0, excelTemplate);
+                    cell.setCellStyle(newStyle);
+                } else if (oldParcels > 1) {
+                    XSSFCellStyle newStyle = getStyleForCell("lightGray", "",
+                            "thick", "thick", "", 0, excelTemplate);
+                    cell.setCellStyle(newStyle);
+                }
+            } else if (c==oldParcels){
+                XSSFCellStyle newStyle = getStyleForCell("lightGray", "",
+                        "thick", "", "thick", 0, excelTemplate);
+                cell.setCellStyle(newStyle);
+            } else {
+                XSSFCellStyle newStyle = getStyleForCell("lightGray", "",
+                        "thick", "", "", 0, excelTemplate);
+                cell.setCellStyle(newStyle);
+            }
+        }
+
+        row.setHeight((short) 600);
 
     }
 
@@ -361,7 +397,7 @@ public class XLSXTemplate implements ExcelTemplate {
                                     "thick", "thick", "", 0, excelTemplate);
                             cell.setCellStyle(newStyle);
                         }
-                    } else if (c == parcels && parcels != 1) {
+                    } else if (c == parcels) {
                         XSSFCellStyle newStyle = getStyleForCell("lightGray", "",
                                 "thick", "", "thick", 0, excelTemplate);
                         cell.setCellStyle(newStyle);
@@ -396,7 +432,7 @@ public class XLSXTemplate implements ExcelTemplate {
                             cell.setCellStyle(newStyle);
                         }
                         cell.setCellValue("Grundstück-Nr.");
-                    } else if (c==parcels && parcels!=1){
+                    } else if (c==parcels){
                         XSSFCellStyle newStyle = getStyleForCell("lightGray", "thin",
                                 "thin", "thin", "thin", 0, excelTemplate);
                         cell.setCellStyle(newStyle);
@@ -546,25 +582,21 @@ public class XLSXTemplate implements ExcelTemplate {
 
 
         try {
-
-            //todo: change path
             FileOutputStream out = new FileOutputStream(new File(filePath));
             excelTemplate.write(out);
-            //out.close();
-        } catch (FileNotFoundException e){
-
+            out.close();
         } catch (IOException e) {
-
+            throw new RuntimeException(e);
         }
 
-        return (XSSFWorkbook) excelTemplate;
+        return excelTemplate;
     }
 
 
     private XSSFCellStyle getStyleForCell(String color, String border_bottom, String border_top, String border_left,
                                           String border_right, int indent, XSSFWorkbook excelTemplate ) {
 
-        XSSFCellStyle style = (XSSFCellStyle) excelTemplate.createCellStyle();
+        XSSFCellStyle style = excelTemplate.createCellStyle();
 
         XSSFColor lightGray = new XSSFColor(new java.awt.Color(217, 217,217));
 
@@ -587,6 +619,7 @@ public class XLSXTemplate implements ExcelTemplate {
             style.setAlignment(HorizontalAlignment.RIGHT);
             style.setIndention((short) indent);
         }
+
         switch (border_bottom) {
             case "thick":
                 style.setBorderBottom(BorderStyle.THICK);
