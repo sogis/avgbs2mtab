@@ -24,6 +24,12 @@ public class XLSXTemplate implements ExcelTemplate {
         Integer numberOfParcelsAffectedByDPRs = metadataOfDPRMutation.getNumberOfParcelsAffectedByDPRs();
         Integer numberOfDPRs = metadataOfDPRMutation.getNumberOfDPRs();
 
+        return generateWorkbookTemplate(filePath, numberOfNewParcels, numberOfOldParcels,
+                numberOfParcelsAffectedByDPRs, numberOfDPRs);
+    }
+
+    private XSSFWorkbook generateWorkbookTemplate(String filePath, int numberOfNewParcels, int numberOfOldParcels,
+                                                  int numberOfParcelsAffectedByDPRs, int numberOfDPRs){
         XSSFWorkbook workbook = createWorkbook(filePath);
         workbook = createParcelTable(workbook, filePath, numberOfNewParcels, numberOfOldParcels,
                 numberOfParcelsAffectedByDPRs);
@@ -33,15 +39,11 @@ public class XLSXTemplate implements ExcelTemplate {
         return workbook;
     }
 
+
     @Override
     public XSSFWorkbook createWorkbook(String filePath) {
 
-        int lastSlash = filePath.lastIndexOf("/");
-        String pathWithoutFilename = filePath.substring(0, lastSlash+1);
-
-        Path xlsxFilePath = Paths.get(pathWithoutFilename);
-
-        if (Files.isWritable(xlsxFilePath)){
+        if (getIfFilePathIsWritable(filePath)){
             try {
                 OutputStream ExcelFile = new FileOutputStream(filePath);
                 XSSFWorkbook workbook = new XSSFWorkbook();
@@ -59,6 +61,16 @@ public class XLSXTemplate implements ExcelTemplate {
         }
 
     }
+
+    private boolean getIfFilePathIsWritable(String filePath){
+        int lastSlash = filePath.lastIndexOf("/");
+        String pathWithoutFilename = filePath.substring(0, lastSlash+1);
+
+        Path xlsxFilePath = Paths.get(pathWithoutFilename);
+
+        return Files.isWritable(xlsxFilePath);
+    }
+
 
     @Override
     public XSSFWorkbook createParcelTable(XSSFWorkbook excelTemplate,String filePath, int newParcels, int oldParcels,
@@ -103,9 +115,6 @@ public class XLSXTemplate implements ExcelTemplate {
 
             }
         }
-
-
-
 
         try {
             FileOutputStream out = new FileOutputStream(new File(filePath));

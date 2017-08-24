@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,8 +35,9 @@ public class ExcelDataTest {
 
         try {
             XSSFWorkbook newWorkbook = xlsxTemplate.createWorkbook(filePath);
+            XSSFSheet sheet = newWorkbook.getSheet("Mutationstabelle");
             newWorkbook = xlsxTemplate.createParcelTable(newWorkbook,filePath, newParcels.size(),oldParcels.size(), 0);
-            newWorkbook = excelData.writeOldParcelsInTemplate(oldParcels, filePath, newWorkbook);
+            newWorkbook = excelData.writeOldParcelsInTemplate(oldParcels, newWorkbook, sheet);
             Assert.assertTrue(checkOldParcels(newWorkbook));
 
         } catch (Exception e){
@@ -68,11 +71,14 @@ public class ExcelDataTest {
         String filePath = excelFile.getAbsolutePath();
 
         XLSXTemplate xlsxTemplate = new XLSXTemplate();
+
+
         ExcelData excelData = new ExcelData();
 
         try {
             XSSFWorkbook newWorkbook = insertParcels(filePath,xlsxTemplate,excelData);
-            newWorkbook = insertInflowAndOutflows(filePath, newWorkbook, excelData);
+            XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
+            newWorkbook = insertInflowAndOutflows(filePath, newWorkbook, excelData, xlsxSheet);
             Assert.assertTrue(checkInflowsOutflows(newWorkbook));
 
         } catch (Exception e){
@@ -91,7 +97,9 @@ public class ExcelDataTest {
         try {
             XSSFWorkbook newWorkbook = insertParcels(filePath,xlsxTemplate,excelData);
 
-            newWorkbook = insertRoundingDifferences(filePath, newWorkbook, excelData);
+            XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
+
+            newWorkbook = insertRoundingDifferences(filePath, newWorkbook, excelData, xlsxSheet);
 
             Assert.assertTrue(checkRoundingDifferences(newWorkbook));
 
@@ -111,11 +119,14 @@ public class ExcelDataTest {
         try {
             XSSFWorkbook newWorkbook = insertParcels(filePath,xlsxTemplate,excelData);
 
+            XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
 
-
-            newWorkbook = excelData.writeOldArea(695,658,-1, 7,filePath, newWorkbook);
-            newWorkbook = excelData.writeOldArea(696,608,0, 7, filePath, newWorkbook);
-            newWorkbook = excelData.writeOldArea(697,817,-1, 7, filePath, newWorkbook);
+            newWorkbook = excelData.writeOldArea(695,658, 7,
+                    newWorkbook, xlsxSheet);
+            newWorkbook = excelData.writeOldArea(696,608, 7,
+                    newWorkbook, xlsxSheet);
+            newWorkbook = excelData.writeOldArea(697,817, 7,
+                    newWorkbook, xlsxSheet);
 
 
             Assert.assertTrue(checkOldAreas(newWorkbook));
@@ -137,8 +148,8 @@ public class ExcelDataTest {
 
         try {
             XSSFWorkbook newWorkbook = insertParcels(filePath,xlsxTemplate,excelData);
-
-            newWorkbook = excelData.writeAreaSum(oldAreas(),newAreas(),-1, filePath, newWorkbook);
+            XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
+            newWorkbook = excelData.writeAreaSum(oldAreas(),newAreas(),-1, newWorkbook, xlsxSheet);
 
 
             Assert.assertTrue(checkSumOfAreas(newWorkbook));
@@ -161,7 +172,9 @@ public class ExcelDataTest {
         try {
             XSSFWorkbook newWorkbook = insertParcels(filePath,xlsxTemplate,excelData);
 
-            newWorkbook = insertNewAreas(filePath, newWorkbook, excelData);
+            XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
+
+            newWorkbook = insertNewAreas(filePath, newWorkbook, excelData, xlsxSheet);
 
 
             Assert.assertTrue(checkNewAreas(newWorkbook));
@@ -192,9 +205,11 @@ public class ExcelDataTest {
             XSSFWorkbook newWorkbook = xlsxTemplate.createWorkbook(filePath);
             newWorkbook = xlsxTemplate.createParcelTable(newWorkbook,filePath, newParcels.size(),oldParcels.size(),
                     parcels.size());
+            XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
             newWorkbook = xlsxTemplate.createDPRTable(newWorkbook, filePath, parcels.size(), dpr.size(),
                     newParcels.size(), oldParcels.size());
-            newWorkbook = excelData.writeParcelsAffectedByDPRsInTemplate(parcels, newParcels.size(), filePath, newWorkbook);
+            newWorkbook = excelData.writeParcelsAffectedByDPRsInTemplate(parcels, newParcels.size(), newWorkbook,
+                    xlsxSheet);
 
             Assert.assertTrue(checkParcels(newWorkbook));
 
@@ -240,7 +255,8 @@ public class ExcelDataTest {
         try {
 
             XSSFWorkbook newWorkbook = insertDPR(filePath,xlsxTemplate, excelData);
-            newWorkbook =insertDPRFlows(filePath, newWorkbook, excelData);
+            XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
+            newWorkbook =insertDPRFlows(filePath, newWorkbook, excelData, xlsxSheet);
 
             Assert.assertTrue(checkFlows(newWorkbook));
 
@@ -263,8 +279,9 @@ public class ExcelDataTest {
         try {
 
             XSSFWorkbook newWorkbook = insertDPR(filePath,xlsxTemplate, excelData);
-            newWorkbook = insertDPRFlows(filePath, newWorkbook, excelData);
-            newWorkbook = insertNewDPRAreas(filePath, newWorkbook, excelData);
+            XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
+            newWorkbook = insertDPRFlows(filePath, newWorkbook, excelData, xlsxSheet);
+            newWorkbook = insertNewDPRAreas(filePath, newWorkbook, excelData, xlsxSheet);
 
 
             Assert.assertTrue(checkDPRNewArea(newWorkbook));
@@ -289,8 +306,9 @@ public class ExcelDataTest {
         try {
 
             XSSFWorkbook newWorkbook = insertDPR(filePath,xlsxTemplate, excelData);
-            newWorkbook = insertDPRFlows(filePath, newWorkbook, excelData);
-            newWorkbook = insertNewDPRAreas(filePath, newWorkbook, excelData);
+            XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
+            newWorkbook = insertDPRFlows(filePath, newWorkbook, excelData, xlsxSheet);
+            newWorkbook = insertNewDPRAreas(filePath, newWorkbook, excelData, xlsxSheet);
             newWorkbook = insertDPRRoundingDifferences(filePath, newWorkbook, excelData);
 
 
@@ -384,17 +402,18 @@ public class ExcelDataTest {
         return allOldParcelsAreCorrect;
     }
 
-    private XSSFWorkbook insertParcels(String filePath, XLSXTemplate xlsxTemplate, ExcelData excelData) {
+    private XSSFWorkbook insertParcels(String filePath, XLSXTemplate xlsxTemplate, ExcelData excelData) throws Exception {
 
         List<Integer> oldParcels = generateOldParcels();
         List<Integer> newParcels = generateNewParcels();
         List<Integer> parcels = generateParcels();
 
         XSSFWorkbook newWorkbook = xlsxTemplate.createWorkbook(filePath);
+        XSSFSheet sheet = newWorkbook.getSheet("Mutationstabelle");
         newWorkbook = xlsxTemplate.createParcelTable(newWorkbook,filePath, newParcels.size(),oldParcels.size(),
                 parcels.size());
-        newWorkbook = excelData.writeOldParcelsInTemplate(oldParcels, filePath, newWorkbook);
-        newWorkbook = excelData.writeNewParcelsInTemplate(newParcels, filePath, newWorkbook);
+        newWorkbook = excelData.writeOldParcelsInTemplate(oldParcels, newWorkbook, sheet);
+        newWorkbook = excelData.writeNewParcelsInTemplate(newParcels, newWorkbook, sheet);
 
         return newWorkbook;
 
@@ -443,21 +462,36 @@ public class ExcelDataTest {
         return allNewParcelsAreCorrect;
     }
 
-    private XSSFWorkbook insertInflowAndOutflows(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData) {
-        newWorkbook = excelData.writeInflowAndOutflows(695, 695,416,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(696, 696,507,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(697, 697,687,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(696, 701,1,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(697, 701,1,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(701, 701,1112,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(870, 870,611,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(874, 874,1939,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(695, 4004,242,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(696, 4004,100,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(697, 4004,129,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(701, 4004,1,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(870, 4004,39,filePath,newWorkbook);
-        newWorkbook = excelData.writeInflowAndOutflows(874, 4004,81,filePath,newWorkbook);
+    private XSSFWorkbook insertInflowAndOutflows(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData,
+                                                 XSSFSheet xlsxSheet) {
+        newWorkbook = excelData.writeInflowAndOutflows(695, 695,416,
+                newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeInflowAndOutflows(696, 696,507,
+                newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeInflowAndOutflows(697, 697,687,
+                newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeInflowAndOutflows(696, 701,1,
+                newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeInflowAndOutflows(697, 701,1,
+                newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeInflowAndOutflows(701, 701,1112,
+                newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeInflowAndOutflows(870, 870,611,
+                newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeInflowAndOutflows(874, 874,1939,
+                newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeInflowAndOutflows(695, 4004,242,
+                newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeInflowAndOutflows(696, 4004,100,
+                newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeInflowAndOutflows(697, 4004,129,
+                newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeInflowAndOutflows(701, 4004,1,
+                newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeInflowAndOutflows(870, 4004,39,
+                newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeInflowAndOutflows(874, 4004,81,
+                newWorkbook, xlsxSheet);
 
         return newWorkbook;
     }
@@ -515,13 +549,14 @@ public class ExcelDataTest {
         return allInflowsAndOutflowsAreCorrect;
     }
 
-    private XSSFWorkbook insertRoundingDifferences(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData){
+    private XSSFWorkbook insertRoundingDifferences(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData,
+                                                   XSSFSheet xlsxSheet){
         newWorkbook = excelData.writeRoundingDifference(695, -1, 7,
-                filePath, newWorkbook);
+                newWorkbook, xlsxSheet);
         newWorkbook = excelData.writeRoundingDifference(697, -1, 7,
-                filePath, newWorkbook);
+                newWorkbook, xlsxSheet);
         newWorkbook = excelData.writeRoundingDifference(701, 1, 7,
-                filePath, newWorkbook);
+                newWorkbook, xlsxSheet);
         return newWorkbook;
     }
 
@@ -558,16 +593,19 @@ public class ExcelDataTest {
         return allOldAreasAreCorrect;
     }
 
-    private XSSFWorkbook insertNewAreas(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData) {
+    private XSSFWorkbook insertNewAreas(String filePath,
+                                        XSSFWorkbook newWorkbook,
+                                        ExcelData excelData,
+                                        XSSFSheet xlsxSheet) {
 
 
-        newWorkbook = excelData.writeNewArea(695, 416, filePath, newWorkbook);
-        newWorkbook = excelData.writeNewArea(696, 507, filePath, newWorkbook);
-        newWorkbook = excelData.writeNewArea(697, 687, filePath, newWorkbook);
-        newWorkbook = excelData.writeNewArea(701, 1114, filePath, newWorkbook);
-        newWorkbook = excelData.writeNewArea(870, 611, filePath, newWorkbook);
-        newWorkbook = excelData.writeNewArea(874, 1939, filePath, newWorkbook);
-        newWorkbook = excelData.writeNewArea(4004, 592, filePath, newWorkbook);
+        newWorkbook = excelData.writeNewArea(695, 416, newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeNewArea(696, 507, newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeNewArea(697, 687, newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeNewArea(701, 1114, newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeNewArea(870, 611, newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeNewArea(874, 1939, newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeNewArea(4004, 592, newWorkbook, xlsxSheet);
 
         return newWorkbook;
     }
@@ -689,10 +727,11 @@ public class ExcelDataTest {
         XSSFWorkbook newWorkbook = xlsxTemplate.createWorkbook(filePath);
         newWorkbook = xlsxTemplate.createParcelTable(newWorkbook,filePath, newParcels.size(),oldParcels.size(),
                 parcels.size());
+        XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
         newWorkbook = xlsxTemplate.createDPRTable(newWorkbook, filePath, parcels.size(), dpr.size(),
                 newParcels.size(), oldParcels.size());
-        newWorkbook = excelData.writeParcelsAffectedByDPRsInTemplate(parcels, newParcels.size(), filePath, newWorkbook);
-        newWorkbook = excelData.writeDPRsInTemplate(dpr, newParcels.size(), filePath, newWorkbook);
+        newWorkbook = excelData.writeParcelsAffectedByDPRsInTemplate(parcels, newParcels.size(), newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeDPRsInTemplate(dpr, newParcels.size(), newWorkbook, xlsxSheet);
 
         return newWorkbook;
 
@@ -710,14 +749,15 @@ public class ExcelDataTest {
         return allDPRsAreCorrect;
     }
 
-    private XSSFWorkbook insertDPRFlows(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData) {
+    private XSSFWorkbook insertDPRFlows(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData,
+                                        XSSFSheet xlsxSheet) {
         Integer numberNewParcels = generateNewParcels().size();
         newWorkbook = excelData.writeDPRInflowAndOutflows(2174, 40053,1175,
-                numberNewParcels,filePath,newWorkbook);
+                numberNewParcels,newWorkbook, xlsxSheet);
         newWorkbook = excelData.writeDPRInflowAndOutflows(2175, 40053,2481,
-                numberNewParcels,filePath,newWorkbook);
+                numberNewParcels,newWorkbook, xlsxSheet);
         newWorkbook = excelData.writeDPRInflowAndOutflows(2176, 40053,5,
-                numberNewParcels,filePath,newWorkbook);
+                numberNewParcels,newWorkbook, xlsxSheet);
 
         return newWorkbook;
     }
@@ -737,11 +777,12 @@ public class ExcelDataTest {
         return allFlowsAreCorrect;
     }
 
-    private XSSFWorkbook insertNewDPRAreas(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData) {
+    private XSSFWorkbook insertNewDPRAreas(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData,
+                                           XSSFSheet xlsxSheet) {
 
         Integer numberNewParcels = generateNewParcels().size();
-        newWorkbook = excelData.writeNewDPRArea(40053,3660, numberNewParcels, filePath, newWorkbook);
-        newWorkbook = excelData.writeNewDPRArea(15828,0, numberNewParcels, filePath, newWorkbook);
+        newWorkbook = excelData.writeNewDPRArea(40053,3660, numberNewParcels, newWorkbook, xlsxSheet);
+        newWorkbook = excelData.writeNewDPRArea(15828,0, numberNewParcels, newWorkbook, xlsxSheet);
 
         return newWorkbook;
     }
@@ -762,9 +803,9 @@ public class ExcelDataTest {
     private XSSFWorkbook insertDPRRoundingDifferences(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData) {
 
         Integer numberNewParcels = generateNewParcels().size();
-
-        newWorkbook = excelData.writeDPRRoundingDifference(40053, -1, numberNewParcels,
-                filePath, newWorkbook);
+        XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
+        newWorkbook = excelData.writeDPRRoundingDifference(40053, -1, numberNewParcels, newWorkbook,
+                xlsxSheet);
 
         return newWorkbook;
     }
