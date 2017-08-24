@@ -5,8 +5,8 @@ package ch.so.agi.avgbs2mtab.mutdat;
  */
 public interface MetadataOfParcelMutation {
 
-    public int getNumberOfOldParcels();
+    public Integer getNumberOfOldParcels();
 
-    public int getNumberOfNewParcels();
+    public Integer getNumberOfNewParcels();
 
 }

@@ -1,16 +1,13 @@
 package ch.so.agi.avgbs2mtab.main;
 
-import ch.so.agi.avgbs2mtab.mutdat.DPRContainer;
-import ch.so.agi.avgbs2mtab.mutdat.ParcelContainer;
+import ch.so.agi.avgbs2mtab.mutdat.*;
 import ch.so.agi.avgbs2mtab.readxtf.ReadXtf;
-<<<<<<< HEAD
+
 import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
 
 import java.io.File;
-import java.nio.file.Files;
-=======
 import ch.so.agi.avgbs2mtab.writeexcel.XlsxWriter;
->>>>>>> e2b5bfde0708a8da4ff7e044c405efdb678aad68
+import java.io.IOException;
 
 /**
  * Main class
@@ -27,15 +24,17 @@ public class Main {
         //Output of Errors to the Commandline
     }
 
-    public static void runConversion(String inputFilePath, String outputFilePath) {
+    public static void runConversion(String inputFilePath, String outputFilePath) throws IOException {
         assertValidInputFile(inputFilePath);
         assertValidOutputFilePath(outputFilePath);
 
         ParcelContainer parceldump = new ParcelContainer();
         DPRContainer dprdump = new DPRContainer();
-        XlsxWriter xlsxWriter = new XlsxWriter();
+        XlsxWriter xlsxWriter = new XlsxWriter(parceldump, dprdump, parceldump, dprdump);
 
-        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
+        ReadXtf xtfreader = new ReadXtf((SetParcel)parceldump, (SetDPR)dprdump, (DataExtractionParcel)parceldump);
+        xtfreader.readFile(inputFilePath);
+        xlsxWriter.writeXlsx(outputFilePath);
 
         xtfreader.readFile(inputFilePath);
         xlsxWriter.writeXlsx(outputFilePath);

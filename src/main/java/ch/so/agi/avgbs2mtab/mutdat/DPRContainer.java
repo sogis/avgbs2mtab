@@ -40,7 +40,7 @@ public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtracti
     ///////////////////////////////////////////////////////
 
     @Override
-    public int getNumberOfDPRs() {
+    public Integer getNumberOfDPRs() {
         int numberofdprs = map.size();
         //Addiere noch die gelöschten dazu....
         int i = 0;
@@ -54,7 +54,7 @@ public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtracti
     }
 
     @Override
-    public int getNumberOfParcelsAffectedByDPRs() {
+    public Integer getNumberOfParcelsAffectedByDPRs() {
         int numberofparcelsaffected = affectedparcelsmap.size();
         return numberofparcelsaffected;
     }
@@ -84,7 +84,7 @@ public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtracti
     }
 
     @Override
-    public int getAddedAreaDPR(int parcelNumberAffectedByDPR, int dpr) {
+    public Integer getAddedAreaDPR(int parcelNumberAffectedByDPR, int dpr) {
         Map<String,Integer> innerdprmap = map.get(dpr);
         String ref = getKeyFromValue(numberandrefmap,parcelNumberAffectedByDPR);
         int addedarea = innerdprmap.get(ref);
@@ -92,21 +92,25 @@ public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtracti
     }
 
     @Override
-    public int getNewAreaDPR(int dpr) {
+    public Integer getNewAreaDPR(int dpr) {
         int newarea = newareamap.get(dpr);
         return newarea;
     }
 
     @Override
-    public int getRoundingDifferenceDPR(int dpr) {
-        int sumaddedareas = 0;
+    public Integer getRoundingDifferenceDPR(int dpr) {
+        Integer sumaddedareas = 0;
+        Integer roundingdifference = null;
         Map<String, Integer> internalmap = map.get(dpr);
-        for(String key : internalmap.keySet()) {
-            int area = internalmap.get(key);
-            sumaddedareas += area;
+        if (internalmap != null) {
+            for (String key : internalmap.keySet()) {
+                Integer area = internalmap.get(key);
+                sumaddedareas += area;
+            }
+            roundingdifference = getNewAreaDPR(dpr) - sumaddedareas;
         }
-        int roundingdiference = getNewAreaDPR(dpr)-sumaddedareas;
-        return roundingdiference;
+
+        return roundingdifference;
     }
 
     public static String getKeyFromValue(Map<String, Integer> hm, Integer value) {

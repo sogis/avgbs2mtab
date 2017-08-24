@@ -2,8 +2,10 @@ package ch.so.agi.avgbs2mtab.readxtf;
 
 import ch.so.agi.avgbs2mtab.mutdat.DPRContainer;
 import ch.so.agi.avgbs2mtab.mutdat.ParcelContainer;
+import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,8 +22,9 @@ public class ReadXtfTest {
 
     @Test
     public void readFile1() throws Exception {
-        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
-        xtfreader.readFile("/home/bjsvwsch/codebasis_test/test.xml");
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
+        ClassLoader classLoader = getClass().getClassLoader();
+        xtfreader.readFile(classLoader.getResource("SO0200002407_4003_20150807.xtf").getPath());
         int addedarea = parceldump.getAddedArea(90154,748);
         int numberofnewparcels = parceldump.getNumberOfNewParcels();
         int numberofoldparcels = parceldump.getNumberOfOldParcels();
@@ -43,8 +46,9 @@ public class ReadXtfTest {
 
     @Test
     public void readFile2() throws Exception {
-        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
-        xtfreader.readFile("/home/bjsvwsch/codebasis_test/test2.xml");
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
+        ClassLoader classLoader = getClass().getClassLoader();
+        xtfreader.readFile(classLoader.getResource("SO0200002407_4004_20150810.xtf").getPath());
         int addedarea = parceldump.getAddedArea(4004,695);
         int numberofnewparcels = parceldump.getNumberOfNewParcels();
         int numberofoldparcels = parceldump.getNumberOfOldParcels();
@@ -67,8 +71,9 @@ public class ReadXtfTest {
 
     @Test
     public void readFileWithDPR() throws Exception {
-        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
-        xtfreader.readFile("/home/bjsvwsch/codebasis_test/test_mit_dpr.xml");
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
+        ClassLoader classLoader = getClass().getClassLoader();
+        xtfreader.readFile(classLoader.getResource("SO0200002407_40051_20150811.xtf").getPath());
         int numberofdprs = dprdump.getNumberOfDPRs();
         int numberofareasafected = dprdump.getNumberOfParcelsAffectedByDPRs();
         List<Integer> parcelsaffectedbydprs = dprdump.getParcelsAffectedByDPRs();
@@ -89,8 +94,9 @@ public class ReadXtfTest {
 
     @Test
     public void readFileWithDeleteDRP() throws Exception {
-        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
-        xtfreader.readFile("/home/bjsvwsch/codebasis_test/test_loeschen_dpr.xml");
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
+        ClassLoader classLoader = getClass().getClassLoader();
+        xtfreader.readFile(classLoader.getResource("SO0200002407_40061_20150814.xtf").getPath());
         int numberofdprs = dprdump.getNumberOfDPRs();
         List<Integer> parcelsaffectedbydprsa = dprdump.getParcelsAffectedByDPRs();
         List<Integer> newdprs = dprdump.getNewDPRs();
@@ -104,30 +110,82 @@ public class ReadXtfTest {
 
     @Test
     public void readComplexFile() throws Exception {
-        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
-        xtfreader.readFile("/home/bjsvwsch/codebasis_test/komplex_test.xml");
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
+        ClassLoader classLoader = getClass().getClassLoader();
+        xtfreader.readFile(classLoader.getResource("SO0200002427_809_20170529.xtf").getPath());
         int numberofnewparcels = parceldump.getNumberOfNewParcels();
         int numberofoldparcels = parceldump.getNumberOfOldParcels();
         List<Integer> newparcels = parceldump.getNewParcelNumbers();
         List<Integer> oldparcels = parceldump.getOldParcelNumbers();
         int gotareafromoldparcel = parceldump.getAddedArea(1273,1864);
         int restarea = parceldump.getRestAreaOfParcel(1273);
-        System.out.println("Number of New Parcels = "+numberofnewparcels);
-        System.out.println("Number of Old Parcels = "+numberofoldparcels);
-        System.out.println("New Parcels: "+newparcels);
-        System.out.println("Old Parcels: "+oldparcels);
-        System.out.println("Area that Parcel 1273 got from Parcel 1864 should be 69: "+gotareafromoldparcel);
-        System.out.println("RestArea From Parcel 1273 Should be 352: "+restarea);
+        assertTrue(numberofnewparcels==3);
+        assertTrue(numberofoldparcels==2);
+        List<Integer> newparcelsasitshouldbe = Arrays.asList(1273,1864,1973);
+        List<Integer> oldparcelsasitshouldbe = Arrays.asList(1273,1864);
+        assertTrue(newparcels.containsAll(newparcelsasitshouldbe) && newparcels.size()==newparcelsasitshouldbe.size());
+        assertTrue(oldparcels.containsAll(oldparcelsasitshouldbe) && oldparcels.size()==oldparcelsasitshouldbe.size());
+        assertTrue(gotareafromoldparcel==69);
+        assertTrue(restarea==352);
         int numberofdprs = dprdump.getNumberOfDPRs();
         int numberofareasafected = dprdump.getNumberOfParcelsAffectedByDPRs();
         List<Integer> parcelsaffectedbydprsa = dprdump.getParcelsAffectedByDPRs();
         List<Integer> newdprs = dprdump.getNewDPRs();
-        System.out.println("Number of DPRs = "+numberofdprs);
-        System.out.println("Number of Parcels affected by DPRs = "+numberofareasafected);
-        System.out.println("New DPRs: "+newdprs);
-        System.out.println("Affected Parcels: "+parcelsaffectedbydprsa);
+        assertTrue(numberofdprs==1);
+        assertTrue(numberofareasafected==1);
+        List<Integer> newdprsastheyshouldbe = Arrays.asList(1941);
+        List<Integer> parcelsaffectedasitshouldbe = Arrays.asList(1864);
+        assertTrue(newdprs.containsAll(newdprsastheyshouldbe) && newdprs.size()==newdprsastheyshouldbe.size());
+        assertTrue(parcelsaffectedbydprsa.containsAll(parcelsaffectedasitshouldbe) && parcelsaffectedbydprsa.size()==parcelsaffectedasitshouldbe.size());
     }
 
+    @Test
+    public void oensingentest() throws Exception {
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
+        ClassLoader classLoader = getClass().getClassLoader();
+        xtfreader.readFile(classLoader.getResource("SO0200002407_4002_20150807.xtf").getPath());
+        List<Integer> newparcels = parceldump.getNewParcelNumbers();
+        List<Integer> oldparcels = parceldump.getOldParcelNumbers();
+        int numberofoldparcels = parceldump.getNumberOfOldParcels();
+        List<Integer> newparcelsasitshouldbe = Arrays.asList(2199);
+        List<Integer> oldparcelsasitshouldbe = Arrays.asList(681,682,2199);
+        assertTrue(newparcels.containsAll(newparcelsasitshouldbe) && newparcels.size()==newparcelsasitshouldbe.size());
+        assertTrue(oldparcels.containsAll(oldparcelsasitshouldbe) && oldparcels.size()==oldparcelsasitshouldbe.size());
+        assertTrue(numberofoldparcels==3);
+    }
 
+    @Test
+    public void readFileWithoutDRP() throws Exception {
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
+        ClassLoader classLoader = getClass().getClassLoader();
+        xtfreader.readFile(classLoader.getResource("SO0200002407_4002_20150807.xtf").getPath());
+        int numberofdprs = dprdump.getNumberOfDPRs();
+        List<Integer> parcelsaffectedbydprsa = dprdump.getParcelsAffectedByDPRs();
+        List<Integer> newdprs = dprdump.getNewDPRs();
+        assertTrue(numberofdprs==0);
+    }
 
+    @Test
+    public void filenotexists() {
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
+        try {
+            xtfreader.readFile("nichtvorhanden.xtf");
+        }catch (IOException e) {
+            System.out.println("Got IOException as Expected. "+e);
+
+        }
+
+    }
+
+    @Test
+    public void filewithwrongextension() {
+        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
+        ClassLoader classLoader = getClass().getClassLoader();
+        try {
+            xtfreader.readFile(classLoader.getResource("SO0200002407_4001_20150806_wong_type.xml").getPath());
+        }catch (IOException e) {
+            System.out.println("Got IOException as Expected. "+e);
+
+        }
+    }
 }

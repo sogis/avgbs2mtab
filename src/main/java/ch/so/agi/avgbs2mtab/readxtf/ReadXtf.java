@@ -3,11 +3,21 @@ package ch.so.agi.avgbs2mtab.readxtf;
 import ch.interlis.iom.IomObject;
 import ch.interlis.iox.*;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import ch.so.agi.avgbs2mtab.mutdat.DataExtractionParcel;
+import ch.so.agi.avgbs2mtab.mutdat.MetadataOfParcelMutation;
 import ch.so.agi.avgbs2mtab.mutdat.SetDPR;
 import ch.so.agi.avgbs2mtab.mutdat.SetParcel;
+import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
+import ch.so.agi.avgbs2mtab.util.FileExtension;
 
 /**
  * This Class contains methods to read xtf-files and write specific content to a hashtable
@@ -22,14 +32,21 @@ public class ReadXtf {
     private IoxReader ioxReader=null;
     private SetParcel parceldump;
     private SetDPR drpdump;
+    private DataExtractionParcel parcelmetadata;
 
-    public ReadXtf(SetParcel parceldump, SetDPR drpdump) {
+    private static final Logger LOGGER = Logger.getLogger( ReadXtf.class.getName() );
+
+
+    public ReadXtf(SetParcel parceldump, SetDPR drpdump, DataExtractionParcel parcelmetadata) {
 
         this.parceldump = parceldump;
         this.drpdump = drpdump;
+        this.parcelmetadata = parcelmetadata;
     }
 
-    public void readFile(String xtffilepath) {
+    public void readFile(String xtffilepath) throws IOException {
+        LOGGER.log(Level.CONFIG,"Start reading the file");
+        checkfile(xtffilepath);
         HashMap<String,String> parcelmetadatamap = readParcelMetadata(xtffilepath);
         HashMap<String,HashMap> drpmetadatamap = readDRPMetadata(xtffilepath);
         readValues(xtffilepath, parcelmetadatamap, drpmetadatamap);
@@ -135,14 +152,20 @@ public class ReadXtf {
                         }
                     }
                     if (aclass.equals(ILI_MUT + ".Liegenschaft") || aclass.equals(ILI_GRUDA_MUT + ".Liegenschaft")) {
-                        int parcelnumber = Integer.parseInt(iomObj.getattrobj("Nummer", 0).getattrvalue("Nummer"));
-                        String parcelref = iomObj.getobjectoid();
-                        drpdump.setDPRNumberAndRef(parcelref,parcelnumber);
+                        Integer numbercount = iomObj.getattrvaluecount("Nummer");
+                        for (int i = 0;i<numbercount;++i) {
+                            int parcelnumber = Integer.parseInt(iomObj.getattrobj("Nummer", i).getattrvalue("Nummer"));
+                            String parcelref = iomObj.getobjectoid();
+                            drpdump.setDPRNumberAndRef(parcelref, parcelnumber);
+                        }
                     }
                     if (aclass.equals(ILI_MUT + ".AVMutation") || aclass.equals(ILI_GRUDA_MUT + ".AVMutation")) {
-                        if (iomObj.getattrobj("geloeschteGrundstuecke",0) != null) {
-                            Integer nummer = Integer.parseInt(iomObj.getattrobj("geloeschteGrundstuecke",0).getattrvalue("Nummer"));
-                            drpdump.setDPRNewArea(nummer,0);
+                        Integer numberofdeletedparcels = iomObj.getattrvaluecount("geloeschteGrundstuecke");
+                        for(Integer i=0;i<numberofdeletedparcels;++i) {
+                            Integer nummer = Integer.parseInt(iomObj.getattrobj("geloeschteGrundstuecke", i).getattrvalue("Nummer"));
+                            if(!parcelmetadata.getOldParcelNumbers().contains(nummer)&&!parcelmetadata.getNewParcelNumbers().contains(nummer)) {
+                                drpdump.setDPRNewArea(nummer, 0);
+                            }
                         }
                     }
                 }else if(event instanceof EndBasketEvent){
@@ -368,5 +391,31 @@ public class ReadXtf {
             }
         }
         return anteil;
+    }
+
+    public void checkfile(String filepath) throws IOException {
+        File file = new File(filepath);
+        if (!file.exists()) {
+            LOGGER.log(Level.WARNING,"File "+filepath+" not found!");
+            throw new IOException("File not found");
+        }
+        if (!file.canRead()) {
+            LOGGER.log(Level.WARNING,"Could not read File "+filepath);
+            throw new IOException("Can't read file "+filepath);
+        }
+        try {
+            FileReader fileReader = new FileReader(filepath);
+            fileReader.read();
+            fileReader.close();
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING,"Exception when checked file can read with message:"+e.getMessage(), e);
+            throw new IOException("Can't read file "+filepath);
+        }
+        String fileExtension = FileExtension.getFileExtension(file);
+        if (!fileExtension.equalsIgnoreCase("xtf")){
+            LOGGER.log(Level.WARNING,"File extension must be .xtf. Error at File: " + filepath);
+            throw new IOException("File extension must be .xtf. Error at File: " + filepath);
+        }
+
     }
 }
