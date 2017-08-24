@@ -8,11 +8,14 @@ import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
 import java.io.File;
 import ch.so.agi.avgbs2mtab.writeexcel.XlsxWriter;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * Main class
  */
 public class Main {
+
+    private static Logger log = Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args){
         CommandlineParser cp = new CommandlineParser(args);
@@ -71,7 +74,7 @@ public class Main {
         if(lastPointIdx < 1)
             throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_WRONG_EXTENSION, "input file name has no extension: " + fileName);
 
-        String[] parts = fileName.split(".");
+        String[] parts = fileName.split("\\."); // . is regex special character -> needs escaping with \\
         String extension = parts[parts.length - 1];
         boolean isXTF = extension.equalsIgnoreCase("xtf");
         boolean isXML = extension.equalsIgnoreCase("xml");

@@ -1,7 +1,6 @@
 package ch.so.agi.avgbs2mtab.main;
 
 import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
-import ch.so.agi.avgbs2mtab.writeexcel.ExcelData;
 import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -50,18 +49,17 @@ public class MainTest {
         }
     }
 
-    //todo martin
-    @Ignore
     @Test
-    public void withXTFFileOfAnotherModelThrowsException() throws Exception{
+    public void xtfFileOfAnotherModelThrowsException() throws Exception{
         ClassLoader classLoader = getClass().getClassLoader();
         File wrongModellXtf = new File(classLoader.getResource("wrong_Modell.xtf").getFile());
         File outputFilePath = validOutputFilePath();
 
         try {
             Main.runConversion(wrongModellXtf.getAbsolutePath(), outputFilePath.getAbsolutePath());
-        } catch (Avgbs2MtabException e) {
-            Assert.assertEquals(Avgbs2MtabException.TYPE_NOT_MATCHING_TRANSFERDATA, e.getType());
+        }
+        catch (Avgbs2MtabException e) {
+            Assert.assertEquals(Avgbs2MtabException.TYPE_TRANSFERDATA_NOT_FOR_AVGBS_MODEL, e.getType());
         }
     }
 
@@ -95,7 +93,6 @@ public class MainTest {
     @Ignore
     @Test
     public void xtfFailedValidationThrowsException() throws Exception{
-        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_4001_20150806_defekt.xtf").getFile());
         try {
@@ -249,12 +246,11 @@ public class MainTest {
 
     @Test
     public void correctValuesOfDPRsAndParcelsWrittenInExcel() throws Exception {
-        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002427_809_20170529.xtf").getFile());
         File outputFilePath = validOutputFilePath();
 
-        main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
+        Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
 
         XSSFSheet xlsxSheet = openExcelSheet(outputFilePath.getAbsolutePath());
 

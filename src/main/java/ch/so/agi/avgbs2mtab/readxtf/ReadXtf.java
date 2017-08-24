@@ -3,30 +3,27 @@ package ch.so.agi.avgbs2mtab.readxtf;
 import ch.interlis.iom.IomObject;
 import ch.interlis.iox.*;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ch.so.agi.avgbs2mtab.mutdat.DataExtractionParcel;
-import ch.so.agi.avgbs2mtab.mutdat.MetadataOfParcelMutation;
 import ch.so.agi.avgbs2mtab.mutdat.SetDPR;
 import ch.so.agi.avgbs2mtab.mutdat.SetParcel;
 import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
-import ch.so.agi.avgbs2mtab.util.FileExtension;
 
 /**
  * This Class contains methods to read xtf-files and write specific content to a hashtable
  */
 public class ReadXtf {
 
-    private final String ILI_MODEL="GB2AV";
+
+
+    private static final String ILI_MODELNAME ="GB2AV";
     private final String ILI_GRUDA_MODEL="GrudaTrans";
-    private final String ILI_MUT=ILI_MODEL+".Mutationstabelle";
+    private final String ILI_MUT= ILI_MODELNAME +".Mutationstabelle";
     private final String ILI_GRUDA_MUT=ILI_GRUDA_MODEL+".Mutationstabelle";
 
     private IoxReader ioxReader=null;
@@ -46,7 +43,7 @@ public class ReadXtf {
 
     public void readFile(String xtffilepath) throws IOException {
         LOGGER.log(Level.CONFIG,"Start reading the file");
-        checkfile(xtffilepath);
+
         HashMap<String,String> parcelmetadatamap = readParcelMetadata(xtffilepath);
         HashMap<String,HashMap> drpmetadatamap = readDRPMetadata(xtffilepath);
         readValues(xtffilepath, parcelmetadatamap, drpmetadatamap);
@@ -61,6 +58,8 @@ public class ReadXtf {
     private void readValues(String xtffilepath, HashMap<String,String> parcelmetadatamap, HashMap<String, HashMap> drpmetadatamap) {
         try{
             //Get Parcel-Information
+            // transferDRP(StartBasketEvent se, HashMap<String, HashMap> drpmetadatamap)
+            // transferParcelAndNewArea(StartBasketEvent basket, HashMap<String,String> metadatamap) {
             ioxReader=new ch.interlis.iom_j.xtf.XtfReader(new java.io.File(xtffilepath));
             IoxEvent event;
             while(true){
@@ -68,6 +67,8 @@ public class ReadXtf {
                 if(event instanceof ObjectEvent){
                 }else if(event instanceof StartBasketEvent){
                     StartBasketEvent se=(StartBasketEvent)event;
+
+                    assertModelIsAvGbs(se);
                     //Main Parcel-Value-Function
                     transferParcelAndNewArea(se, parcelmetadatamap);
                     ///////////////////////////////////////
@@ -91,6 +92,8 @@ public class ReadXtf {
                 if(event3 instanceof ObjectEvent){
                 }else if(event3 instanceof StartBasketEvent){
                     StartBasketEvent se=(StartBasketEvent)event3;
+
+                    assertModelIsAvGbs(se);
                     //Main DPR-Value-Function
                     transferDRP(se, drpmetadatamap);
                     ///////////////////////////////////////
@@ -191,6 +194,8 @@ public class ReadXtf {
                 if(event instanceof ObjectEvent){
                 }else if(event instanceof StartBasketEvent){
                     StartBasketEvent se=(StartBasketEvent)event;
+
+                    assertModelIsAvGbs(se);
                     //Hier beginnt das Auslesen der Metadaten!
                     map = getParcelMetadata(se);
                     ///////////////////////////////////////
@@ -207,8 +212,12 @@ public class ReadXtf {
                 }
             }
         }catch(Exception e){
-            System.out.println("FEHLER 2");
-            throw new RuntimeException(e);
+            if(e instanceof Avgbs2MtabException) {
+                throw (Avgbs2MtabException) e;
+            }
+            else {
+                throw new Avgbs2MtabException("error in reading xtf file", e);
+            }
         }
         finally{
             if(ioxReader!=null){
@@ -235,6 +244,8 @@ public class ReadXtf {
                 if(event instanceof ObjectEvent){
                 }else if(event instanceof StartBasketEvent){
                     StartBasketEvent se=(StartBasketEvent)event;
+
+                    assertModelIsAvGbs(se);
                     //Hier beginnt das Auslesen der Metadaten!
                     map = getDRPMetadata(se);
                     ///////////////////////////////////////
@@ -251,8 +262,12 @@ public class ReadXtf {
                 }
             }
         }catch(Exception e){
-            System.out.println("FEHLER 3");
-            throw new RuntimeException(e);
+            if(e instanceof Avgbs2MtabException){
+                throw (Avgbs2MtabException)e;
+            }
+            else{
+                throw new Avgbs2MtabException("Error reading xtf file ...", e);
+            }
         }
         finally{
             if(ioxReader!=null){
@@ -364,7 +379,7 @@ public class ReadXtf {
                 IomObject iomObj = ((ObjectEvent) event).getIomObject();
                 objv.put(iomObj.getobjectoid(), iomObj);
                 String aclass = iomObj.getobjecttag();
-                if (aclass.equals(ILI_MODEL + ".Grundstuecksbeschrieb.Anteil") || aclass.equals(ILI_MODEL + ".Grundstuecksbeschrieb.Anteil")) {
+                if (aclass.equals(ILI_MODELNAME + ".Grundstuecksbeschrieb.Anteil") || aclass.equals(ILI_MODELNAME + ".Grundstuecksbeschrieb.Anteil")) {
                     String drpnumber = iomObj.getattrobj("flaeche",0).getobjectrefoid();
                     String liegt_auf = iomObj.getattrobj("liegt_auf",0).getobjectrefoid();
                     Integer area = Integer.parseInt(iomObj.getattrvalue("Flaechenmass"));
@@ -393,6 +408,8 @@ public class ReadXtf {
         return anteil;
     }
 
+    //todo martin: noch notwendig? Ist in asserts der Mainmethode vorhanden
+    /*
     public void checkfile(String filepath) throws IOException {
         File file = new File(filepath);
         if (!file.exists()) {
@@ -417,5 +434,19 @@ public class ReadXtf {
             throw new IOException("File extension must be .xtf. Error at File: " + filepath);
         }
 
+    }
+    */
+
+    private static void assertModelIsAvGbs(StartBasketEvent se){
+
+        String namev[] = se.getType().split("\\.");
+        String modelName = namev[0];
+
+        if(!modelName.equals(ILI_MODELNAME)) {
+            throw new Avgbs2MtabException(
+                    Avgbs2MtabException.TYPE_TRANSFERDATA_NOT_FOR_AVGBS_MODEL,
+                    String.format("Given transferfile references wrong model %s (should reference %s)", modelName, ILI_MODELNAME)
+            );
+        }
     }
 }
