@@ -5,7 +5,7 @@ import java.util.*;
 /**
  *
  */
-public class ParcelContainer implements SetParcel,MetadataOfParcelMutation, DataExtractionParcel {
+public class ParcelContainer implements SetParcel, MetadataOfParcelMutation, DataExtractionParcel {
 
     Map<Integer,Map> map=new Hashtable<Integer,Map>(); //Haupt Map
     Map<Integer,Integer> parcelnewareamap = new Hashtable<>(); //Map mit den neuen Flächen

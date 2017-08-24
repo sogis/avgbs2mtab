@@ -1,7 +1,6 @@
 package ch.so.agi.avgbs2mtab.main;
 
 import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
-import ch.so.agi.avgbs2mtab.writeexcel.ExcelData;
 import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -18,85 +17,82 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class IntegrationTests {
+public class MainTest {
 
+    //todo noemi ErrorString-Referenzierung zeigen (Kein Vergleich auf neuen String)
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    @Ignore
     @Test
-    public void testWithSQLFileThrowsException() throws Exception {
+    public void inputFileExtensionOutsideXtfOrXmlThrowsException() throws Exception {
         File sqlFile = createFileWithoutXTFExtension();
-        Main main = new Main();
-
+        File outputFilePath = validOutputFilePath();
         try{
-            main.runConversion(sqlFile.getAbsolutePath(), "Test.xlsx");
-
+            Main.runConversion(sqlFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
         } catch (Avgbs2MtabException e) {
-            Assert.assertEquals("TYPE_WRONG_EXTENSION", e.getType());
+            Assert.assertEquals(Avgbs2MtabException.TYPE_WRONG_EXTENSION, e.getType());
         }
 
     }
 
-
+    //todo martin
     @Ignore
     @Test
-    public void testWithXTFFileWithoutXMLStructureThrowsException() throws Exception {
+    public void withXTFFileWithoutXMLStructureThrowsException() throws Exception {
         File xtfFile = createFileWithXTFExtensionAndNoXMLStructure();
-        Main main = new Main();
+        File outputFilePath = validOutputFilePath();
         try {
-            main.runConversion(xtfFile.getAbsolutePath(), "Test.xlsx");
+            Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
         } catch (Avgbs2MtabException e) {
-            Assert.assertEquals("TYPE_NO_XML_STYLING", e.getType());
+            Assert.assertEquals(Avgbs2MtabException.TYPE_NO_XML_STYLING, e.getType());
         }
-
     }
 
-
-    @Ignore
     @Test
-    public void testWithXTFFileOfAnotherModellThrowsException() throws Exception{
-        Main main = new Main();
+    public void xtfFileOfAnotherModelThrowsException() throws Exception{
         ClassLoader classLoader = getClass().getClassLoader();
         File wrongModellXtf = new File(classLoader.getResource("wrong_Modell.xtf").getFile());
+        File outputFilePath = validOutputFilePath();
+
         try {
-            main.runConversion(wrongModellXtf.getAbsolutePath(), "Test.xlsx");
-        } catch (Avgbs2MtabException e) {
-            Assert.assertEquals("TYPE_NOT_MATCHING_TRANSFERDATA", e.getType());
+            Main.runConversion(wrongModellXtf.getAbsolutePath(), outputFilePath.getAbsolutePath());
+        }
+        catch (Avgbs2MtabException e) {
+            Assert.assertEquals(Avgbs2MtabException.TYPE_TRANSFERDATA_NOT_FOR_AVGBS_MODEL, e.getType());
         }
     }
 
-    @Ignore
     @Test
-    public void NoPermissionToReadXTFFileThrowsException() throws Exception {
-        Main main = new Main();
+    public void noPermissionToReadXTFFileThrowsException() throws Exception {
         File xtfFile = createNonReadableXTFFile();
+        File outputFilePath = validOutputFilePath();
         try {
-            main.runConversion(xtfFile.getAbsolutePath(), "Test.xlsx");
+            Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
         } catch (Avgbs2MtabException e) {
-            Assert.assertEquals("TYPE_NO_ACCESS_TO_FILE", e.getType());
+            Assert.assertEquals(Avgbs2MtabException.TYPE_FILE_NOT_READABLE, e.getType());
         }
 
     }
 
-    @Ignore
+
     @Test
-    public void NoPermissionToWriteXLSXFileThrowsException() throws Exception{
-        Main main = new Main();
+    public void noPermissionToWriteXLSXFileThrowsException() throws Exception{
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_4002_20150807.xtf").getFile());
+        File outputFilePath = validOutputFilePath();
+        outputFilePath.getParentFile().setWritable(false);
         try {
-            main.runConversion(xtfFile.getAbsolutePath(), "Test.xlsx");
+            Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
         } catch (Avgbs2MtabException e){
-            Assert.assertEquals("TYPE_NO_ACCESS_TO_FOLDER", e.getType());
+            Assert.assertEquals(Avgbs2MtabException.TYPE_FOLDER_NOT_WRITEABLE, e.getType());
         }
     }
 
+    /* Not yet implemented - assuming valid file due to small and "expert" user group
     @Ignore
     @Test
     public void xtfFailedValidationThrowsException() throws Exception{
-        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_4001_20150806_defekt.xtf").getFile());
         try {
@@ -104,41 +100,20 @@ public class IntegrationTests {
         } catch (Avgbs2MtabException e) {
             Assert.assertEquals("TYPE_VALIDATION_FAILED", e.getType());
         }
-
-
     }
-
-
-    @Ignore
-    @Test
-    public void InfoLogCreatesCorrectLogMessage() throws Exception {
-
-    }
-
-    @Ignore
-    @Test
-    public void DebugLogCreatesCorrectLogMessage() throws Exception {
-
-    }
-
-    @Ignore
-    @Test
-    public void TraceLogCreatesCorrectLogMessage() throws Exception {
-
-    }
+    */
 
 
     //Parzelle geändert (Zugang), Parzelle gelöscht (an bestehende Parzellen)
     @Test
     public void correctValuesWrittenInExcelAtTransferAreaTo1OldParcels() throws Exception {
-        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_4002_20150807.xtf").getFile());
-        String filePath = "Test.xlsx";
+        File outputFilePath = validOutputFilePath();
 
-        main.runConversion(xtfFile.getAbsolutePath(), filePath);
+        Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
 
-        XSSFSheet xlsxSheet = openExcelSheet(filePath);
+        XSSFSheet xlsxSheet = openExcelSheet(outputFilePath.getAbsolutePath());
 
         HashMap<String, Double> xlsxDataNumeric = generateHashMapFromNumericValuesInExcel(xlsxSheet);
         HashMap<String, String> xlsxDataString = generateHashMapFromStringValuesInExcel(xlsxSheet);
@@ -155,21 +130,18 @@ public class IntegrationTests {
 
 
         Assert.assertTrue(allValuesAreCorrect);
-
-
     }
 
     //Neue Parzelle (Teile von bestehendenParzellen), Parzelle geändert (Teilabgang)
     @Test
     public void correctValuesWrittenInExcelAtNewParcelsFrom1OldParcel() throws Exception {
-        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_4001_20150806.xtf").getFile());
-        String filePath = "Test1.xlsx";
+        File outputFilePath = validOutputFilePath();
 
-        main.runConversion(xtfFile.getAbsolutePath(), filePath);
+        Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
 
-        XSSFSheet xlsxSheet = openExcelSheet(filePath);
+        XSSFSheet xlsxSheet = openExcelSheet(outputFilePath.getAbsolutePath());
 
         HashMap<String, Double> xlsxDataNumeric = generateHashMapFromNumericValuesInExcel(xlsxSheet);
         HashMap<String, String> xlsxDataString = generateHashMapFromStringValuesInExcel(xlsxSheet);
@@ -187,22 +159,18 @@ public class IntegrationTests {
 
 
         Assert.assertTrue(allValuesAreCorrect);
-
-
-
     }
 
 
     @Test
     public void correctValuesWrittenInExcelAtNewDPR() throws Exception {
-        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_40051_20150811.xtf").getFile());
-        String filePath = "Test2.xlsx";
+        File outputFilePath = validOutputFilePath();
 
-        main.runConversion(xtfFile.getAbsolutePath(), filePath);
+        Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
 
-        XSSFSheet xlsxSheet = openExcelSheet(filePath);
+        XSSFSheet xlsxSheet = openExcelSheet(outputFilePath.getAbsolutePath());
 
         HashMap<String, Double> xlsxDataNumeric = generateHashMapFromNumericValuesInExcel(xlsxSheet);
         HashMap<String, String> xlsxDataString = generateHashMapFromStringValuesInExcel(xlsxSheet);
@@ -219,19 +187,17 @@ public class IntegrationTests {
 
 
         Assert.assertTrue(allValuesAreCorrect);
-
     }
 
     @Test
     public void correctValuesWrittenInExcelAtDeleteDPR() throws Exception {
-        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_40061_20150814.xtf").getFile());
-        String filePath = "Test3.xlsx";
+        File outputFilePath = validOutputFilePath();
 
-        main.runConversion(xtfFile.getAbsolutePath(), filePath);
+        Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
 
-        XSSFSheet xlsxSheet = openExcelSheet(filePath);
+        XSSFSheet xlsxSheet = openExcelSheet(outputFilePath.getAbsolutePath());
 
         HashMap<String, String> xlsxDataString = generateHashMapFromStringValuesInExcel(xlsxSheet);
 
@@ -250,14 +216,16 @@ public class IntegrationTests {
 
     @Test
     public void correctValuesCalculatedInExcel() throws Exception {
-        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_4004_20150810.xtf").getFile());
-        String filePath = "Test4.xlsx";
 
-        main.runConversion(xtfFile.getAbsolutePath(), filePath);
+        File outputFilePath = validOutputFilePath();
+        Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
 
-        XSSFSheet xlsxSheet = openExcelSheet(filePath);
+        InputStream ExcelFileToRead = new FileInputStream("C:\\Test.xlsx");
+        XSSFWorkbook  wb = new XSSFWorkbook(ExcelFileToRead);
+        XSSFSheet xlsxSheet = wb.getSheetAt(0);
+
 
         HashMap<String, Double> xlsxDataNumeric = generateHashMapFromNumericValuesInExcel(xlsxSheet);
         HashMap<String, String> xlsxDataString = generateHashMapFromStringValuesInExcel(xlsxSheet);
@@ -278,14 +246,13 @@ public class IntegrationTests {
 
     @Test
     public void correctValuesOfDPRsAndParcelsWrittenInExcel() throws Exception {
-        Main main = new Main();
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002427_809_20170529.xtf").getFile());
-        String filePath = "Test5.xlsx";
+        File outputFilePath = validOutputFilePath();
 
-        main.runConversion(xtfFile.getAbsolutePath(), filePath);
+        Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
 
-        XSSFSheet xlsxSheet = openExcelSheet(filePath);
+        XSSFSheet xlsxSheet = openExcelSheet(outputFilePath.getAbsolutePath());
 
         HashMap<String, Double> xlsxDataNumeric = generateHashMapFromNumericValuesInExcel(xlsxSheet);
         HashMap<String, String> xlsxDataString = generateHashMapFromStringValuesInExcel(xlsxSheet);
@@ -585,7 +552,6 @@ public class IntegrationTests {
         expectedValuesString.put("D19", "[m2]");
 
         return expectedValuesString;
-
     }
 
     private HashMap<String, Double> generateHashMapOfExpectedNumericValuesOfSO0200002407_4001_20150806() {
@@ -803,6 +769,20 @@ public class IntegrationTests {
         return expectedValuesNumeric;
     }
 
+
+    private File validOutputFilePath() {
+        File res = null;
+        try {
+            File subFolder = folder.newFolder();
+            String filePath = subFolder.getAbsolutePath() + ".xlsx";
+            res = new File(filePath);
+        } catch (IOException ioe) {
+            throw new Avgbs2MtabException("Could not create testing subfolder in: " + folder.toString());
+        }
+
+        return res;
+    }
+
     private HashMap<String, String> generateHashMapOfExpectedStringValuesOfSO0200002427_809_20170529() {
         HashMap<String, String> expectedValuesString = new HashMap<>();
 
@@ -863,7 +843,6 @@ public class IntegrationTests {
         expectedValuesNumeric.put("D19", (double) 1238);
 
         return expectedValuesNumeric;
-
     }
 
 
