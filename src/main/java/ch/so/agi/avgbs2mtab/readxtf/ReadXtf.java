@@ -416,6 +416,6 @@ public class ReadXtf {
             LOGGER.log(Level.WARNING,"File extension must be .xtf. Error at File: " + filepath);
             throw new IOException("File extension must be .xtf. Error at File: " + filepath);
         }
-        
+
     }
 }

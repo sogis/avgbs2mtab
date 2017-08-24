@@ -1,7 +1,6 @@
 package ch.so.agi.avgbs2mtab.main;
 
-import ch.so.agi.avgbs2mtab.mutdat.DPRContainer;
-import ch.so.agi.avgbs2mtab.mutdat.ParcelContainer;
+import ch.so.agi.avgbs2mtab.mutdat.*;
 import ch.so.agi.avgbs2mtab.readxtf.ReadXtf;
 import ch.so.agi.avgbs2mtab.writeexcel.XlsxWriter;
 
@@ -17,7 +16,7 @@ public class Main {
         DPRContainer dprdump = new DPRContainer();
         XlsxWriter xlsxWriter = new XlsxWriter(parceldump, dprdump, parceldump, dprdump);
 
-        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
+        ReadXtf xtfreader = new ReadXtf((SetParcel)parceldump, (SetDPR)dprdump, (DataExtractionParcel)parceldump);
         xtfreader.readFile(inputfile);
         xlsxWriter.writeXlsx(outputfilename);
 
