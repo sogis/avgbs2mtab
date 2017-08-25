@@ -1,9 +1,16 @@
-group 'avgbs2mtab'
-version '1.0-SNAPSHOT'
+plugins {
+    id "com.jfrog.artifactory" version "4.5.2"
+    id "com.github.johnrengelman.shadow" version "2.0.1"
+}
 
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
+apply plugin: "com.jfrog.artifactory"
+apply plugin: "com.github.johnrengelman.shadow"
+
+group 'ch.so.agi.avgbs2mtab'
+version '0.9.0'
 
 sourceCompatibility = 1.8
 
@@ -35,6 +42,41 @@ dependencies {
             './lib/poi-3.16/lib/commons-collections4-4.1.jar',
             './lib/iox/iox.jar',
             './lib/iox/iox-api.jar')
-    compile gradleApi()
 }
 
+// Initialize properties for artifactory upload.
+// Preventing gradle errors if gradle.properties is missing.
+ext {
+    setPropertyDefaultValue('artifactory_user', "user")
+    setPropertyDefaultValue('artifactory_password', "password")
+}
+
+artifactory {
+    contextUrl = "http://sogeo.services:8081/artifactory"
+    publish {
+        repository {
+            //repoKey = 'libs-snapshot-local'
+            repoKey = 'libs-release-local'
+            username = "${artifactoryUser}"
+            password = "${artifactoryPassword}"
+            maven = true
+        }
+        defaults {
+            publications ('mavenJava')
+        }
+    }
+}
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            // from components.java // standard use case
+            artifact file("build/libs/" + project.name + "-" + project.version + "-all.jar") // is there a more elegant way for publishing the fat jar?
+        }
+    }
+}
+
+def setPropertyDefaultValue(propertyName, defaultValue) {
+    if (!project.hasProperty(propertyName)) {
+        ext[propertyName] = defaultValue
+    }
+}
