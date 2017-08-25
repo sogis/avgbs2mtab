@@ -76,7 +76,7 @@ public class ExcelDataTest {
         try {
             XSSFWorkbook newWorkbook = insertParcels(filePath,xlsxTemplate,excelData);
             XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
-            newWorkbook = insertInflowAndOutflows(filePath, newWorkbook, excelData, xlsxSheet);
+            insertInflowAndOutflows(excelData, xlsxSheet);
             Assert.assertTrue(checkInflowsOutflows(newWorkbook));
 
         } catch (Exception e){
@@ -97,7 +97,7 @@ public class ExcelDataTest {
 
             XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
 
-            newWorkbook = insertRoundingDifferences(filePath, newWorkbook, excelData, xlsxSheet);
+            insertRoundingDifferences(excelData, xlsxSheet);
 
             Assert.assertTrue(checkRoundingDifferences(newWorkbook));
 
@@ -169,7 +169,7 @@ public class ExcelDataTest {
 
             XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
 
-            newWorkbook = insertNewAreas(filePath, newWorkbook, excelData, xlsxSheet);
+            insertNewAreas(excelData, xlsxSheet);
 
 
             Assert.assertTrue(checkNewAreas(newWorkbook));
@@ -250,7 +250,7 @@ public class ExcelDataTest {
 
             XSSFWorkbook newWorkbook = insertDPR(filePath,xlsxTemplate, excelData);
             XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
-            newWorkbook =insertDPRFlows(filePath, newWorkbook, excelData, xlsxSheet);
+            insertDPRFlows(excelData, xlsxSheet);
 
             Assert.assertTrue(checkFlows(newWorkbook));
 
@@ -274,8 +274,8 @@ public class ExcelDataTest {
 
             XSSFWorkbook newWorkbook = insertDPR(filePath,xlsxTemplate, excelData);
             XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
-            newWorkbook = insertDPRFlows(filePath, newWorkbook, excelData, xlsxSheet);
-            newWorkbook = insertNewDPRAreas(filePath, newWorkbook, excelData, xlsxSheet);
+            insertDPRFlows(excelData, xlsxSheet);
+            insertNewDPRAreas(excelData, xlsxSheet);
 
 
             Assert.assertTrue(checkDPRNewArea(newWorkbook));
@@ -301,9 +301,9 @@ public class ExcelDataTest {
 
             XSSFWorkbook newWorkbook = insertDPR(filePath,xlsxTemplate, excelData);
             XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
-            newWorkbook = insertDPRFlows(filePath, newWorkbook, excelData, xlsxSheet);
-            newWorkbook = insertNewDPRAreas(filePath, newWorkbook, excelData, xlsxSheet);
-            newWorkbook = insertDPRRoundingDifferences(filePath, newWorkbook, excelData);
+            insertDPRFlows(excelData, xlsxSheet);
+            insertNewDPRAreas(excelData, xlsxSheet);
+            insertDPRRoundingDifferences(newWorkbook, excelData);
 
 
             Assert.assertTrue(checkDPRRoundingDifferences(newWorkbook));
@@ -456,7 +456,7 @@ public class ExcelDataTest {
         return allNewParcelsAreCorrect;
     }
 
-    private XSSFWorkbook insertInflowAndOutflows(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData,
+    private void insertInflowAndOutflows(ExcelData excelData,
                                                  XSSFSheet xlsxSheet) {
         excelData.writeInflowAndOutflowOfOneParcelPair(695, 695,416, xlsxSheet);
         excelData.writeInflowAndOutflowOfOneParcelPair(696, 696,507, xlsxSheet);
@@ -473,7 +473,6 @@ public class ExcelDataTest {
         excelData.writeInflowAndOutflowOfOneParcelPair(870, 4004,39, xlsxSheet);
         excelData.writeInflowAndOutflowOfOneParcelPair(874, 4004,81, xlsxSheet);
 
-        return newWorkbook;
     }
 
     private boolean checkInflowsOutflows(XSSFWorkbook workbook){
@@ -529,12 +528,11 @@ public class ExcelDataTest {
         return allInflowsAndOutflowsAreCorrect;
     }
 
-    private XSSFWorkbook insertRoundingDifferences(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData,
+    private void insertRoundingDifferences(ExcelData excelData,
                                                    XSSFSheet xlsxSheet){
         excelData.writeRoundingDifference(695, -1, 7, xlsxSheet);
         excelData.writeRoundingDifference(697, -1, 7, xlsxSheet);
         excelData.writeRoundingDifference(701, 1, 7, xlsxSheet);
-        return newWorkbook;
     }
 
 
@@ -573,9 +571,7 @@ public class ExcelDataTest {
         return allOldAreasAreCorrect;
     }
 
-    private XSSFWorkbook insertNewAreas(String filePath,
-                                        XSSFWorkbook newWorkbook,
-                                        ExcelData excelData,
+    private void insertNewAreas(ExcelData excelData,
                                         XSSFSheet xlsxSheet) {
 
 
@@ -587,7 +583,6 @@ public class ExcelDataTest {
         excelData.writeNewArea(874, 1939, xlsxSheet);
         excelData.writeNewArea(4004, 592, xlsxSheet);
 
-        return newWorkbook;
     }
 
     private boolean checkNewAreas(XSSFWorkbook workbook){
@@ -729,7 +724,7 @@ public class ExcelDataTest {
         return allDPRsAreCorrect;
     }
 
-    private XSSFWorkbook insertDPRFlows(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData,
+    private void insertDPRFlows(ExcelData excelData,
                                         XSSFSheet xlsxSheet) {
         Integer numberNewParcels = generateNewParcels().size();
         excelData.writeDPRInflowAndOutflows(2174, 40053,1175, numberNewParcels,
@@ -738,7 +733,6 @@ public class ExcelDataTest {
                 xlsxSheet);
         excelData.writeDPRInflowAndOutflows(2176, 40053,5, numberNewParcels, xlsxSheet);
 
-        return newWorkbook;
     }
 
     private boolean checkFlows(XSSFWorkbook workbook){
@@ -756,14 +750,13 @@ public class ExcelDataTest {
         return allFlowsAreCorrect;
     }
 
-    private XSSFWorkbook insertNewDPRAreas(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData,
+    private void insertNewDPRAreas(ExcelData excelData,
                                            XSSFSheet xlsxSheet) {
 
         Integer numberNewParcels = generateNewParcels().size();
         excelData.writeNewDPRArea(40053,3660, numberNewParcels, xlsxSheet);
         excelData.writeNewDPRArea(15828,0, numberNewParcels, xlsxSheet);
 
-        return newWorkbook;
     }
 
     private boolean checkDPRNewArea(XSSFWorkbook workbook) {
@@ -779,13 +772,11 @@ public class ExcelDataTest {
         return allNewAreasAreCorrect;
     }
 
-    private XSSFWorkbook insertDPRRoundingDifferences(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData) {
+    private void insertDPRRoundingDifferences(XSSFWorkbook newWorkbook, ExcelData excelData) {
 
         Integer numberNewParcels = generateNewParcels().size();
         XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
         excelData.writeDPRRoundingDifference(40053, -1, numberNewParcels, xlsxSheet);
-
-        return newWorkbook;
     }
 
     private boolean checkDPRRoundingDifferences(XSSFWorkbook workbook){
