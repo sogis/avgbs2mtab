@@ -14,10 +14,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ExcelData implements WriteExcel {
 
-
+    private static final Logger LOGGER = Logger.getLogger( XLSXTemplate.class.getName());
 
     public void fillValuesIntoParcelTable (String filePath,
                                            XSSFWorkbook workbook,
@@ -67,6 +69,8 @@ public class ExcelData implements WriteExcel {
                                              List<Integer> orderedListOfNewParcelNumbers,
                                              XSSFSheet xlsxSheet){
 
+        LOGGER.log(Level.FINER, "Write number of new and old parcels into parcel table");
+
         writeOldParcelsInTemplate(orderedListOfOldParcelNumbers, xlsxSheet);
         writeNewParcelsInTemplate(orderedListOfNewParcelNumbers, xlsxSheet);
     }
@@ -114,6 +118,8 @@ public class ExcelData implements WriteExcel {
                                                             List<Integer> orderedListOfNewParcelNumbers,
                                                             DataExtractionParcel dataExtractionParcel,
                                                             XSSFSheet xlsxSheet) {
+
+        LOGGER.log(Level.FINER, "Write all inflows and outflows of each parcel into parcel table.");
 
 
         for (int oldParcel : orderedListOfOldParcelNumbers) {
@@ -219,6 +225,8 @@ public class ExcelData implements WriteExcel {
                                                            DataExtractionParcel dataExtractionParcel,
                                                            XSSFSheet xlsxSheet) {
 
+        LOGGER.log(Level.FINER, "Write the rounding difference for each parcel into parcel table.");
+
         for (int oldParcel : orderedListOfOldParcelNumbers) {
 
             Integer roundingDifference =  dataExtractionParcel.getRoundingDifference(oldParcel);
@@ -253,6 +261,8 @@ public class ExcelData implements WriteExcel {
                                                              List<Integer> orderedListOfNewParcelNumbers,
                                                              DataExtractionParcel dataExtractionParcel,
                                                              XSSFSheet xlsxSheet) {
+
+        LOGGER.log(Level.FINER, "Write the sum of all rounding differences into parcel table");
 
         if (orderedListOfNewParcelNumbers.size() != 0 && orderedListOfOldParcelNumbers.size() != 0) {
             writeSumOfRoundingDifference(orderedListOfNewParcelNumbers.size(),
@@ -308,6 +318,8 @@ public class ExcelData implements WriteExcel {
                                                  DataExtractionParcel dataExtractionParcel,
                                                  XSSFSheet xlsxSheet) {
 
+        LOGGER.log(Level.FINER, "Write for each parcel the new area into parcel table.");
+
         for (int newParcel : orderedListOfNewParcelNumbers){
 
             int newArea = dataExtractionParcel.getNewArea(newParcel);
@@ -335,6 +347,8 @@ public class ExcelData implements WriteExcel {
     private HashMap<Integer, Integer> getAllOldAreas(List<Integer> orderedListOfNewParcelNumbers,
                                                      List<Integer> orderedListOfOldParcelNumbers,
                                                      DataExtractionParcel dataExtractionParcel) {
+
+        LOGGER.log(Level.FINER, "Calculating for each old parcel the old area.");
 
         HashMap<Integer, Integer> oldAreaHashMap = new HashMap<>();
         Integer oldArea;
@@ -389,6 +403,8 @@ public class ExcelData implements WriteExcel {
                                                  HashMap<Integer, Integer> oldAreaHashMap,
                                                  XSSFSheet xlsxSheet) {
 
+        LOGGER.log(Level.FINER,"Write for each old parcel the old area into parcel table.");
+
         for (int oldParcel : orderedListOfOldParcelNumbers) {
             Integer oldArea = oldAreaHashMap.get(oldParcel);
 
@@ -421,6 +437,8 @@ public class ExcelData implements WriteExcel {
                                              HashMap<Integer, Integer> oldAreaHashMap,
                                              DataExtractionParcel dataExtractionParcel,
                                              XSSFSheet xlsxSheet) {
+
+        LOGGER.log(Level.FINER, "Write the sum of the areas into parcel table.");
 
         if (orderedListOfNewParcelNumbers.size() != 0 && orderedListOfOldParcelNumbers.size() != 0) {
 
@@ -504,6 +522,8 @@ public class ExcelData implements WriteExcel {
                                               int numberOfNewParcelsInParcelTable,
                                               XSSFSheet xlsxSheet) {
 
+        LOGGER.log(Level.FINER, "Write the numbers of dprs and parcels into dpr table");
+
         writeParcelsAffectedByDPRsInTemplate(orderedListOfParcelNumbers, numberOfNewParcelsInParcelTable, xlsxSheet);
         writeDPRsInTemplate(orderedListOfDPRs, numberOfNewParcelsInParcelTable, xlsxSheet);
     }
@@ -573,6 +593,8 @@ public class ExcelData implements WriteExcel {
                                            DataExtractionDPR dataExtractionDPR,
                                            XSSFSheet xlsxSheet){
 
+        LOGGER.log(Level.FINER, "Write all flows of area into dpr table");
+
         for (int parcel : orderedListOfParcelNumbers) {
             for (int dpr : orderedListOfDPRs) {
 
@@ -641,6 +663,8 @@ public class ExcelData implements WriteExcel {
                                                          DataExtractionDPR dataExtractionDPR,
                                                          XSSFSheet xlsxSheet){
 
+        LOGGER.log(Level.FINER, "Write rounding difference for each dpr into dpr table");
+
         for (int dpr : orderedListOfDPRs) {
 
             Integer roundingDifference = dataExtractionDPR.getRoundingDifferenceDPR(dpr);
@@ -673,6 +697,8 @@ public class ExcelData implements WriteExcel {
                                               int numberOfNewParcelsInParcelTable,
                                               DataExtractionDPR dataExtractionDPR,
                                               XSSFSheet xlsxSheet){
+
+        LOGGER.log(Level.FINER, "Write for each dpr the new area into dpr table");
 
         for (int dpr : orderedListOfDPRs) {
             Integer newArea = dataExtractionDPR.getNewAreaDPR(dpr);

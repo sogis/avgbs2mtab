@@ -6,8 +6,13 @@ import org.apache.poi.xssf.usermodel.*;
 
 
 import java.io.*;
+import java.util.logging.Logger;
 
 public class XLSXTemplate implements ExcelTemplate {
+
+    private static final Logger LOGGER = Logger.getLogger( XLSXTemplate.class.getName());
+
+
 
     public XSSFWorkbook createExcelTemplate (String filePath,MetadataOfParcelMutation metadataOfParcelMutation,
                                              MetadataOfDPRMutation metadataOfDPRMutation ) {
@@ -26,11 +31,18 @@ public class XLSXTemplate implements ExcelTemplate {
 
     private XSSFWorkbook generateWorkbookTemplate(String filePath, int numberOfNewParcels, int numberOfOldParcels,
                                                   int numberOfParcelsAffectedByDPRs, int numberOfDPRs){
+
+        LOGGER.log(java.util.logging.Level.FINER, "Start creating Excel-Workbook");
         XSSFWorkbook workbook = createWorkbook(filePath);
+        LOGGER.log(java.util.logging.Level.FINER, "Finished creating Excel-Workbook; Start creating empty table" +
+                "with parcels");
         workbook = createParcelTable(workbook, filePath, numberOfNewParcels, numberOfOldParcels,
                 numberOfParcelsAffectedByDPRs);
+        LOGGER.log(java.util.logging.Level.FINER, "Finished creating table with parcels; Start creating empty " +
+                "table with dprs");
         workbook = createDPRTable(workbook, filePath, numberOfParcelsAffectedByDPRs, numberOfDPRs,
                 numberOfNewParcels, numberOfOldParcels);
+        LOGGER.log(java.util.logging.Level.FINER, "Finished creating table with dprs");
 
         return workbook;
     }
