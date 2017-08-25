@@ -119,11 +119,11 @@ public class ExcelDataTest {
 
             XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
 
-            newWorkbook = excelData.writeOldArea(695,658, 7,
+            newWorkbook = excelData.writeOldArea(695,657, 7,
                     newWorkbook, xlsxSheet);
             newWorkbook = excelData.writeOldArea(696,608, 7,
                     newWorkbook, xlsxSheet);
-            newWorkbook = excelData.writeOldArea(697,817, 7,
+            newWorkbook = excelData.writeOldArea(697,816, 7,
                     newWorkbook, xlsxSheet);
 
 
@@ -582,6 +582,9 @@ public class ExcelDataTest {
         boolean allOldAreasAreCorrect = true;
 
         Row row = xlsxSheet.getRow(19);
+        /*System.out.println(row.getCell(1));
+        System.out.println(row.getCell(2));
+        System.out.println(row.getCell(3));*/
 
         if (row.getCell(1).getNumericCellValue() != 657 ||
                 row.getCell(2).getNumericCellValue() != 608 ||
