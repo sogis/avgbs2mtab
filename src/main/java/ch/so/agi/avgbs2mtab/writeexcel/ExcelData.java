@@ -9,7 +9,6 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import sun.security.x509.AVA;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,8 +19,9 @@ public class ExcelData implements WriteExcel {
 
 
 
-    public XSSFWorkbook fillValuesIntoParcelTable (String filePath, XSSFWorkbook workbook,
-                                                   DataExtractionParcel dataExtractionParcel){
+    public void fillValuesIntoParcelTable (String filePath,
+                                           XSSFWorkbook workbook,
+                                           DataExtractionParcel dataExtractionParcel){
 
 
         try {
@@ -31,55 +31,49 @@ public class ExcelData implements WriteExcel {
             List<Integer> orderedListOfOldParcelNumbers = dataExtractionParcel.getOldParcelNumbers();
             List<Integer> orderedListOfNewParcelNumbers = dataExtractionParcel.getNewParcelNumbers();
 
-            workbook = writeParcelsIntoParcelTable(orderedListOfOldParcelNumbers, orderedListOfNewParcelNumbers,
-                    xlsxSheet, workbook);
+            writeParcelsIntoParcelTable(orderedListOfOldParcelNumbers, orderedListOfNewParcelNumbers, xlsxSheet);
 
-            workbook = writeAllInflowsAndOutFlowsIntoParcelTable(orderedListOfOldParcelNumbers,
-                    orderedListOfNewParcelNumbers, workbook, dataExtractionParcel, xlsxSheet);
-
-            workbook = writeAllRoundingDifferenceIntoParcelTable(orderedListOfOldParcelNumbers,
-                    orderedListOfNewParcelNumbers, workbook, dataExtractionParcel, xlsxSheet);
-
-            workbook = writeSumOfRoundingDifferenceIntoParcelTable(orderedListOfOldParcelNumbers,
-                    orderedListOfNewParcelNumbers, workbook, dataExtractionParcel, xlsxSheet);
-
-            workbook = writeAllNewAreasIntoParcelTable(orderedListOfNewParcelNumbers, workbook,
+            writeAllInflowsAndOutFlowsIntoParcelTable(orderedListOfOldParcelNumbers, orderedListOfNewParcelNumbers,
                     dataExtractionParcel, xlsxSheet);
+
+            writeAllRoundingDifferenceIntoParcelTable(orderedListOfOldParcelNumbers, orderedListOfNewParcelNumbers,
+                    dataExtractionParcel, xlsxSheet);
+
+            writeSumOfRoundingDifferenceIntoParcelTable(orderedListOfOldParcelNumbers, orderedListOfNewParcelNumbers,
+                    dataExtractionParcel, xlsxSheet);
+
+            writeAllNewAreasIntoParcelTable(orderedListOfNewParcelNumbers, dataExtractionParcel, xlsxSheet);
 
             HashMap<Integer, Integer> oldAreaHashMap = getAllOldAreas(orderedListOfNewParcelNumbers,
                     orderedListOfOldParcelNumbers, dataExtractionParcel);
 
-            workbook = writeAllOldAreasIntoParcelTable(orderedListOfOldParcelNumbers, orderedListOfNewParcelNumbers,
-                    oldAreaHashMap, workbook, xlsxSheet);
+            writeAllOldAreasIntoParcelTable(orderedListOfOldParcelNumbers, orderedListOfNewParcelNumbers,
+                    oldAreaHashMap, xlsxSheet);
 
 
-            workbook = writeAreaSumIntoParcelTable(orderedListOfOldParcelNumbers, orderedListOfNewParcelNumbers,
-                    oldAreaHashMap, workbook, dataExtractionParcel, xlsxSheet);
+            writeAreaSumIntoParcelTable(orderedListOfOldParcelNumbers, orderedListOfNewParcelNumbers,
+                    oldAreaHashMap, dataExtractionParcel, xlsxSheet);
 
             workbook.write(excelFile);
             excelFile.close();
-            return workbook;
+
         } catch (IOException e){
             throw new RuntimeException(e);
         }
 
     }
 
-    private XSSFWorkbook writeParcelsIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
-                                                     List<Integer> orderedListOfNewParcelNumbers,
-                                                     XSSFSheet xlsxSheet,
-                                                     XSSFWorkbook workbook){
+    private void writeParcelsIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
+                                             List<Integer> orderedListOfNewParcelNumbers,
+                                             XSSFSheet xlsxSheet){
 
-        workbook = writeOldParcelsInTemplate(orderedListOfOldParcelNumbers, workbook, xlsxSheet);
-        workbook = writeNewParcelsInTemplate(orderedListOfNewParcelNumbers, workbook, xlsxSheet);
-
-        return workbook;
+        writeOldParcelsInTemplate(orderedListOfOldParcelNumbers, xlsxSheet);
+        writeNewParcelsInTemplate(orderedListOfNewParcelNumbers, xlsxSheet);
     }
 
     @Override
-    public XSSFWorkbook writeOldParcelsInTemplate(List<Integer> orderedListOfOldParcelNumbers,
-                                                  XSSFWorkbook workbook,
-                                                  XSSFSheet xlsxSheet) {
+    public void writeOldParcelsInTemplate(List<Integer> orderedListOfOldParcelNumbers,
+                                          XSSFSheet xlsxSheet) {
 
         Row rowWithOldParcelNumbers =xlsxSheet.getRow(2);
 
@@ -90,14 +84,11 @@ public class ExcelData implements WriteExcel {
             cell.setCellValue(parcelNumber);
             column++;
         }
-
-        return workbook;
     }
 
     @Override
-    public XSSFWorkbook writeNewParcelsInTemplate(List<Integer> orderedListOfNewParcelNumbers,
-                                                  XSSFWorkbook workbook,
-                                                  XSSFSheet xlsxSheet){
+    public void writeNewParcelsInTemplate(List<Integer> orderedListOfNewParcelNumbers,
+                                          XSSFSheet xlsxSheet){
 
         int rowIndex = 1;
 
@@ -105,14 +96,12 @@ public class ExcelData implements WriteExcel {
             writeValueIntoCell(2+2*rowIndex, 0, xlsxSheet, parcelNumber);
             rowIndex++;
         }
-
-        return workbook;
     }
 
     private void writeValueIntoCell(Integer rowIndex,
-                                     Integer columnIndex,
-                                     XSSFSheet xlsxSheet,
-                                     Integer value){
+                                    Integer columnIndex,
+                                    XSSFSheet xlsxSheet,
+                                    Integer value){
 
         Row row = xlsxSheet.getRow(rowIndex);
         Cell cell = row.getCell(columnIndex);
@@ -121,11 +110,10 @@ public class ExcelData implements WriteExcel {
     }
 
 
-    private XSSFWorkbook writeAllInflowsAndOutFlowsIntoParcelTable (List<Integer> orderedListOfOldParcelNumbers,
-                                                                    List<Integer> orderedListOfNewParcelNumbers,
-                                                                    XSSFWorkbook workbook,
-                                                                    DataExtractionParcel dataExtractionParcel,
-                                                                    XSSFSheet xlsxSheet) {
+    private void writeAllInflowsAndOutFlowsIntoParcelTable (List<Integer> orderedListOfOldParcelNumbers,
+                                                            List<Integer> orderedListOfNewParcelNumbers,
+                                                            DataExtractionParcel dataExtractionParcel,
+                                                            XSSFSheet xlsxSheet) {
 
 
         for (int oldParcel : orderedListOfOldParcelNumbers) {
@@ -134,12 +122,10 @@ public class ExcelData implements WriteExcel {
                 Integer area = getAreaOfFlowBetweenOldAndNewParcel(oldParcel, newParcel, dataExtractionParcel);
 
                 if (area != null) {
-                    workbook = writeInflowAndOutflowOfOneParcelPair(oldParcel, newParcel, area, workbook, xlsxSheet);
+                    writeInflowAndOutflowOfOneParcelPair(oldParcel, newParcel, area, xlsxSheet);
                 }
             }
         }
-
-        return workbook;
     }
 
     private Integer getAreaOfFlowBetweenOldAndNewParcel(int oldParcel,
@@ -159,11 +145,10 @@ public class ExcelData implements WriteExcel {
     }
 
     @Override
-    public XSSFWorkbook writeInflowAndOutflowOfOneParcelPair(int oldParcelNumber,
-                                                             int newParcelNumber,
-                                                             int area,
-                                                             XSSFWorkbook workbook,
-                                                             XSSFSheet xlsxSheet) {
+    public void writeInflowAndOutflowOfOneParcelPair(int oldParcelNumber,
+                                                     int newParcelNumber,
+                                                     int area,
+                                                     XSSFSheet xlsxSheet) {
 
         Integer indexOldParcelNumber;
         Integer indexNewParcelNumber;
@@ -178,8 +163,6 @@ public class ExcelData implements WriteExcel {
         } else {
             writeValueIntoCell(indexNewParcelNumber, indexOldParcelNumber, xlsxSheet, area);
         }
-
-        return workbook;
     }
 
     private Integer getColumnIndexOfParcelInTable(int ParcelNumber,
@@ -223,7 +206,7 @@ public class ExcelData implements WriteExcel {
 
         if (indexNewParcelNumber == null) {
             throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, "Could not find Parcel " +
-            newParcelNumber);
+                    newParcelNumber);
         } else {
             return indexNewParcelNumber;
         }
@@ -231,11 +214,10 @@ public class ExcelData implements WriteExcel {
 
 
 
-    private XSSFWorkbook writeAllRoundingDifferenceIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
-                                                                   List<Integer> orderedListOfNewParcelNumbers,
-                                                                   XSSFWorkbook workbook,
-                                                                   DataExtractionParcel dataExtractionParcel,
-                                                                   XSSFSheet xlsxSheet) {
+    private void writeAllRoundingDifferenceIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
+                                                           List<Integer> orderedListOfNewParcelNumbers,
+                                                           DataExtractionParcel dataExtractionParcel,
+                                                           XSSFSheet xlsxSheet) {
 
         for (int oldParcel : orderedListOfOldParcelNumbers) {
 
@@ -243,17 +225,16 @@ public class ExcelData implements WriteExcel {
 
             if (roundingDifference != null && roundingDifference != 0) {
 
-                workbook = writeRoundingDifference(oldParcel, -roundingDifference, orderedListOfNewParcelNumbers.size(),
-                        workbook, xlsxSheet);
+                writeRoundingDifference(oldParcel, -roundingDifference, orderedListOfNewParcelNumbers.size(), xlsxSheet);
             }
         }
-
-        return workbook;
     }
 
     @Override
-    public XSSFWorkbook writeRoundingDifference(int oldParcelNumber,int roundingDifference, int numberOfNewParcels,
-                                                XSSFWorkbook workbook, XSSFSheet xlsxSheet) {
+    public void writeRoundingDifference(int oldParcelNumber,
+                                        int roundingDifference,
+                                        int numberOfNewParcels,
+                                        XSSFSheet xlsxSheet) {
 
         Integer columnOldParcelNumber = getColumnIndexOfParcelInTable(oldParcelNumber, 2, xlsxSheet);
 
@@ -265,25 +246,20 @@ public class ExcelData implements WriteExcel {
         } else {
             writeValueIntoCell(rowOldParcelNumber, columnOldParcelNumber, xlsxSheet, roundingDifference);
         }
-
-        return workbook;
     }
 
 
-    private XSSFWorkbook writeSumOfRoundingDifferenceIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
-                                                                     List<Integer> orderedListOfNewParcelNumbers,
-                                                                     XSSFWorkbook workbook,
-                                                                     DataExtractionParcel dataExtractionParcel,
-                                                                     XSSFSheet xlsxSheet) {
+    private void writeSumOfRoundingDifferenceIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
+                                                             List<Integer> orderedListOfNewParcelNumbers,
+                                                             DataExtractionParcel dataExtractionParcel,
+                                                             XSSFSheet xlsxSheet) {
 
         if (orderedListOfNewParcelNumbers.size() != 0 && orderedListOfOldParcelNumbers.size() != 0) {
-            workbook = writeSumOfRoundingDifference(orderedListOfNewParcelNumbers.size(),
+            writeSumOfRoundingDifference(orderedListOfNewParcelNumbers.size(),
                     orderedListOfOldParcelNumbers.size(),
-                    calculateRoundingDifference(orderedListOfOldParcelNumbers, dataExtractionParcel), workbook,
+                    calculateRoundingDifference(orderedListOfOldParcelNumbers, dataExtractionParcel),
                     xlsxSheet);
         }
-
-        return workbook;
     }
 
     private List<Integer> getAllNewAreas (List<Integer> orderedListOfNewParcelNumbers,
@@ -315,11 +291,10 @@ public class ExcelData implements WriteExcel {
     }
 
     @Override
-    public XSSFWorkbook writeSumOfRoundingDifference (int NumberOfNewParcels,
-                                                      int NumberOfOldParcels,
-                                                      int roundingDifferenceSum,
-                                                      XSSFWorkbook workbook,
-                                                      XSSFSheet xlsxSheet){
+    public void writeSumOfRoundingDifference (int NumberOfNewParcels,
+                                              int NumberOfOldParcels,
+                                              int roundingDifferenceSum,
+                                              XSSFSheet xlsxSheet){
 
         int rowNumber = 5 + 2 * NumberOfNewParcels - 1;
         int columnNumber = NumberOfOldParcels + 1;
@@ -327,30 +302,24 @@ public class ExcelData implements WriteExcel {
         if (roundingDifferenceSum != 0) {
             writeValueIntoCell(rowNumber, columnNumber, xlsxSheet, roundingDifferenceSum);
         }
-
-        return workbook;
     }
 
-    private XSSFWorkbook writeAllNewAreasIntoParcelTable(List<Integer> orderedListOfNewParcelNumbers,
-                                                         XSSFWorkbook workbook,
-                                                         DataExtractionParcel dataExtractionParcel,
-                                                         XSSFSheet xlsxSheet) {
+    private void writeAllNewAreasIntoParcelTable(List<Integer> orderedListOfNewParcelNumbers,
+                                                 DataExtractionParcel dataExtractionParcel,
+                                                 XSSFSheet xlsxSheet) {
 
         for (int newParcel : orderedListOfNewParcelNumbers){
 
             int newArea = dataExtractionParcel.getNewArea(newParcel);
 
-            workbook = writeNewArea(newParcel, newArea, workbook, xlsxSheet);
+            writeNewArea(newParcel, newArea, xlsxSheet);
         }
-
-        return workbook;
     }
 
     @Override
-    public XSSFWorkbook writeNewArea(int newParcelNumber,
-                                     int area,
-                                     XSSFWorkbook workbook,
-                                     XSSFSheet xlsxSheet) {
+    public void writeNewArea(int newParcelNumber,
+                             int area,
+                             XSSFSheet xlsxSheet) {
 
         Integer rowNewParcelNumber = getRowIndexOfNewParcelInTable(newParcelNumber, xlsxSheet);
 
@@ -361,8 +330,6 @@ public class ExcelData implements WriteExcel {
         } catch (Exception e){
             throw new Avgbs2MtabException("Could not find last row");
         }
-
-        return workbook;
     }
 
     private HashMap<Integer, Integer> getAllOldAreas(List<Integer> orderedListOfNewParcelNumbers,
@@ -417,29 +384,24 @@ public class ExcelData implements WriteExcel {
     }
 
 
-    private XSSFWorkbook writeAllOldAreasIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
-                                                         List<Integer> orderedListOfNewParcelNumbers,
-                                                         HashMap<Integer, Integer> oldAreaHashMap,
-                                                         XSSFWorkbook workbook,
-                                                         XSSFSheet xlsxSheet) {
+    private void writeAllOldAreasIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
+                                                 List<Integer> orderedListOfNewParcelNumbers,
+                                                 HashMap<Integer, Integer> oldAreaHashMap,
+                                                 XSSFSheet xlsxSheet) {
 
         for (int oldParcel : orderedListOfOldParcelNumbers) {
             Integer oldArea = oldAreaHashMap.get(oldParcel);
 
-            workbook = writeOldArea(oldParcel, oldArea, orderedListOfNewParcelNumbers.size(),
-                    workbook, xlsxSheet);
+            writeOldArea(oldParcel, oldArea, orderedListOfNewParcelNumbers.size(), xlsxSheet);
         }
-
-        return workbook;
     }
 
 
     @Override
-    public XSSFWorkbook writeOldArea(int oldParcelNumber,
-                                     int oldArea,
-                                     int numberOfnewParcels,
-                                     XSSFWorkbook workbook,
-                                     XSSFSheet xlsxSheet){
+    public void writeOldArea(int oldParcelNumber,
+                             int oldArea,
+                             int numberOfnewParcels,
+                             XSSFSheet xlsxSheet){
 
         Integer columnOldParcelNumber = getColumnIndexOfParcelInTable(oldParcelNumber, 2, xlsxSheet);
 
@@ -451,34 +413,27 @@ public class ExcelData implements WriteExcel {
             throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, "The old parcel "
                     + oldParcelNumber + " could not be found in the excel.");
         }
-
-        return workbook;
     }
 
 
-    private XSSFWorkbook writeAreaSumIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
-                                                     List<Integer> orderedListOfNewParcelNumbers,
-                                                     HashMap<Integer, Integer> oldAreaHashMap,
-                                                     XSSFWorkbook workbook,
-                                                     DataExtractionParcel dataExtractionParcel,
-                                                     XSSFSheet xlsxSheet) {
+    private void writeAreaSumIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
+                                             List<Integer> orderedListOfNewParcelNumbers,
+                                             HashMap<Integer, Integer> oldAreaHashMap,
+                                             DataExtractionParcel dataExtractionParcel,
+                                             XSSFSheet xlsxSheet) {
 
         if (orderedListOfNewParcelNumbers.size() != 0 && orderedListOfOldParcelNumbers.size() != 0) {
 
-            workbook = writeAreaSum(oldAreaHashMap, getAllNewAreas(orderedListOfNewParcelNumbers, dataExtractionParcel),
-                    calculateRoundingDifference(orderedListOfOldParcelNumbers, dataExtractionParcel),
-                    workbook, xlsxSheet);
+            writeAreaSum(oldAreaHashMap, getAllNewAreas(orderedListOfNewParcelNumbers, dataExtractionParcel),
+                    calculateRoundingDifference(orderedListOfOldParcelNumbers, dataExtractionParcel), xlsxSheet);
         }
-
-        return workbook;
     }
 
     @Override
-    public XSSFWorkbook writeAreaSum(HashMap<Integer, Integer> oldAreas,
-                                     List<Integer> newAreas,
-                                     int roundingDifference,
-                                     XSSFWorkbook workbook,
-                                     XSSFSheet xlsxSheet){
+    public void writeAreaSum(HashMap<Integer, Integer> oldAreas,
+                             List<Integer> newAreas,
+                             int roundingDifference,
+                             XSSFSheet xlsxSheet){
 
         Integer sumOldAreas = 0;
         Integer sumNewAreas = 0;
@@ -502,15 +457,13 @@ public class ExcelData implements WriteExcel {
         } else {
             throw new Avgbs2MtabException("The sum of the old areas does not equal with the sum of the new areas.");
         }
-
-        return workbook;
     }
 
 
 
-    public XSSFWorkbook fillValuesIntoDPRTable (String filePath, XSSFWorkbook workbook,
-                                                DataExtractionDPR dataExtractionDPR,
-                                                MetadataOfParcelMutation metadataOfParcelMutation) {
+    public void fillValuesIntoDPRTable (String filePath, XSSFWorkbook workbook,
+                                        DataExtractionDPR dataExtractionDPR,
+                                        MetadataOfParcelMutation metadataOfParcelMutation) {
 
         try {
             OutputStream ExcelFile = new FileOutputStream(filePath);
@@ -522,48 +475,43 @@ public class ExcelData implements WriteExcel {
 
             Integer numberOfNewParcelsInParcelTable = metadataOfParcelMutation.getNumberOfNewParcels();
 
-            workbook = writeParcelsAndDPRsIntoTable(orderedListOfParcelNumbers, orderedListOfDPRs,
-                    numberOfNewParcelsInParcelTable, workbook, xlsxSheet);
+            writeParcelsAndDPRsIntoTable(orderedListOfParcelNumbers, orderedListOfDPRs, numberOfNewParcelsInParcelTable,
+                    xlsxSheet);
 
 
-            workbook = writeAllFlowsIntoDPRTable(orderedListOfParcelNumbers, orderedListOfDPRs,
-                    numberOfNewParcelsInParcelTable, workbook, dataExtractionDPR, xlsxSheet);
-
-
-            workbook = writeAllRoundingDifferencesIntoDPRTable(orderedListOfDPRs, numberOfNewParcelsInParcelTable,
-                    workbook, dataExtractionDPR, xlsxSheet);
-
-
-            workbook = writeAllNewAreasIntoDPRTable(orderedListOfDPRs, numberOfNewParcelsInParcelTable, workbook,
+            writeAllFlowsIntoDPRTable(orderedListOfParcelNumbers, orderedListOfDPRs, numberOfNewParcelsInParcelTable,
                     dataExtractionDPR, xlsxSheet);
+
+
+            writeAllRoundingDifferencesIntoDPRTable(orderedListOfDPRs, numberOfNewParcelsInParcelTable,
+                    dataExtractionDPR, xlsxSheet);
+
+
+            writeAllNewAreasIntoDPRTable(orderedListOfDPRs, numberOfNewParcelsInParcelTable, dataExtractionDPR,
+                    xlsxSheet);
 
 
             workbook.write(ExcelFile);
             ExcelFile.close();
-            return workbook;
+
         } catch (IOException e){
             throw new RuntimeException(e);
         }
     }
 
-    private XSSFWorkbook writeParcelsAndDPRsIntoTable(List<Integer> orderedListOfParcelNumbers,
-                                                      List<Integer> orderedListOfDPRs,
-                                                      int numberOfNewParcelsInParcelTable,
-                                                      XSSFWorkbook workbook,
-                                                      XSSFSheet xlsxSheet) {
+    private void writeParcelsAndDPRsIntoTable(List<Integer> orderedListOfParcelNumbers,
+                                              List<Integer> orderedListOfDPRs,
+                                              int numberOfNewParcelsInParcelTable,
+                                              XSSFSheet xlsxSheet) {
 
-        workbook = writeParcelsAffectedByDPRsInTemplate(orderedListOfParcelNumbers, numberOfNewParcelsInParcelTable,
-                workbook, xlsxSheet);
-        workbook = writeDPRsInTemplate(orderedListOfDPRs, numberOfNewParcelsInParcelTable, workbook, xlsxSheet);
-
-        return workbook;
+        writeParcelsAffectedByDPRsInTemplate(orderedListOfParcelNumbers, numberOfNewParcelsInParcelTable, xlsxSheet);
+        writeDPRsInTemplate(orderedListOfDPRs, numberOfNewParcelsInParcelTable, xlsxSheet);
     }
 
     @Override
-    public XSSFWorkbook writeParcelsAffectedByDPRsInTemplate(List<Integer> orderedListOfParcelNumbersAffectedByDPRs,
-                                                             int newParcelNumber,
-                                                             XSSFWorkbook workbook,
-                                                             XSSFSheet xlsxSheet) {
+    public void writeParcelsAffectedByDPRsInTemplate(List<Integer> orderedListOfParcelNumbersAffectedByDPRs,
+                                                     int newParcelNumber,
+                                                     XSSFSheet xlsxSheet) {
 
         Integer column = 1;
 
@@ -576,8 +524,6 @@ public class ExcelData implements WriteExcel {
 
             column++;
         }
-
-        return workbook;
     }
 
     private int calculateIndexOfParcelRow (int newParcelNumber,
@@ -595,10 +541,9 @@ public class ExcelData implements WriteExcel {
     }
 
     @Override
-    public XSSFWorkbook writeDPRsInTemplate(List<Integer> orderedListOfDPRs,
-                                            int newParcelNumber,
-                                            XSSFWorkbook workbook,
-                                            XSSFSheet xlsxSheet) {
+    public void writeDPRsInTemplate(List<Integer> orderedListOfDPRs,
+                                    int newParcelNumber,
+                                    XSSFSheet xlsxSheet) {
 
         Integer rowIndex = calculateIndexOfParcelRow(newParcelNumber, 12);
 
@@ -609,14 +554,12 @@ public class ExcelData implements WriteExcel {
             rowIndex++;
             rowIndex++;
         }
-
-        return workbook;
     }
 
     private void writeValueIntoCell(Integer rowIndex,
-                               Integer columnIndex,
-                               XSSFSheet xlsxSheet,
-                               String value){
+                                    Integer columnIndex,
+                                    XSSFSheet xlsxSheet,
+                                    String value){
 
         XSSFRow row = xlsxSheet.getRow(rowIndex);
         XSSFCell cell =row.getCell(columnIndex);
@@ -624,33 +567,28 @@ public class ExcelData implements WriteExcel {
 
     }
 
-    private XSSFWorkbook writeAllFlowsIntoDPRTable(List<Integer> orderedListOfParcelNumbers,
-                                                   List<Integer> orderedListOfDPRs,
-                                                   int numberOfNewParcelsInParcelTable,
-                                                   XSSFWorkbook workbook,
-                                                   DataExtractionDPR dataExtractionDPR,
-                                                   XSSFSheet xlsxSheet){
+    private void writeAllFlowsIntoDPRTable(List<Integer> orderedListOfParcelNumbers,
+                                           List<Integer> orderedListOfDPRs,
+                                           int numberOfNewParcelsInParcelTable,
+                                           DataExtractionDPR dataExtractionDPR,
+                                           XSSFSheet xlsxSheet){
 
         for (int parcel : orderedListOfParcelNumbers) {
             for (int dpr : orderedListOfDPRs) {
 
                 Integer area = dataExtractionDPR.getAddedAreaDPR(parcel, dpr);
 
-                workbook = writeDPRInflowAndOutflows(parcel, dpr, area, numberOfNewParcelsInParcelTable,
-                        workbook, xlsxSheet);
+                writeDPRInflowAndOutflows(parcel, dpr, area, numberOfNewParcelsInParcelTable, xlsxSheet);
             }
         }
-
-        return workbook;
     }
 
     @Override
-    public XSSFWorkbook writeDPRInflowAndOutflows(int parcelNumberAffectedByDPR,
-                                                  int dpr,
-                                                  int area,
-                                                  int newParcelNumber,
-                                                  XSSFWorkbook workbook,
-                                                  XSSFSheet xlsxSheet) {
+    public void writeDPRInflowAndOutflows(int parcelNumberAffectedByDPR,
+                                          int dpr,
+                                          int area,
+                                          int newParcelNumber,
+                                          XSSFSheet xlsxSheet) {
 
         Integer indexOfParcelRow = calculateIndexOfParcelRow(newParcelNumber, 10);
 
@@ -659,8 +597,6 @@ public class ExcelData implements WriteExcel {
         int indexDPR = getRowIndexOfDPRInTable(indexOfParcelRow, dpr, xlsxSheet);
 
         writeValueIntoCell(indexDPR, indexParcel, xlsxSheet, area);
-
-        return workbook;
     }
 
     private Integer getRowIndexOfDPRInTable(int indexOfParcelRow,
@@ -700,32 +636,26 @@ public class ExcelData implements WriteExcel {
         return Integer.parseInt(dprString.substring(1, (dprStringLength-1)));
     }
 
-    private XSSFWorkbook writeAllRoundingDifferencesIntoDPRTable(List<Integer> orderedListOfDPRs,
-                                                                 int numberOfNewParcelsInParcelTable,
-                                                                 XSSFWorkbook workbook,
-                                                                 DataExtractionDPR dataExtractionDPR,
-                                                                 XSSFSheet xlsxSheet){
+    private void writeAllRoundingDifferencesIntoDPRTable(List<Integer> orderedListOfDPRs,
+                                                         int numberOfNewParcelsInParcelTable,
+                                                         DataExtractionDPR dataExtractionDPR,
+                                                         XSSFSheet xlsxSheet){
 
         for (int dpr : orderedListOfDPRs) {
 
             Integer roundingDifference = dataExtractionDPR.getRoundingDifferenceDPR(dpr);
 
             if (roundingDifference != null && roundingDifference != 0) {
-                workbook = writeDPRRoundingDifference(dpr, -roundingDifference, numberOfNewParcelsInParcelTable,
-                        workbook, xlsxSheet);
+                writeDPRRoundingDifference(dpr, -roundingDifference, numberOfNewParcelsInParcelTable, xlsxSheet);
             }
         }
-
-        return workbook;
-
     }
 
     @Override
-    public XSSFWorkbook writeDPRRoundingDifference(int dpr,
-                                                   int roundingDifference,
-                                                   int newParcelNumber,
-                                                   XSSFWorkbook workbook,
-                                                   XSSFSheet xlsxSheet) {
+    public void  writeDPRRoundingDifference(int dpr,
+                                            int roundingDifference,
+                                            int newParcelNumber,
+                                            XSSFSheet xlsxSheet) {
 
         Integer rowDPRNumber;
         Integer columnRoundingDifference;
@@ -737,32 +667,26 @@ public class ExcelData implements WriteExcel {
         columnRoundingDifference = (int) xlsxSheet.getRow(rowDPRNumber).getLastCellNum()-2;
 
         writeValueIntoCell(rowDPRNumber, columnRoundingDifference, xlsxSheet, roundingDifference);
-
-        return workbook;
     }
 
-    private XSSFWorkbook writeAllNewAreasIntoDPRTable(List<Integer> orderedListOfDPRs,
-                                                      int numberOfNewParcelsInParcelTable,
-                                                      XSSFWorkbook workbook,
-                                                      DataExtractionDPR dataExtractionDPR,
-                                                      XSSFSheet xlsxSheet){
+    private void writeAllNewAreasIntoDPRTable(List<Integer> orderedListOfDPRs,
+                                              int numberOfNewParcelsInParcelTable,
+                                              DataExtractionDPR dataExtractionDPR,
+                                              XSSFSheet xlsxSheet){
 
         for (int dpr : orderedListOfDPRs) {
             Integer newArea = dataExtractionDPR.getNewAreaDPR(dpr);
-            workbook = writeNewDPRArea(dpr, newArea, numberOfNewParcelsInParcelTable, workbook, xlsxSheet);
+            writeNewDPRArea(dpr, newArea, numberOfNewParcelsInParcelTable, xlsxSheet);
         }
-
-        return workbook;
     }
 
 
 
     @Override
-    public XSSFWorkbook writeNewDPRArea(int dpr,
-                                        int area,
-                                        int newParcelNumber,
-                                        XSSFWorkbook workbook,
-                                        XSSFSheet xlsxSheet) {
+    public void writeNewDPRArea(int dpr,
+                                int area,
+                                int newParcelNumber,
+                                XSSFSheet xlsxSheet) {
 
         Integer indexOfParcelRow = calculateIndexOfParcelRow(newParcelNumber, 10);
 
@@ -771,8 +695,6 @@ public class ExcelData implements WriteExcel {
         Integer columnNewArea = (int) xlsxSheet.getRow(rowDPRNumber).getLastCellNum()-1;
 
         writeNewDPRAreaValueIntoCell(rowDPRNumber, columnNewArea, area, xlsxSheet);
-
-        return workbook;
     }
 
     private void writeNewDPRAreaValueIntoCell(int rowDPRNumber,

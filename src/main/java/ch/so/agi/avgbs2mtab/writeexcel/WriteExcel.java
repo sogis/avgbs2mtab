@@ -1,88 +1,73 @@
 package ch.so.agi.avgbs2mtab.writeexcel;
 
 import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 
 
 public interface WriteExcel  {
 
-    public XSSFWorkbook writeOldParcelsInTemplate(List<Integer> orderedListOfOldParcelNumbers,
-                                                  XSSFWorkbook workbook,
-                                                  XSSFSheet xlsxSheet);
+    void writeOldParcelsInTemplate(List<Integer> orderedListOfOldParcelNumbers,
+                                          XSSFSheet xlsxSheet);
 
-    public XSSFWorkbook writeNewParcelsInTemplate(List<Integer> orderedListOfNewParcelNumbers,
-                                                  XSSFWorkbook workbook,
-                                                  XSSFSheet xlsxSheet);
+    void writeNewParcelsInTemplate(List<Integer> orderedListOfNewParcelNumbers,
+                                          XSSFSheet xlsxSheet);
 
-    public XSSFWorkbook writeInflowAndOutflowOfOneParcelPair(int oldParcelNumber,
-                                                             int newParcelNumber,
-                                                             int area,
-                                                             XSSFWorkbook workbook,
-                                                             XSSFSheet xlsxSheet);
+    void writeInflowAndOutflowOfOneParcelPair(int oldParcelNumber,
+                                                     int newParcelNumber,
+                                                     int area,
+                                                     XSSFSheet xlsxSheet);
 
-    public XSSFWorkbook writeNewArea(int newParcelNumber,
-                                     int area,
-                                     XSSFWorkbook workbook,
-                                     XSSFSheet xlsxSheet);
+    void writeNewArea(int newParcelNumber,
+                             int area,
+                             XSSFSheet xlsxSheet);
 
-    public XSSFWorkbook writeRoundingDifference(int oldParcelNumber,
-                                                int roundingDifference,
-                                                int numberOfNewParcels,
-                                                XSSFWorkbook workbook,
-                                                XSSFSheet xlsxSheet);
-
-    public XSSFWorkbook writeSumOfRoundingDifference (int NumberOfNewParcels,
-                                                      int NumberOfOldParcels,
-                                                      int roundingDifferenceSum,
-                                                      XSSFWorkbook workbook,
-                                                      XSSFSheet xlsxSheet);
-
-
-    public XSSFWorkbook writeOldArea(int oldParcelNumber,
-                                     int oldArea,
-                                     int numberOfNewParcels,
-                                     XSSFWorkbook workbook,
-                                     XSSFSheet xlsxSheet);
-
-    public XSSFWorkbook writeAreaSum(HashMap<Integer, Integer> oldAreas,
-                                     List<Integer> newAreas,
-                                     int roundingDifference,
-                                     XSSFWorkbook workbook,
-                                     XSSFSheet xlsxSheet);
-
-
-    public XSSFWorkbook writeParcelsAffectedByDPRsInTemplate(List<Integer> orderedListOfParcelNumbersAffectedByDPRs,
-                                                             int newParcelNumber,
-                                                             XSSFWorkbook workbook,
-                                                             XSSFSheet xlsxSheet);
-
-    public XSSFWorkbook writeDPRsInTemplate(List<Integer> orderedListOfDPRs,
-                                            int newParcelNumber,
-                                            XSSFWorkbook workbook,
-                                            XSSFSheet xlsxSheet);
-
-    public XSSFWorkbook writeDPRInflowAndOutflows(int parcelNumberAffectedByDPR,
-                                                  int dpr,
-                                                  int area,
-                                                  int newParcelNumber,
-                                                  XSSFWorkbook workbook,
-                                                  XSSFSheet xlsxSheet);
-
-    public XSSFWorkbook writeNewDPRArea(int dpr,
-                                        int area,
-                                        int newParcelNumber,
-                                        XSSFWorkbook workbook,
+    void writeRoundingDifference(int oldParcelNumber,
+                                        int roundingDifference,
+                                        int numberOfNewParcels,
                                         XSSFSheet xlsxSheet);
 
-    public XSSFWorkbook writeDPRRoundingDifference(int dpr,
-                                                   int roundingDifference,
-                                                   int newParcelNumber,
-                                                   XSSFWorkbook workbook,
-                                                   XSSFSheet xlsxSheet);
+    void writeSumOfRoundingDifference (int NumberOfNewParcels,
+                                              int NumberOfOldParcels,
+                                              int roundingDifferenceSum,
+                                              XSSFSheet xlsxSheet);
+
+
+    void writeOldArea(int oldParcelNumber,
+                             int oldArea,
+                             int numberOfNewParcels,
+                             XSSFSheet xlsxSheet);
+
+    void writeAreaSum(HashMap<Integer, Integer> oldAreas,
+                             List<Integer> newAreas,
+                             int roundingDifference,
+                             XSSFSheet xlsxSheet);
+
+
+    void writeParcelsAffectedByDPRsInTemplate(List<Integer> orderedListOfParcelNumbersAffectedByDPRs,
+                                                     int newParcelNumber,
+                                                     XSSFSheet xlsxSheet);
+
+    void writeDPRsInTemplate(List<Integer> orderedListOfDPRs,
+                                    int newParcelNumber,
+                                    XSSFSheet xlsxSheet);
+
+    void writeDPRInflowAndOutflows(int parcelNumberAffectedByDPR,
+                                          int dpr,
+                                          int area,
+                                          int newParcelNumber,
+                                          XSSFSheet xlsxSheet);
+
+    void writeNewDPRArea(int dpr,
+                                int area,
+                                int newParcelNumber,
+                                XSSFSheet xlsxSheet);
+
+    void writeDPRRoundingDifference(int dpr,
+                                           int roundingDifference,
+                                           int newParcelNumber,
+                                           XSSFSheet xlsxSheet);
 
 
 

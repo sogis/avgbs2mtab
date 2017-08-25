@@ -29,7 +29,7 @@ public class XlsxWriter {
         //todo: Debug-log with message: "start generating excel-template"
         XSSFWorkbook workbook = xlsxTemplate.createExcelTemplate(filePath, metadataOfParcelMutation, metadataOfDPRMutation);
         //todo: Debug-log with message: "finished generating excel-template; start writing parcels into excel-template"
-        workbook = excelData.fillValuesIntoParcelTable(filePath, workbook, dataExtractionParcel);
+        excelData.fillValuesIntoParcelTable(filePath, workbook, dataExtractionParcel);
         //todo: Debug-log with message: "finished writing parcels into excel-template; start writing dprs into excel-templat"
         excelData.fillValuesIntoDPRTable(filePath, workbook, dataExtractionDPR, metadataOfParcelMutation);
         //todo: Debug-log with message: "finished writing dprs into excel-template"
