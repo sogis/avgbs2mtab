@@ -41,35 +41,6 @@ public class XLSXTemplate implements ExcelTemplate {
     @Override
     public XSSFWorkbook createWorkbook(String filePath) {
 
-<<<<<<< HEAD
-        if (getIfFilePathIsWritable(filePath)){
-=======
-        int lastSlash = filePath.lastIndexOf("/");
-        String pathWithoutFilename = filePath.substring(0, lastSlash+1);
-
-        Path xlsxFilePath = Paths.get(pathWithoutFilename);
-
-        //todo  - ist in main abgefangen - brauchts das hier noch?
-/*
-        if (Files.isWritable(xlsxFilePath)){
->>>>>>> c1b2470b71bd1f8a2fd5ef96bfcf0162bf9da30f
-            try {
-                OutputStream ExcelFile = new FileOutputStream(filePath);
-                XSSFWorkbook workbook = new XSSFWorkbook();
-                workbook.createSheet("Mutationstabelle");
-                workbook.write(ExcelFile);
-
-                return workbook;
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_NO_ACCESS_TO_FOLDER,
-                    "Can not write in directory: " + filePath);
-        }
-*/
-
         try {
             OutputStream ExcelFile = new FileOutputStream(filePath);
             XSSFWorkbook workbook = new XSSFWorkbook();
@@ -78,22 +49,10 @@ public class XLSXTemplate implements ExcelTemplate {
 
             return workbook;
 
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
-    private boolean getIfFilePathIsWritable(String filePath){
-        int lastSlash = filePath.lastIndexOf("/");
-        String pathWithoutFilename = filePath.substring(0, lastSlash+1);
-
-        Path xlsxFilePath = Paths.get(pathWithoutFilename);
-
-        return Files.isWritable(xlsxFilePath);
-    }
-
 
     @Override
     public XSSFWorkbook createParcelTable(XSSFWorkbook excelTemplate,String filePath, int newParcels, int oldParcels,
