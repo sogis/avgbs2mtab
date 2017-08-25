@@ -6,8 +6,6 @@ import org.apache.poi.xssf.usermodel.*;
 
 
 import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class XLSXTemplate implements ExcelTemplate {
 
@@ -44,7 +42,7 @@ public class XLSXTemplate implements ExcelTemplate {
         try {
             OutputStream ExcelFile = new FileOutputStream(filePath);
             XSSFWorkbook workbook = new XSSFWorkbook();
-            XSSFSheet xlsxSheet = workbook.createSheet("Mutationstabelle");
+            workbook.createSheet("Mutationstabelle");
             workbook.write(ExcelFile);
 
             return workbook;

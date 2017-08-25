@@ -18,11 +18,11 @@ public interface WriteExcel  {
                                                   XSSFWorkbook workbook,
                                                   XSSFSheet xlsxSheet);
 
-    public XSSFWorkbook writeInflowAndOutflows(int oldParcelNumber,
-                                               int newParcelNumber,
-                                               int area,
-                                               XSSFWorkbook workbook,
-                                               XSSFSheet xlsxSheet);
+    public XSSFWorkbook writeInflowAndOutflowOfOneParcelPair(int oldParcelNumber,
+                                                             int newParcelNumber,
+                                                             int area,
+                                                             XSSFWorkbook workbook,
+                                                             XSSFSheet xlsxSheet);
 
     public XSSFWorkbook writeNewArea(int newParcelNumber,
                                      int area,

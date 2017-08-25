@@ -218,14 +218,11 @@ public class MainTest {
     public void correctValuesCalculatedInExcel() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_4004_20150810.xtf").getFile());
-
         File outputFilePath = validOutputFilePath();
+
         Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
 
-        InputStream ExcelFileToRead = new FileInputStream("C:\\Test.xlsx");
-        XSSFWorkbook  wb = new XSSFWorkbook(ExcelFileToRead);
-        XSSFSheet xlsxSheet = wb.getSheetAt(0);
-
+        XSSFSheet xlsxSheet = openExcelSheet(outputFilePath.getAbsolutePath());
 
         HashMap<String, Double> xlsxDataNumeric = generateHashMapFromNumericValuesInExcel(xlsxSheet);
         HashMap<String, String> xlsxDataString = generateHashMapFromStringValuesInExcel(xlsxSheet);

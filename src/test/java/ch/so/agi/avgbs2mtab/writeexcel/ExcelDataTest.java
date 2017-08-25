@@ -9,8 +9,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -464,33 +462,33 @@ public class ExcelDataTest {
 
     private XSSFWorkbook insertInflowAndOutflows(String filePath, XSSFWorkbook newWorkbook, ExcelData excelData,
                                                  XSSFSheet xlsxSheet) {
-        newWorkbook = excelData.writeInflowAndOutflows(695, 695,416,
+        newWorkbook = excelData.writeInflowAndOutflowOfOneParcelPair(695, 695,416,
                 newWorkbook, xlsxSheet);
-        newWorkbook = excelData.writeInflowAndOutflows(696, 696,507,
+        newWorkbook = excelData.writeInflowAndOutflowOfOneParcelPair(696, 696,507,
                 newWorkbook, xlsxSheet);
-        newWorkbook = excelData.writeInflowAndOutflows(697, 697,687,
+        newWorkbook = excelData.writeInflowAndOutflowOfOneParcelPair(697, 697,687,
                 newWorkbook, xlsxSheet);
-        newWorkbook = excelData.writeInflowAndOutflows(696, 701,1,
+        newWorkbook = excelData.writeInflowAndOutflowOfOneParcelPair(696, 701,1,
                 newWorkbook, xlsxSheet);
-        newWorkbook = excelData.writeInflowAndOutflows(697, 701,1,
+        newWorkbook = excelData.writeInflowAndOutflowOfOneParcelPair(697, 701,1,
                 newWorkbook, xlsxSheet);
-        newWorkbook = excelData.writeInflowAndOutflows(701, 701,1112,
+        newWorkbook = excelData.writeInflowAndOutflowOfOneParcelPair(701, 701,1112,
                 newWorkbook, xlsxSheet);
-        newWorkbook = excelData.writeInflowAndOutflows(870, 870,611,
+        newWorkbook = excelData.writeInflowAndOutflowOfOneParcelPair(870, 870,611,
                 newWorkbook, xlsxSheet);
-        newWorkbook = excelData.writeInflowAndOutflows(874, 874,1939,
+        newWorkbook = excelData.writeInflowAndOutflowOfOneParcelPair(874, 874,1939,
                 newWorkbook, xlsxSheet);
-        newWorkbook = excelData.writeInflowAndOutflows(695, 4004,242,
+        newWorkbook = excelData.writeInflowAndOutflowOfOneParcelPair(695, 4004,242,
                 newWorkbook, xlsxSheet);
-        newWorkbook = excelData.writeInflowAndOutflows(696, 4004,100,
+        newWorkbook = excelData.writeInflowAndOutflowOfOneParcelPair(696, 4004,100,
                 newWorkbook, xlsxSheet);
-        newWorkbook = excelData.writeInflowAndOutflows(697, 4004,129,
+        newWorkbook = excelData.writeInflowAndOutflowOfOneParcelPair(697, 4004,129,
                 newWorkbook, xlsxSheet);
-        newWorkbook = excelData.writeInflowAndOutflows(701, 4004,1,
+        newWorkbook = excelData.writeInflowAndOutflowOfOneParcelPair(701, 4004,1,
                 newWorkbook, xlsxSheet);
-        newWorkbook = excelData.writeInflowAndOutflows(870, 4004,39,
+        newWorkbook = excelData.writeInflowAndOutflowOfOneParcelPair(870, 4004,39,
                 newWorkbook, xlsxSheet);
-        newWorkbook = excelData.writeInflowAndOutflows(874, 4004,81,
+        newWorkbook = excelData.writeInflowAndOutflowOfOneParcelPair(874, 4004,81,
                 newWorkbook, xlsxSheet);
 
         return newWorkbook;
