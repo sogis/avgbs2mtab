@@ -72,6 +72,7 @@ public class XLSXTemplate implements ExcelTemplate {
             return workbook;
 
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Could not create Excel-Workbook at " + filePath);
             throw new RuntimeException(e);
         }
     }
@@ -134,6 +135,7 @@ public class XLSXTemplate implements ExcelTemplate {
             out.close();
 
         } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Could not create parcel table " + e.getMessage());
             throw new RuntimeException(e);
 
         }
@@ -555,6 +557,7 @@ public class XLSXTemplate implements ExcelTemplate {
             excelTemplate.write(out);
             out.close();
         } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Could not create dpr table " + e.getMessage());
             throw new RuntimeException(e);
         }
 

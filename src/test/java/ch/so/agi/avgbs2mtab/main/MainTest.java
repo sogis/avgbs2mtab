@@ -271,7 +271,6 @@ public class MainTest {
 
 
 
-
     private File createFileWithoutXTFExtension() throws Exception {
         File noXtfExtensionFile =  folder.newFile("query.sql");
         BufferedWriter writer1 = new BufferedWriter(new FileWriter(noXtfExtensionFile));
