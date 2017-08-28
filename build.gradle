@@ -10,7 +10,7 @@ apply plugin: "com.jfrog.artifactory"
 apply plugin: "com.github.johnrengelman.shadow"
 
 group 'ch.so.agi.avgbs2mtab'
-version '0.9.0'
+version '0.9.1'
 
 sourceCompatibility = 1.8
 
