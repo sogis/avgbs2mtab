@@ -71,7 +71,9 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             // from components.java // standard use case
-            artifact file("build/libs/" + project.name + "-" + project.version + "-all.jar") // is there a more elegant way for publishing the fat jar?
+            // Is there a more elegant way for publishing the fat jar?
+            // It's confusing too: artifact is named w/o "-all" suffix.
+            artifact file("build/libs/" + project.name + "-" + project.version + "-all.jar")
         }
     }
 }
