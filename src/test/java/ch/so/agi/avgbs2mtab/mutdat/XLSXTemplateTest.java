@@ -48,8 +48,8 @@ public class XLSXTemplateTest {
 
         try {
             XSSFWorkbook newWorkbook = xlsxTemplate.createWorkbook(filePath);
-            newWorkbook = xlsxTemplate.createParcelTable(newWorkbook, filePath, newParcels.size(), oldParcels.size(), parcels.size());
-            newWorkbook = xlsxTemplate.createDPRTable(newWorkbook, filePath, parcels.size(), dpr.size(),
+            xlsxTemplate.createParcelTable(newWorkbook, filePath, newParcels.size(), oldParcels.size(), parcels.size());
+            xlsxTemplate.createDPRTable(newWorkbook, filePath, parcels.size(), dpr.size(),
                     newParcels.size(), oldParcels.size());
 
             Assert.assertTrue(checkStylingOfExcelCells(newWorkbook));
@@ -73,8 +73,8 @@ public class XLSXTemplateTest {
 
         try {
             XSSFWorkbook newWorkbook = xlsxTemplate.createWorkbook(filePath);
-            newWorkbook = xlsxTemplate.createParcelTable(newWorkbook, filePath, newParcels, oldParcels, parcels);
-            newWorkbook = xlsxTemplate.createDPRTable(newWorkbook, filePath, parcels, dpr,
+            xlsxTemplate.createParcelTable(newWorkbook, filePath, newParcels, oldParcels, parcels);
+            xlsxTemplate.createDPRTable(newWorkbook, filePath, parcels, dpr,
                     newParcels, oldParcels);
 
             Assert.assertTrue(checkStylingOfExcelCellsWithoutAnyParcelsAndDPRs(newWorkbook));

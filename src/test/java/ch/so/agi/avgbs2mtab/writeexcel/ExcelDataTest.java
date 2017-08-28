@@ -34,7 +34,7 @@ public class ExcelDataTest {
         try {
             XSSFWorkbook newWorkbook = xlsxTemplate.createWorkbook(filePath);
             XSSFSheet sheet = newWorkbook.getSheet("Mutationstabelle");
-            newWorkbook = xlsxTemplate.createParcelTable(newWorkbook,filePath, newParcels.size(),oldParcels.size(), 0);
+            xlsxTemplate.createParcelTable(newWorkbook,filePath, newParcels.size(),oldParcels.size(), 0);
             excelData.writeOldParcelsInTemplate(oldParcels, sheet);
             Assert.assertTrue(checkOldParcels(newWorkbook));
 
@@ -198,10 +198,10 @@ public class ExcelDataTest {
 
 
             XSSFWorkbook newWorkbook = xlsxTemplate.createWorkbook(filePath);
-            newWorkbook = xlsxTemplate.createParcelTable(newWorkbook,filePath, newParcels.size(),oldParcels.size(),
+            xlsxTemplate.createParcelTable(newWorkbook,filePath, newParcels.size(),oldParcels.size(),
                     parcels.size());
             XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
-            newWorkbook = xlsxTemplate.createDPRTable(newWorkbook, filePath, parcels.size(), dpr.size(),
+            xlsxTemplate.createDPRTable(newWorkbook, filePath, parcels.size(), dpr.size(),
                     newParcels.size(), oldParcels.size());
             excelData.writeParcelsAffectedByDPRsInTemplate(parcels, newParcels.size(), xlsxSheet);
 
@@ -404,7 +404,7 @@ public class ExcelDataTest {
 
         XSSFWorkbook newWorkbook = xlsxTemplate.createWorkbook(filePath);
         XSSFSheet sheet = newWorkbook.getSheet("Mutationstabelle");
-        newWorkbook = xlsxTemplate.createParcelTable(newWorkbook,filePath, newParcels.size(),oldParcels.size(),
+        xlsxTemplate.createParcelTable(newWorkbook,filePath, newParcels.size(),oldParcels.size(),
                 parcels.size());
         excelData.writeOldParcelsInTemplate(oldParcels, sheet);
         excelData.writeNewParcelsInTemplate(newParcels, sheet);
@@ -700,10 +700,10 @@ public class ExcelDataTest {
         List<Integer> dpr = generateDPR();
 
         XSSFWorkbook newWorkbook = xlsxTemplate.createWorkbook(filePath);
-        newWorkbook = xlsxTemplate.createParcelTable(newWorkbook,filePath, newParcels.size(),oldParcels.size(),
+        xlsxTemplate.createParcelTable(newWorkbook,filePath, newParcels.size(),oldParcels.size(),
                 parcels.size());
         XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
-        newWorkbook = xlsxTemplate.createDPRTable(newWorkbook, filePath, parcels.size(), dpr.size(),
+        xlsxTemplate.createDPRTable(newWorkbook, filePath, parcels.size(), dpr.size(),
                 newParcels.size(), oldParcels.size());
         excelData.writeParcelsAffectedByDPRsInTemplate(parcels, newParcels.size(), xlsxSheet);
         excelData.writeDPRsInTemplate(dpr, newParcels.size(), xlsxSheet);

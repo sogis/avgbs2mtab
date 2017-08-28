@@ -17,10 +17,19 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * The Class ExcelData gets the data from the container and writes it into the prepared exceltemplate
+ */
 public class ExcelData implements WriteExcel {
 
     private static final Logger LOGGER = Logger.getLogger( XLSXTemplate.class.getName());
 
+    /**
+     * gets the parcel data from the container and writes it into the parcel table from the prepared exceltemplate
+     * @param filePath                  Path, where the excel-template should be writen to
+     * @param workbook                  Excel-workbook
+     * @param dataExtractionParcel      Methods to get data from container
+     */
     public void fillValuesIntoParcelTable (String filePath,
                                            XSSFWorkbook workbook,
                                            DataExtractionParcel dataExtractionParcel){
@@ -65,6 +74,12 @@ public class ExcelData implements WriteExcel {
 
     }
 
+    /**
+     * Writes numbers of parcels into parcel table
+     * @param orderedListOfOldParcelNumbers List of old parcel numbers
+     * @param orderedListOfNewParcelNumbers List of new parcel numbers
+     * @param xlsxSheet                     excel sheet
+     */
     private void writeParcelsIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
                                              List<Integer> orderedListOfNewParcelNumbers,
                                              XSSFSheet xlsxSheet){
@@ -75,6 +90,11 @@ public class ExcelData implements WriteExcel {
         writeNewParcelsInTemplate(orderedListOfNewParcelNumbers, xlsxSheet);
     }
 
+    /**
+     * writes the numbers of old parcels into specific row of parcel table
+     * @param orderedListOfOldParcelNumbers List of old parcel numbers
+     * @param xlsxSheet                     excel sheet
+     */
     @Override
     public void writeOldParcelsInTemplate(List<Integer> orderedListOfOldParcelNumbers,
                                           XSSFSheet xlsxSheet) {
@@ -90,6 +110,11 @@ public class ExcelData implements WriteExcel {
         }
     }
 
+    /**
+     * writes the numbers of new parcels into specific column of parcel table
+     * @param orderedListOfNewParcelNumbers List of new parcel numbers
+     * @param xlsxSheet                     excel sheet
+     */
     @Override
     public void writeNewParcelsInTemplate(List<Integer> orderedListOfNewParcelNumbers,
                                           XSSFSheet xlsxSheet){
@@ -102,6 +127,13 @@ public class ExcelData implements WriteExcel {
         }
     }
 
+    /**
+     * writes inflow or outflow value in a specific cell
+     * @param rowIndex      Index of row
+     * @param columnIndex   Index of column
+     * @param xlsxSheet     excel sheet
+     * @param value         value of inflow or outflow
+     */
     private void writeValueIntoCell(Integer rowIndex,
                                     Integer columnIndex,
                                     XSSFSheet xlsxSheet,
@@ -114,6 +146,13 @@ public class ExcelData implements WriteExcel {
     }
 
 
+    /**
+     * writes all inflows and outflows into parcel table
+     * @param orderedListOfOldParcelNumbers List of old parcel numbers
+     * @param orderedListOfNewParcelNumbers List of new parcel numbers
+     * @param dataExtractionParcel          get-methods for container
+     * @param xlsxSheet                     excel sheet
+     */
     private void writeAllInflowsAndOutFlowsIntoParcelTable (List<Integer> orderedListOfOldParcelNumbers,
                                                             List<Integer> orderedListOfNewParcelNumbers,
                                                             DataExtractionParcel dataExtractionParcel,
@@ -134,6 +173,13 @@ public class ExcelData implements WriteExcel {
         }
     }
 
+    /**
+     * gets area flow between two parcels
+     * @param oldParcel             number of old parcel
+     * @param newParcel             number of new parcel
+     * @param dataExtractionParcel  get-methods for container
+     * @return                      area flow
+     */
     private Integer getAreaOfFlowBetweenOldAndNewParcel(int oldParcel,
                                                         int newParcel,
                                                         DataExtractionParcel dataExtractionParcel){
@@ -150,6 +196,13 @@ public class ExcelData implements WriteExcel {
 
     }
 
+    /**
+     * Writes area flow into parcel table
+     * @param oldParcelNumber   number of old parcel
+     * @param newParcelNumber   number of new parcel
+     * @param area              area flow
+     * @param xlsxSheet         excel sheet
+     */
     @Override
     public void writeInflowAndOutflowOfOneParcelPair(int oldParcelNumber,
                                                      int newParcelNumber,
@@ -171,6 +224,13 @@ public class ExcelData implements WriteExcel {
         }
     }
 
+    /**
+     * Gets column index of a specific parcel
+     * @param ParcelNumber  number of parcel
+     * @param rowNumber     index of row
+     * @param xlsxSheet     excel sheet
+     * @return              index of column
+     */
     private Integer getColumnIndexOfParcelInTable(int ParcelNumber,
                                                   int rowNumber,
                                                   XSSFSheet xlsxSheet){
@@ -192,6 +252,12 @@ public class ExcelData implements WriteExcel {
         }
     }
 
+    /**
+     * Gets row index of a specific parcel
+     * @param newParcelNumber   number of new parcel
+     * @param xlsxSheet         excel sheet
+     * @return                  index of row
+     */
     private Integer getRowIndexOfNewParcelInTable (int newParcelNumber,
                                                    XSSFSheet xlsxSheet){
 
@@ -219,7 +285,13 @@ public class ExcelData implements WriteExcel {
     }
 
 
-
+    /**
+     * Writes all rounding differences of the parcel table into parcel table
+     * @param orderedListOfOldParcelNumbers List of numbers of old parcels
+     * @param orderedListOfNewParcelNumbers List of numbers of new parcels
+     * @param dataExtractionParcel          get-methods for container
+     * @param xlsxSheet                     excel sheet
+     */
     private void writeAllRoundingDifferenceIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
                                                            List<Integer> orderedListOfNewParcelNumbers,
                                                            DataExtractionParcel dataExtractionParcel,
@@ -238,6 +310,13 @@ public class ExcelData implements WriteExcel {
         }
     }
 
+    /**
+     * Writes a rounding difference from one parcel into parcel table
+     * @param oldParcelNumber       number of old parcel
+     * @param roundingDifference    value of rounding difference
+     * @param numberOfNewParcels    amount of new parcels
+     * @param xlsxSheet             excel sheet
+     */
     @Override
     public void writeRoundingDifference(int oldParcelNumber,
                                         int roundingDifference,
@@ -257,6 +336,13 @@ public class ExcelData implements WriteExcel {
     }
 
 
+    /**
+     * Writes the sum of all rounding differences of parcel table into sum cell
+     * @param orderedListOfOldParcelNumbers list of numbers of old parcels
+     * @param orderedListOfNewParcelNumbers list of numbers of new parcels
+     * @param dataExtractionParcel          get-methods for container
+     * @param xlsxSheet                     excel sheet
+     */
     private void writeSumOfRoundingDifferenceIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
                                                              List<Integer> orderedListOfNewParcelNumbers,
                                                              DataExtractionParcel dataExtractionParcel,
@@ -272,6 +358,12 @@ public class ExcelData implements WriteExcel {
         }
     }
 
+    /**
+     * Gets all new areas of parcels
+     * @param orderedListOfNewParcelNumbers list of numbers of new parcels
+     * @param dataExtractionParcel          get-methods for container
+     * @return                              list of new areas
+     */
     private List<Integer> getAllNewAreas (List<Integer> orderedListOfNewParcelNumbers,
                                           DataExtractionParcel dataExtractionParcel) {
 
@@ -284,6 +376,12 @@ public class ExcelData implements WriteExcel {
         return newAreaList;
     }
 
+    /**
+     * Calculates sum of all rounding differences
+     * @param orderedListOfOldParcelNumbers list of numbers of old parcels
+     * @param dataExtractionParcel          get-methods for container
+     * @return                              sum of all rounding differences
+     */
     private Integer calculateRoundingDifference(List<Integer> orderedListOfOldParcelNumbers,
                                                 DataExtractionParcel dataExtractionParcel) {
 
@@ -300,6 +398,13 @@ public class ExcelData implements WriteExcel {
 
     }
 
+    /**
+     * Writes sum of rounding difference into specific cell
+     * @param NumberOfNewParcels        amount of new parcels
+     * @param NumberOfOldParcels        amount of old parcels
+     * @param roundingDifferenceSum     value of rounding difference
+     * @param xlsxSheet                 excel sheet
+     */
     @Override
     public void writeSumOfRoundingDifference (int NumberOfNewParcels,
                                               int NumberOfOldParcels,
@@ -314,6 +419,12 @@ public class ExcelData implements WriteExcel {
         }
     }
 
+    /**
+     * Writes all new ares into parcel table
+     * @param orderedListOfNewParcelNumbers list of numbers of new parcels
+     * @param dataExtractionParcel          get-methods for container
+     * @param xlsxSheet                     excel sheet
+     */
     private void writeAllNewAreasIntoParcelTable(List<Integer> orderedListOfNewParcelNumbers,
                                                  DataExtractionParcel dataExtractionParcel,
                                                  XSSFSheet xlsxSheet) {
@@ -328,6 +439,12 @@ public class ExcelData implements WriteExcel {
         }
     }
 
+    /**
+     * writes the new area of a parcel into parcel table
+     * @param newParcelNumber   number of new parcel
+     * @param area              value of area
+     * @param xlsxSheet         excel sheet
+     */
     @Override
     public void writeNewArea(int newParcelNumber,
                              int area,
@@ -344,6 +461,13 @@ public class ExcelData implements WriteExcel {
         }
     }
 
+    /**
+     * gets all old areas and writes them into a hashmap
+     * @param orderedListOfNewParcelNumbers list of numbers of new parcels
+     * @param orderedListOfOldParcelNumbers list of numbers of old parcels
+     * @param dataExtractionParcel          get-methods for parcel container
+     * @return                              hashmap with all old areas
+     */
     private HashMap<Integer, Integer> getAllOldAreas(List<Integer> orderedListOfNewParcelNumbers,
                                                      List<Integer> orderedListOfOldParcelNumbers,
                                                      DataExtractionParcel dataExtractionParcel) {
@@ -359,7 +483,7 @@ public class ExcelData implements WriteExcel {
             oldArea = 0;
             for (int newParcel : orderedListOfNewParcelNumbers) {
 
-                area = getFlowBetweenTwoParcels(oldParcel, newParcel, dataExtractionParcel);
+                area = getAreaOfFlowBetweenOldAndNewParcel(oldParcel, newParcel, dataExtractionParcel);
 
                 if (area != null) {
                     oldArea += area;
@@ -382,22 +506,13 @@ public class ExcelData implements WriteExcel {
 
     }
 
-    private Integer getFlowBetweenTwoParcels(int oldParcel,
-                                             int newParcel,
-                                             DataExtractionParcel dataExtractionParcel){
-        Integer area;
-
-        if (oldParcel != newParcel) {
-
-            area = dataExtractionParcel.getAddedArea(newParcel, oldParcel);
-        } else {
-            area = dataExtractionParcel.getRestAreaOfParcel(oldParcel);
-        }
-
-        return area;
-    }
-
-
+    /**
+     * Writes all old areas into parcel table
+     * @param orderedListOfOldParcelNumbers list of numbers of old parcels
+     * @param orderedListOfNewParcelNumbers list of numbers of new parcels
+     * @param oldAreaHashMap                hashmap with areas of old parcels
+     * @param xlsxSheet                     excel sheet
+     */
     private void writeAllOldAreasIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
                                                  List<Integer> orderedListOfNewParcelNumbers,
                                                  HashMap<Integer, Integer> oldAreaHashMap,
@@ -412,7 +527,13 @@ public class ExcelData implements WriteExcel {
         }
     }
 
-
+    /**
+     * Writes area of a old parcel into parcel table
+     * @param oldParcelNumber       number of old parcel
+     * @param oldArea               area of old parcel
+     * @param numberOfnewParcels    amount of new parcels
+     * @param xlsxSheet             excel sheet
+     */
     @Override
     public void writeOldArea(int oldParcelNumber,
                              int oldArea,
@@ -432,6 +553,14 @@ public class ExcelData implements WriteExcel {
     }
 
 
+    /**
+     * gets the sum of all area (old or new) and writes it into parcel table
+     * @param orderedListOfOldParcelNumbers list of numbers of old parcels
+     * @param orderedListOfNewParcelNumbers list of numbers of new parcels
+     * @param oldAreaHashMap                hashmap with all old areas
+     * @param dataExtractionParcel          get-methods for container
+     * @param xlsxSheet                     excel sheet
+     */
     private void writeAreaSumIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
                                              List<Integer> orderedListOfNewParcelNumbers,
                                              HashMap<Integer, Integer> oldAreaHashMap,
@@ -447,6 +576,13 @@ public class ExcelData implements WriteExcel {
         }
     }
 
+    /**
+     * Calculates the sum of all areas (old or new)
+     * @param oldAreas              hashmap with all old areas
+     * @param newAreas              list with all new areas
+     * @param roundingDifference    sum of all rounding differences
+     * @param xlsxSheet             excel sheet
+     */
     @Override
     public void writeAreaSum(HashMap<Integer, Integer> oldAreas,
                              List<Integer> newAreas,
@@ -478,7 +614,13 @@ public class ExcelData implements WriteExcel {
     }
 
 
-
+    /**
+     * Fills all values (parcel and dpr number, area values, rounding differences) into dpr table
+     * @param filePath                  path, where the excel file should be saved to
+     * @param workbook                  excel workbook
+     * @param dataExtractionDPR         get-Methods for dpr-container
+     * @param metadataOfParcelMutation  get-Methods for dpr metadata
+     */
     public void fillValuesIntoDPRTable (String filePath, XSSFWorkbook workbook,
                                         DataExtractionDPR dataExtractionDPR,
                                         MetadataOfParcelMutation metadataOfParcelMutation) {
@@ -517,6 +659,13 @@ public class ExcelData implements WriteExcel {
         }
     }
 
+    /**
+     * writes all number of parcels and dprs into dpr table
+     * @param orderedListOfParcelNumbers        list of numbers of parcels
+     * @param orderedListOfDPRs                 list of number of dprs
+     * @param numberOfNewParcelsInParcelTable   amount of new parcels in parcel table
+     * @param xlsxSheet                         excel sheet
+     */
     private void writeParcelsAndDPRsIntoTable(List<Integer> orderedListOfParcelNumbers,
                                               List<Integer> orderedListOfDPRs,
                                               int numberOfNewParcelsInParcelTable,
@@ -528,6 +677,12 @@ public class ExcelData implements WriteExcel {
         writeDPRsInTemplate(orderedListOfDPRs, numberOfNewParcelsInParcelTable, xlsxSheet);
     }
 
+    /**
+     * Writes number of parcels into dpr table
+     * @param orderedListOfParcelNumbersAffectedByDPRs  list of numbers of parcel
+     * @param newParcelNumber                           amount of new parcels in parcel table
+     * @param xlsxSheet                                 excel sheet
+     */
     @Override
     public void writeParcelsAffectedByDPRsInTemplate(List<Integer> orderedListOfParcelNumbersAffectedByDPRs,
                                                      int newParcelNumber,
@@ -546,6 +701,12 @@ public class ExcelData implements WriteExcel {
         }
     }
 
+    /**
+     * Calculates index of parcel row in dpr table
+     * @param newParcelNumber   amount of new parcels
+     * @param constant          constant value
+     * @return                  index of parcel row
+     */
     private int calculateIndexOfParcelRow (int newParcelNumber,
                                            int constant) {
         int indexOfParcelRow;
@@ -560,6 +721,12 @@ public class ExcelData implements WriteExcel {
 
     }
 
+    /**
+     * Writes all dpr into dpr table
+     * @param orderedListOfDPRs list of numbers of dprs
+     * @param newParcelNumber   amount of new parcels
+     * @param xlsxSheet         excel sheet
+     */
     @Override
     public void writeDPRsInTemplate(List<Integer> orderedListOfDPRs,
                                     int newParcelNumber,
@@ -576,6 +743,13 @@ public class ExcelData implements WriteExcel {
         }
     }
 
+    /**
+     * Rewrites the number of the given dpr and writes it into a specific cell
+     * @param rowIndex      index of row
+     * @param columnIndex   index of column
+     * @param xlsxSheet     excel sheet
+     * @param value         number of dpr as a string
+     */
     private void writeValueIntoCell(Integer rowIndex,
                                     Integer columnIndex,
                                     XSSFSheet xlsxSheet,
@@ -587,6 +761,14 @@ public class ExcelData implements WriteExcel {
 
     }
 
+    /**
+     * Writes all flows between parcels and dprs into dpr table
+     * @param orderedListOfParcelNumbers        list of numbers of parcels
+     * @param orderedListOfDPRs                 list of numbers of dprs
+     * @param numberOfNewParcelsInParcelTable   amount of new parcels in parcel table
+     * @param dataExtractionDPR                 get-methods for dpr container
+     * @param xlsxSheet                         excel sheet
+     */
     private void writeAllFlowsIntoDPRTable(List<Integer> orderedListOfParcelNumbers,
                                            List<Integer> orderedListOfDPRs,
                                            int numberOfNewParcelsInParcelTable,
@@ -605,6 +787,14 @@ public class ExcelData implements WriteExcel {
         }
     }
 
+    /**
+     * Writes area flow between one parcel and one dpr into dpr table
+     * @param parcelNumberAffectedByDPR number of parcel
+     * @param dpr                       number of dpr
+     * @param area                      value of area
+     * @param newParcelNumber           amount of new parcels
+     * @param xlsxSheet                 excel sheet
+     */
     @Override
     public void writeDPRInflowAndOutflows(int parcelNumberAffectedByDPR,
                                           int dpr,
@@ -621,6 +811,13 @@ public class ExcelData implements WriteExcel {
         writeValueIntoCell(indexDPR, indexParcel, xlsxSheet, area);
     }
 
+    /**
+     * gets row index of dpr in dpr table
+     * @param indexOfParcelRow  index of row with parcel numbers
+     * @param dpr               number of dpr
+     * @param xlsxSheet         excel sheet
+     * @return                  row index of dpr
+     */
     private Integer getRowIndexOfDPRInTable(int indexOfParcelRow,
                                             int dpr,
                                             XSSFSheet xlsxSheet){
@@ -651,13 +848,25 @@ public class ExcelData implements WriteExcel {
         }
     }
 
-    private Integer getDPRNumberFromCell(Cell cell1){
-        String dprString = cell1.getStringCellValue();
+    /**
+     * extracts the dpr number from a string
+     * @param cell  excel cell
+     * @return      number of dpr
+     */
+    private Integer getDPRNumberFromCell(Cell cell){
+        String dprString = cell.getStringCellValue();
         int dprStringLength = dprString.length();
 
         return Integer.parseInt(dprString.substring(1, (dprStringLength-1)));
     }
 
+    /**
+     * Writes all rounding differences into dpr table
+     * @param orderedListOfDPRs                 list of numbers of dprs
+     * @param numberOfNewParcelsInParcelTable   amount of new parcels in parcel table
+     * @param dataExtractionDPR                 get-Methods for dpr container
+     * @param xlsxSheet                         excel sheet
+     */
     private void writeAllRoundingDifferencesIntoDPRTable(List<Integer> orderedListOfDPRs,
                                                          int numberOfNewParcelsInParcelTable,
                                                          DataExtractionDPR dataExtractionDPR,
@@ -675,6 +884,13 @@ public class ExcelData implements WriteExcel {
         }
     }
 
+    /**
+     * Write rounding difference for one dpr
+     * @param dpr                   number of dpr
+     * @param roundingDifference    rounding difference
+     * @param newParcelNumber       amount of new parcels in parcel table
+     * @param xlsxSheet             excel sheet
+     */
     @Override
     public void  writeDPRRoundingDifference(int dpr,
                                             int roundingDifference,
@@ -693,6 +909,13 @@ public class ExcelData implements WriteExcel {
         writeValueIntoCell(rowDPRNumber, columnRoundingDifference, xlsxSheet, roundingDifference);
     }
 
+    /**
+     * writes all new areas into dpr table
+     * @param orderedListOfDPRs                 list of numbers of dprs
+     * @param numberOfNewParcelsInParcelTable   amount of new parcels in parcel table
+     * @param dataExtractionDPR                 get-methods for dpr container
+     * @param xlsxSheet                         excel sheet
+     */
     private void writeAllNewAreasIntoDPRTable(List<Integer> orderedListOfDPRs,
                                               int numberOfNewParcelsInParcelTable,
                                               DataExtractionDPR dataExtractionDPR,
@@ -707,7 +930,13 @@ public class ExcelData implements WriteExcel {
     }
 
 
-
+    /**
+     * writes the new area of one dpr into dpr table
+     * @param dpr               number of dpr
+     * @param area              value of area
+     * @param newParcelNumber   amount of new parcels in parcel table
+     * @param xlsxSheet         excel sheet
+     */
     @Override
     public void writeNewDPRArea(int dpr,
                                 int area,
@@ -723,6 +952,13 @@ public class ExcelData implements WriteExcel {
         writeNewDPRAreaValueIntoCell(rowDPRNumber, columnNewArea, area, xlsxSheet);
     }
 
+    /**
+     * Writes new area value from a specific dpr into dpr table
+     * @param rowDPRNumber      index of row of specific dpr
+     * @param columnNewArea     index of column with new areas
+     * @param area              value of area
+     * @param xlsxSheet         excel sheet
+     */
     private void writeNewDPRAreaValueIntoCell(int rowDPRNumber,
                                               int columnNewArea,
                                               int area,

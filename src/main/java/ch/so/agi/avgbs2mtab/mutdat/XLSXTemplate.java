@@ -7,7 +7,11 @@ import org.apache.poi.xssf.usermodel.*;
 
 import java.io.*;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
+/**
+ * The class XLSXTemplate generates an excel template, where the two tables (parcel and dpr table) are already styled
+ */
 public class XLSXTemplate implements ExcelTemplate {
 
     private static final Logger LOGGER = Logger.getLogger( XLSXTemplate.class.getName());
@@ -29,25 +33,33 @@ public class XLSXTemplate implements ExcelTemplate {
                 numberOfParcelsAffectedByDPRs, numberOfDPRs);
     }
 
+    /**
+     * generates an excel template, with two styled tables
+     */
     private XSSFWorkbook generateWorkbookTemplate(String filePath, int numberOfNewParcels, int numberOfOldParcels,
                                                   int numberOfParcelsAffectedByDPRs, int numberOfDPRs){
 
-        LOGGER.log(java.util.logging.Level.FINER, "Start creating Excel-Workbook");
+        LOGGER.log(Level.FINER, "Start creating Excel-Workbook");
         XSSFWorkbook workbook = createWorkbook(filePath);
-        LOGGER.log(java.util.logging.Level.FINER, "Finished creating Excel-Workbook; Start creating empty table" +
+        LOGGER.log(Level.FINER, "Finished creating Excel-Workbook; Start creating empty table" +
                 "with parcels");
-        workbook = createParcelTable(workbook, filePath, numberOfNewParcels, numberOfOldParcels,
+        createParcelTable(workbook, filePath, numberOfNewParcels, numberOfOldParcels,
                 numberOfParcelsAffectedByDPRs);
-        LOGGER.log(java.util.logging.Level.FINER, "Finished creating table with parcels; Start creating empty " +
+        LOGGER.log(Level.FINER, "Finished creating table with parcels; Start creating empty " +
                 "table with dprs");
-        workbook = createDPRTable(workbook, filePath, numberOfParcelsAffectedByDPRs, numberOfDPRs,
+        createDPRTable(workbook, filePath, numberOfParcelsAffectedByDPRs, numberOfDPRs,
                 numberOfNewParcels, numberOfOldParcels);
-        LOGGER.log(java.util.logging.Level.FINER, "Finished creating table with dprs");
+        LOGGER.log(Level.FINER, "Finished creating table with dprs");
 
         return workbook;
     }
 
 
+    /**
+     * creates an excel workbook and saves it
+     * @param filePath  path, where excel file should be saved to
+     * @return          excel workbook
+     */
     @Override
     public XSSFWorkbook createWorkbook(String filePath) {
 
@@ -64,20 +76,28 @@ public class XLSXTemplate implements ExcelTemplate {
         }
     }
 
+    /**
+     * creates the parcel table
+     * @param excelTemplate         excel workbook
+     * @param filePath              path, where excel file should be saved to
+     * @param newParcels            amount of new parcels
+     * @param oldParcels            amount of old parcels
+     * @param parcelsAffectedByDPR  amount of parcels in dpr table
+     */
     @Override
-    public XSSFWorkbook createParcelTable(XSSFWorkbook excelTemplate,String filePath, int newParcels, int oldParcels,
+    public void createParcelTable(XSSFWorkbook excelTemplate,String filePath, int newParcels, int oldParcels,
                                           int parcelsAffectedByDPR) {
 
         XSSFSheet sheet = excelTemplate.getSheet("Mutationstabelle");
 
-        sheet = addMergedRegions(sheet, oldParcels);
+        addMergedRegions(sheet, oldParcels);
 
         if (oldParcels == 0 || newParcels == 0){
             oldParcels = 1;
             newParcels = 1;
         }
 
-        sheet = setCellSize(sheet, oldParcels, parcelsAffectedByDPR);
+        setCellSize(sheet, oldParcels, parcelsAffectedByDPR);
 
 
         for (int i = 0; i < (newParcels*2+5) + 1; i++){
@@ -118,43 +138,63 @@ public class XLSXTemplate implements ExcelTemplate {
 
         }
 
-        return excelTemplate;
-
     }
 
-    private XSSFSheet addMergedRegions(XSSFSheet sheet, int oldParcels) {
+    /**
+     * adds merged region to excel sheet
+     * @param sheet         excel sheet
+     * @param oldParcels    amount of old parcels
+     */
+    private void addMergedRegions(XSSFSheet sheet, int oldParcels) {
         if (oldParcels>1){
             sheet.addMergedRegion(new CellRangeAddress(0,0,1, oldParcels));
             sheet.addMergedRegion(new CellRangeAddress(1,1,1, oldParcels));
         }
-        return sheet;
     }
 
-    private XSSFSheet setCellSize(XSSFSheet sheet, int oldParcels, int parcelsAffectedByDPR){
+    /**
+     * sets cell size for excel sheet
+     * @param sheet                 excel sheet
+     * @param oldParcels            amount of old parcels
+     * @param parcelsAffectedByDPR  amount of parcels in dpr table
+     */
+    private void setCellSize(XSSFSheet sheet, int oldParcels, int parcelsAffectedByDPR){
 
-        sheet = setDefaultCellSize(sheet);
-        sheet = setColumnHeight(sheet, oldParcels, parcelsAffectedByDPR);
-
-        return sheet;
+        setDefaultCellSize(sheet);
+        setColumnHeight(sheet, oldParcels, parcelsAffectedByDPR);
     }
 
-    private XSSFSheet setDefaultCellSize(XSSFSheet sheet){
+    /**
+     * sets default cell size
+     * @param sheet     excel sheet
+     */
+    private void setDefaultCellSize(XSSFSheet sheet){
         sheet.setDefaultRowHeight((short) 300);
         sheet.setDefaultColumnWidth((short) 18.43);
 
-        return sheet;
     }
 
-    private XSSFSheet setColumnHeight(XSSFSheet sheet, int oldParcels, int parcelsAffectedByDPR) {
+    /**
+     * sets column height
+     * @param sheet                 excel sheet
+     * @param oldParcels            amount of old parcels in parcel table
+     * @param parcelsAffectedByDPR  amount of parcels in dpr table
+     */
+    private void setColumnHeight(XSSFSheet sheet, int oldParcels, int parcelsAffectedByDPR) {
         sheet.setColumnWidth(0,19*253);
         if (oldParcels >= parcelsAffectedByDPR) {
             sheet.setColumnWidth(oldParcels + 1, 14 * 253);
             sheet.setColumnWidth(oldParcels + 2, 14 * 253);
         }
-        return sheet;
 
     }
 
+    /**
+     * styles the first row in parcel table
+     * @param row               first row in parcel table
+     * @param oldParcels        amount of old parcels
+     * @param excelTemplate     excel workbook
+     */
     private void  stylingFirstParcelRow(Row row, int oldParcels, XSSFWorkbook excelTemplate) {
         Cell cell;
         for (int c = 1; c <= oldParcels; c++){
@@ -187,6 +227,17 @@ public class XLSXTemplate implements ExcelTemplate {
 
     }
 
+    /**
+     * creates a cell specific styling
+     * @param color             background color of cell
+     * @param border_bottom     cell border styling (bottom)
+     * @param border_top        cell border styling (top)
+     * @param border_left       cell border styling (left)
+     * @param border_right      cell border styling (right)
+     * @param indent            text indent
+     * @param excelTemplate     excel workbook
+     * @return                  cell style
+     */
     private XSSFCellStyle getStyleForCell(String color, String border_bottom, String border_top, String border_left,
                                           String border_right, int indent, XSSFWorkbook excelTemplate ) {
 
@@ -258,6 +309,12 @@ public class XLSXTemplate implements ExcelTemplate {
 
     }
 
+    /**
+     * styles the second row in parcel table
+     * @param row               second row
+     * @param oldParcels        amount of old parcels
+     * @param excelTemplate     excel workbook
+     */
     private void stylingSecondParcelRow(Row row, int oldParcels, XSSFWorkbook excelTemplate){
         Cell cell;
         for (int c = 0; c <= oldParcels +1; c++){
@@ -295,6 +352,12 @@ public class XLSXTemplate implements ExcelTemplate {
         row.setHeight((short) 600);
     }
 
+    /**
+     * styles the third row in parcel table
+     * @param row               third row
+     * @param oldParcels        amount of old parcels
+     * @param excelTemplate     excel workbook
+     */
     private void stylingThirdParcelRow (Row row, int oldParcels, XSSFWorkbook excelTemplate){
         Cell cell;
         for (int c = 0; c <= oldParcels +1; c++){
@@ -334,6 +397,12 @@ public class XLSXTemplate implements ExcelTemplate {
         row.setHeight((short) 600);
     }
 
+    /**
+     * styles the last row of parcel table
+     * @param row               last row
+     * @param oldParcels        amount of old parcels
+     * @param excelTemplate     excel workbook
+     */
     private void stylingLastParcelRow(Row row, int oldParcels, XSSFWorkbook excelTemplate){
         Cell cell;
         for (int c = 0; c <= oldParcels + 1; c++) {
@@ -369,6 +438,14 @@ public class XLSXTemplate implements ExcelTemplate {
         row.setHeight((short) 600);
     }
 
+    /**
+     * styles every row between the third and the last row of parcel table
+     * @param row               row
+     * @param oldParcels        amount of old parcels
+     * @param newParcels        amount of new parcels
+     * @param i                 row index
+     * @param excelTemplate     excel workbook
+     */
     private void stylingEveryOtherParcelRow(Row row, int oldParcels, int newParcels, int i, XSSFWorkbook excelTemplate){
         Cell cell;
         String border_bottom;
@@ -415,10 +492,17 @@ public class XLSXTemplate implements ExcelTemplate {
     }
 
 
-
-
+    /**
+     * creates the dpr table
+     * @param excelTemplate     excel workbook
+     * @param filePath          path, where excel file should be saved to
+     * @param parcels           amount of parcels in dpr table
+     * @param dpr               amount of dprs in dpr table
+     * @param newParcels        amount of new parcels in parcel table
+     * @param oldParcels        amount of old parcels in parcel table
+     */
     @Override
-    public XSSFWorkbook createDPRTable(XSSFWorkbook excelTemplate, String filePath, int parcels, int dpr,
+    public void createDPRTable(XSSFWorkbook excelTemplate, String filePath, int parcels, int dpr,
                                        int newParcels, int oldParcels) {
 
         if (newParcels == 0 ){
@@ -439,9 +523,9 @@ public class XLSXTemplate implements ExcelTemplate {
 
         XSSFSheet sheet = excelTemplate.getSheet("Mutationstabelle");
 
-        sheet = setColumnWidth(parcels, oldParcels, sheet);
+        setColumnWidth(parcels, oldParcels, sheet);
 
-        sheet = addMergedRegionsDPR(rowStartIndex, parcels, sheet);
+        addMergedRegionsDPR(rowStartIndex, parcels, sheet);
 
 
         for (int i = rowStartIndex; i < (rowStartIndex + 3 + 2 * dpr); i++) {
@@ -474,18 +558,28 @@ public class XLSXTemplate implements ExcelTemplate {
             throw new RuntimeException(e);
         }
 
-        return excelTemplate;
     }
 
-    private XSSFSheet setColumnWidth(int parcels, int oldParcels, XSSFSheet sheet){
+    /**
+     * sets column width for the two last columns
+     * @param parcels       amount of parcels in dpr table
+     * @param oldParcels    amount of old parcels in parcel table
+     * @param sheet         excel sheet
+     */
+    private void setColumnWidth(int parcels, int oldParcels, XSSFSheet sheet){
         if (parcels > oldParcels) {
             sheet.setColumnWidth(parcels+1,14*253);
             sheet.setColumnWidth(parcels+2,14*253);
         }
-        return sheet;
     }
 
-    private XSSFSheet addMergedRegionsDPR(int rowStartIndex, int parcels, XSSFSheet sheet){
+    /**
+     * adds merged regions to excel
+     * @param rowStartIndex     start index for row
+     * @param parcels           amount of parcels in dpr table
+     * @param sheet             excel sheet
+     */
+    private void addMergedRegionsDPR(int rowStartIndex, int parcels, XSSFSheet sheet){
         if (parcels>1){
             sheet.addMergedRegion(new CellRangeAddress(rowStartIndex, rowStartIndex,1, parcels));
             sheet.addMergedRegion(new CellRangeAddress(rowStartIndex + 1,rowStartIndex + 1,
@@ -494,10 +588,14 @@ public class XLSXTemplate implements ExcelTemplate {
 
         sheet.addMergedRegion((new CellRangeAddress(rowStartIndex + 1, rowStartIndex + 2,
                 parcels + 1, parcels + 1)));
-
-        return sheet;
     }
 
+    /**
+     * styles the first row in dpr table
+     * @param row               first row
+     * @param parcels           amount of parcels in dpr table
+     * @param excelTemplate     excel workbook
+     */
     private void stylingFirstDPRRow(Row row, int parcels, XSSFWorkbook excelTemplate){
         Cell cell;
 
@@ -530,6 +628,13 @@ public class XLSXTemplate implements ExcelTemplate {
         row.setHeight((short) 600);
     }
 
+    /**
+     * styles the second row in dpr table
+     * @param row               second row
+     * @param parcels           amount of parcels in dpr table
+     * @param oldParcels        amount of old parcels in parcel table
+     * @param excelTemplate     excel workbook
+     */
     private void stylingSecondDPRRow (Row row, int parcels, int oldParcels, XSSFWorkbook excelTemplate){
         Cell cell;
 
@@ -577,6 +682,12 @@ public class XLSXTemplate implements ExcelTemplate {
         row.setHeight((short) 600);
     }
 
+    /**
+     * styles every row where a dpr number is written
+     * @param row               row with dpr number
+     * @param parcels           amount of parcels in dpr table
+     * @param excelTemplate     excel workbook
+     */
     private void stylingRowWithDPRNumber(Row row, int parcels, XSSFWorkbook excelTemplate) {
 
         Cell cell;
@@ -621,6 +732,15 @@ public class XLSXTemplate implements ExcelTemplate {
         row.setHeight((short) 600);
     }
 
+    /**
+     * styles all other rows that are not first row or second row or a row with dpr
+     * @param row               row
+     * @param i                 row index
+     * @param rowStartIndex     start index of first row in dpr table
+     * @param parcels           amount of parcels in dpr table
+     * @param dpr               amount of dprs
+     * @param excelTemplate     excel workbook
+     */
     private void stylingEveryOtherDPRRow(Row row, int i, int rowStartIndex, int parcels, int dpr,
                                          XSSFWorkbook excelTemplate ) {
         String border_bottom;
