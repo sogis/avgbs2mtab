@@ -69,6 +69,7 @@ public class ExcelData implements WriteExcel {
             excelFile.close();
 
         } catch (IOException e){
+            LOGGER.log(Level.SEVERE, "Could not write values into parcel table " + e.getMessage());
             throw new RuntimeException(e);
         }
 
@@ -216,9 +217,12 @@ public class ExcelData implements WriteExcel {
 
         indexNewParcelNumber = getRowIndexOfNewParcelInTable(newParcelNumber, xlsxSheet);
 
+        String errorMessage = "Either the old parcel " + oldParcelNumber + " or the new parcel " + newParcelNumber +
+                " could not be found in the excel.";
+
         if (indexNewParcelNumber==null || indexOldParcelNumber==null){
-            throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, "Either the old parcel "
-                    + oldParcelNumber + " or the new parcel " + newParcelNumber + " could not be found in the excel.");
+            LOGGER.log(Level.SEVERE, errorMessage);
+            throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, errorMessage);
         } else {
             writeValueIntoCell(indexNewParcelNumber, indexOldParcelNumber, xlsxSheet, area);
         }
@@ -247,6 +251,7 @@ public class ExcelData implements WriteExcel {
         if (indexOldParcelNumber != null) {
             return indexOldParcelNumber;
         } else {
+            LOGGER.log(Level.SEVERE, "Could not find Parcel " + ParcelNumber);
             throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, "Could not find Parcel " +
                     ParcelNumber);
         }
@@ -277,6 +282,7 @@ public class ExcelData implements WriteExcel {
         }
 
         if (indexNewParcelNumber == null) {
+            LOGGER.log(Level.SEVERE, "Could not finde parcel " +  newParcelNumber);
             throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, "Could not find Parcel " +
                     newParcelNumber);
         } else {
@@ -327,9 +333,11 @@ public class ExcelData implements WriteExcel {
 
         Integer rowOldParcelNumber = 5 + 2 * numberOfNewParcels - 1;
 
+        String errorMessage = "The old parcel "+ oldParcelNumber + " could not be found in the excel.";
+
         if (columnOldParcelNumber==null){
-            throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, "The old parcel "
-                    + oldParcelNumber + " could not be found in the excel.");
+            LOGGER.log(Level.SEVERE, errorMessage);
+            throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, errorMessage);
         } else {
             writeValueIntoCell(rowOldParcelNumber, columnOldParcelNumber, xlsxSheet, roundingDifference);
         }
@@ -457,6 +465,7 @@ public class ExcelData implements WriteExcel {
             Integer columnNewParcelNumber = row.getLastCellNum()-1;
             writeValueIntoCell(rowNewParcelNumber, columnNewParcelNumber, xlsxSheet, area);
         } catch (Exception e){
+            LOGGER.log(Level.SEVERE,"Last row could not be found");
             throw new Avgbs2MtabException("Could not find last row");
         }
     }
@@ -497,6 +506,7 @@ public class ExcelData implements WriteExcel {
                 }
                 oldAreaHashMap.put(oldParcel, oldArea);
             } else {
+                LOGGER.log(Level.SEVERE,"Area of old parcel must not be null");
                 throw new Avgbs2MtabException("Area of old parcel must not be null");
             }
 
@@ -544,11 +554,13 @@ public class ExcelData implements WriteExcel {
 
         Integer rowOldParcelArea = 6 + 2 * numberOfnewParcels -1;
 
+        String errorMessage = "The old parcel " + oldParcelNumber + " could not be found in the excel.";
+
         if (columnOldParcelNumber != null){
             writeValueIntoCell(rowOldParcelArea, columnOldParcelNumber, xlsxSheet, oldArea);
         } else {
-            throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, "The old parcel "
-                    + oldParcelNumber + " could not be found in the excel.");
+            LOGGER.log(Level.SEVERE, errorMessage);
+            throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, errorMessage);
         }
     }
 
@@ -609,7 +621,8 @@ public class ExcelData implements WriteExcel {
             writeValueIntoCell(5 + 2 * numberOfNewParcels, 1 + numberOfOldParcels, xlsxSheet,
                     sumOldAreas);
         } else {
-            throw new Avgbs2MtabException("The sum of the old areas does not equal with the sum of the new areas.");
+            LOGGER.log(Level.SEVERE, "The sum of the old areas is not equal to the sum of the new areas.");
+            throw new Avgbs2MtabException("The sum of the old areas is not equal to the sum of the new areas.");
         }
     }
 
@@ -655,6 +668,7 @@ public class ExcelData implements WriteExcel {
             ExcelFile.close();
 
         } catch (IOException e){
+            LOGGER.log(Level.SEVERE, "Could not write values into dpr table : " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -843,6 +857,7 @@ public class ExcelData implements WriteExcel {
         if (indexDPR != null) {
             return indexDPR;
         } else {
+            LOGGER.log(Level.SEVERE,"Could not finde DPR " + dpr + " in DPR-Table.");
             throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, "Could not finde DPR " +
                     dpr + " in DPR-Table.");
         }
