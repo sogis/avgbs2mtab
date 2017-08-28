@@ -3,6 +3,7 @@ package ch.so.agi.avgbs2mtab.readxtf;
 import ch.so.agi.avgbs2mtab.mutdat.DPRContainer;
 import ch.so.agi.avgbs2mtab.mutdat.ParcelContainer;
 import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -165,6 +166,7 @@ public class ReadXtfTest {
         assertTrue(numberofdprs==0);
     }
 
+    @Ignore
     @Test
     public void filenotexists() {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
@@ -182,7 +184,7 @@ public class ReadXtfTest {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
         ClassLoader classLoader = getClass().getClassLoader();
         try {
-            xtfreader.readFile(classLoader.getResource("SO0200002407_4001_20150806_wong_type.xml").getPath());
+            xtfreader.readFile(classLoader.getResource("SO0200002407_4001_20150806_wrong_type.xml").getPath());
         }catch (IOException e) {
             System.out.println("Got IOException as Expected. "+e);
 
