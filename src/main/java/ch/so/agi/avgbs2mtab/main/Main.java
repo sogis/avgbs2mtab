@@ -7,6 +7,10 @@ import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
 
 import java.io.File;
 import ch.so.agi.avgbs2mtab.writeexcel.XlsxWriter;
+import org.w3c.dom.Document;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -81,6 +85,18 @@ public class Main {
 
         if(!isXTF && !isXML)
             throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_WRONG_EXTENSION, "input file extension must be xml or xtf: " + fileName);
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+        try {
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(inputFile);
+            // the "parse" method also validates XML, will throw an exception if misformatted
+        } catch (Exception e) {
+            throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_NO_XML_STYLING, "No XML Styling!" +e);
+        }
+
+
     }
 
 }

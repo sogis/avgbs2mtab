@@ -408,35 +408,6 @@ public class ReadXtf {
         return anteil;
     }
 
-    //todo martin: noch notwendig? Ist in asserts der Mainmethode vorhanden
-    /*
-    public void checkfile(String filepath) throws IOException {
-        File file = new File(filepath);
-        if (!file.exists()) {
-            LOGGER.log(Level.WARNING,"File "+filepath+" not found!");
-            throw new IOException("File not found");
-        }
-        if (!file.canRead()) {
-            LOGGER.log(Level.WARNING,"Could not read File "+filepath);
-            throw new IOException("Can't read file "+filepath);
-        }
-        try {
-            FileReader fileReader = new FileReader(filepath);
-            fileReader.read();
-            fileReader.close();
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING,"Exception when checked file can read with message:"+e.getMessage(), e);
-            throw new IOException("Can't read file "+filepath);
-        }
-        String fileExtension = FileExtension.getFileExtension(file);
-        if (!fileExtension.equalsIgnoreCase("xtf")){
-            LOGGER.log(Level.WARNING,"File extension must be .xtf. Error at File: " + filepath);
-            throw new IOException("File extension must be .xtf. Error at File: " + filepath);
-        }
-
-    }
-    */
-
     private static void assertModelIsAvGbs(StartBasketEvent se){
 
         String namev[] = se.getType().split("\\.");

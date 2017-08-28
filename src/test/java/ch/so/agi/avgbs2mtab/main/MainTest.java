@@ -36,8 +36,6 @@ public class MainTest {
 
     }
 
-    //todo martin
-    @Ignore
     @Test
     public void withXTFFileWithoutXMLStructureThrowsException() throws Exception {
         File xtfFile = createFileWithXTFExtensionAndNoXMLStructure();
@@ -285,6 +283,7 @@ public class MainTest {
         File XtfExtensionFile =  folder.newFile("query.xtf");
         BufferedWriter writer1 = new BufferedWriter(new FileWriter(XtfExtensionFile));
         writer1.write("Test");
+        writer1.write("Dies ist ein super Text");
         writer1.close();
         return XtfExtensionFile ;
     }

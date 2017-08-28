@@ -166,19 +166,6 @@ public class ReadXtfTest {
         assertTrue(numberofdprs==0);
     }
 
-    @Ignore
-    @Test
-    public void filenotexists() {
-        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
-        try {
-            xtfreader.readFile("nichtvorhanden.xtf");
-        }catch (IOException e) {
-            System.out.println("Got IOException as Expected. "+e);
-
-        }
-
-    }
-
     @Test
     public void filewithwrongextension() {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump, parceldump);
