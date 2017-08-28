@@ -7,7 +7,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -29,7 +28,7 @@ public class MainTest {
         File sqlFile = createFileWithoutXTFExtension();
         File outputFilePath = validOutputFilePath();
         try{
-            Main.runConversion(sqlFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
+            Avgbs2mtabMain.runConversion(sqlFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
         } catch (Avgbs2MtabException e) {
             Assert.assertEquals(Avgbs2MtabException.TYPE_WRONG_EXTENSION, e.getType());
         }
@@ -41,7 +40,7 @@ public class MainTest {
         File xtfFile = createFileWithXTFExtensionAndNoXMLStructure();
         File outputFilePath = validOutputFilePath();
         try {
-            Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
+            Avgbs2mtabMain.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
         } catch (Avgbs2MtabException e) {
             Assert.assertEquals(Avgbs2MtabException.TYPE_NO_XML_STYLING, e.getType());
         }
@@ -54,7 +53,7 @@ public class MainTest {
         File outputFilePath = validOutputFilePath();
 
         try {
-            Main.runConversion(wrongModellXtf.getAbsolutePath(), outputFilePath.getAbsolutePath());
+            Avgbs2mtabMain.runConversion(wrongModellXtf.getAbsolutePath(), outputFilePath.getAbsolutePath());
         }
         catch (Avgbs2MtabException e) {
             Assert.assertEquals(Avgbs2MtabException.TYPE_TRANSFERDATA_NOT_FOR_AVGBS_MODEL, e.getType());
@@ -66,7 +65,7 @@ public class MainTest {
         File xtfFile = createNonReadableXTFFile();
         File outputFilePath = validOutputFilePath();
         try {
-            Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
+            Avgbs2mtabMain.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
         } catch (Avgbs2MtabException e) {
             Assert.assertEquals(Avgbs2MtabException.TYPE_FILE_NOT_READABLE, e.getType());
         }
@@ -81,7 +80,7 @@ public class MainTest {
         File outputFilePath = validOutputFilePath();
         outputFilePath.getParentFile().setWritable(false);
         try {
-            Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
+            Avgbs2mtabMain.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
         } catch (Avgbs2MtabException e){
             Assert.assertEquals(Avgbs2MtabException.TYPE_FOLDER_NOT_WRITEABLE, e.getType());
         }
@@ -109,7 +108,7 @@ public class MainTest {
         File xtfFile = new File(classLoader.getResource("SO0200002407_4002_20150807.xtf").getFile());
         File outputFilePath = validOutputFilePath();
 
-        Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
+        Avgbs2mtabMain.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
 
         XSSFSheet xlsxSheet = openExcelSheet(outputFilePath.getAbsolutePath());
 
@@ -137,7 +136,7 @@ public class MainTest {
         File xtfFile = new File(classLoader.getResource("SO0200002407_4001_20150806.xtf").getFile());
         File outputFilePath = validOutputFilePath();
 
-        Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
+        Avgbs2mtabMain.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
 
         XSSFSheet xlsxSheet = openExcelSheet(outputFilePath.getAbsolutePath());
 
@@ -166,7 +165,7 @@ public class MainTest {
         File xtfFile = new File(classLoader.getResource("SO0200002407_40051_20150811.xtf").getFile());
         File outputFilePath = validOutputFilePath();
 
-        Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
+        Avgbs2mtabMain.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
 
         XSSFSheet xlsxSheet = openExcelSheet(outputFilePath.getAbsolutePath());
 
@@ -193,7 +192,7 @@ public class MainTest {
         File xtfFile = new File(classLoader.getResource("SO0200002407_40061_20150814.xtf").getFile());
         File outputFilePath = validOutputFilePath();
 
-        Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
+        Avgbs2mtabMain.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
 
         XSSFSheet xlsxSheet = openExcelSheet(outputFilePath.getAbsolutePath());
 
@@ -218,7 +217,7 @@ public class MainTest {
         File xtfFile = new File(classLoader.getResource("SO0200002407_4004_20150810.xtf").getFile());
         File outputFilePath = validOutputFilePath();
 
-        Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
+        Avgbs2mtabMain.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
 
         XSSFSheet xlsxSheet = openExcelSheet(outputFilePath.getAbsolutePath());
 
@@ -245,7 +244,7 @@ public class MainTest {
         File xtfFile = new File(classLoader.getResource("SO0200002427_809_20170529.xtf").getFile());
         File outputFilePath = validOutputFilePath();
 
-        Main.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
+        Avgbs2mtabMain.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
 
         XSSFSheet xlsxSheet = openExcelSheet(outputFilePath.getAbsolutePath());
 

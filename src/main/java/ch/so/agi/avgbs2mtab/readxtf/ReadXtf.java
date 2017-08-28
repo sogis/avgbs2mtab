@@ -31,7 +31,7 @@ public class ReadXtf {
     private SetDPR drpdump;
     private DataExtractionParcel parcelmetadata;
 
-    private static final Logger LOGGER = Logger.getLogger( ReadXtf.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger(ReadXtf.class.getName());
 
 
     public ReadXtf(SetParcel parceldump, SetDPR drpdump, DataExtractionParcel parcelmetadata) {

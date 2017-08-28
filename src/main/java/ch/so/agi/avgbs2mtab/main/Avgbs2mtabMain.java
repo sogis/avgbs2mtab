@@ -17,9 +17,9 @@ import java.util.logging.Logger;
 /**
  * Main class
  */
-public class Main {
+public class Avgbs2mtabMain {
 
-    private static Logger log = Logger.getLogger(Main.class.getName());
+    private static Logger log = Logger.getLogger(Avgbs2mtabMain.class.getName());
 
     public static void main(String[] args){
         CommandlineParser cp = new CommandlineParser(args);

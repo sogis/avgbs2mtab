@@ -69,7 +69,7 @@ public class CommandlineParser {
 
     private void help() {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("Main", options);
+        formatter.printHelp("Avgbs2mtabMain", options);
         System.exit(0);
     }
 }
