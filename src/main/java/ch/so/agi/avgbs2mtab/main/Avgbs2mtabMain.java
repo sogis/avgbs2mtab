@@ -39,10 +39,12 @@ public class Avgbs2mtabMain {
         DPRContainer dprdump = new DPRContainer();
         XlsxWriter xlsxWriter = new XlsxWriter(parceldump, dprdump, parceldump, dprdump);
 
+        //todo Martin: Verwirrend dass für das Lesen von xtf DataExtractionParcel benötigt wird - Falls nur ein kleiner Teil davon benötigt wird dies in SetParcel oder SetDPR aufnehmen
         ReadXtf xtfreader = new ReadXtf((SetParcel)parceldump, (SetDPR)dprdump, (DataExtractionParcel)parceldump);
         xtfreader.readFile(inputFilePath);
         xlsxWriter.writeXlsx(outputFilePath);
 
+        //todo entgeht mir da was? wieso zweimal aufgerufen (Effekt aus (manuellem) merge?)
         xtfreader.readFile(inputFilePath);
         xlsxWriter.writeXlsx(outputFilePath);
     }
@@ -92,7 +94,7 @@ public class Avgbs2mtabMain {
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(inputFile);
             // the "parse" method also validates XML, will throw an exception if misformatted
-        } catch (Exception e) {
+        } catch (Exception e) {//todo kein Pauschalabfangen von Exceptions - nur genau die entsprechende Exception abfangen.
             throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_NO_XML_STYLING, "No XML Styling!" +e);
         }
 
