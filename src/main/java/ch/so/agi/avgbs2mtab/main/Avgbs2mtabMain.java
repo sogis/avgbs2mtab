@@ -39,7 +39,7 @@ public class Avgbs2mtabMain {
         DPRContainer dprdump = new DPRContainer();
         XlsxWriter xlsxWriter = new XlsxWriter(parceldump, dprdump, parceldump, dprdump);
 
-        ReadXtf xtfreader = new ReadXtf((SetParcel)parceldump, (SetDPR)dprdump, (DataExtractionParcel)parceldump);
+        ReadXtf xtfreader = new ReadXtf((SetParcel)parceldump, (SetDPR)dprdump);
         xtfreader.readFile(inputFilePath);
         xlsxWriter.writeXlsx(outputFilePath);
 

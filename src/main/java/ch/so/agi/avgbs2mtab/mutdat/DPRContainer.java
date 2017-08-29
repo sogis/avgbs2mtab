@@ -14,6 +14,10 @@ public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtracti
     HashMap<String, String> affectedparcelsmap = new HashMap<>(); //Eine kleine Map mit allen Parzellen die irgendwie betroffen sind.
     HashMap<Integer, Integer> newareamap = new HashMap<>(); //HashMap mit den gesamtflächen der DPRs.
 
+    ////////////////////////////////////////////////////////
+    // SET- Methoden ///////////////////////////////////////
+    ///////////////////////////////////////////////////////
+
     public void setDPRWithAdditions(Integer dprnumber, String laysonref, Integer area) {
         if(map.get(dprnumber) != null) {
             Map laysonrefandarea = map.get(dprnumber);
