@@ -42,9 +42,6 @@ public class Avgbs2mtabMain {
         ReadXtf xtfreader = new ReadXtf((SetParcel)parceldump, (SetDPR)dprdump);
         xtfreader.readFile(inputFilePath);
         xlsxWriter.writeXlsx(outputFilePath);
-
-        xtfreader.readFile(inputFilePath);
-        xlsxWriter.writeXlsx(outputFilePath);
     }
 
     private static void assertValidOutputFilePath(String outputFilePath){

@@ -11,6 +11,7 @@ public class Avgbs2MtabException  extends RuntimeException {
         public static final String TYPE_FILE_EXISTS = "TYPE_FILE_EXISTS";
         public static final String TYPE_VALIDATION_FAILED = "TYPE_VALIDATION_FAILED";
         public static final String TYPE_MISSING_PARCEL_IN_EXCEL = "TYPE_MISSING_PARCEL_IN_EXCEL";
+        public static final String TYPE_NUMBERFORMAT = "TYPE NUMBERFORMAT";
 
         private String type;
 
