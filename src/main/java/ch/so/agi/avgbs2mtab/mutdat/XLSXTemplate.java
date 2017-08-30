@@ -9,6 +9,7 @@ import java.io.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
+//todo Ist dies eine Util-Klasse? Sprich sind nicht alle Methoden darin statisch? Falls ja diese auch mit keyword static versehen...
 /**
  * The class XLSXTemplate generates an excel template, where the two tables (parcel and dpr table) are already styled
  */
@@ -20,8 +21,6 @@ public class XLSXTemplate implements ExcelTemplate {
 
     public XSSFWorkbook createExcelTemplate (String filePath,MetadataOfParcelMutation metadataOfParcelMutation,
                                              MetadataOfDPRMutation metadataOfDPRMutation ) {
-
-
 
         Integer numberOfNewParcels = metadataOfParcelMutation.getNumberOfNewParcels();
         Integer numberOfOldParcels = metadataOfParcelMutation.getNumberOfOldParcels();
@@ -89,6 +88,10 @@ public class XLSXTemplate implements ExcelTemplate {
     public void createParcelTable(XSSFWorkbook excelTemplate,String filePath, int newParcels, int oldParcels,
                                           int parcelsAffectedByDPR) {
 
+        /*
+        todo Da der Name des Sheets als "Key" verwendet wird diesen in private static final String auslagern
+        und an den entsprechenden Stellen den final String verwenden - ist so stabilerer Code
+         */
         XSSFSheet sheet = excelTemplate.getSheet("Mutationstabelle");
 
         addMergedRegions(sheet, oldParcels);
@@ -100,7 +103,7 @@ public class XLSXTemplate implements ExcelTemplate {
 
         setCellSize(sheet, oldParcels, parcelsAffectedByDPR);
 
-
+        //todo Namen: Die Zahlen 2,5,1 in sprechende lokale Variablen packen - dies erläutert den Code enorm
         for (int i = 0; i < (newParcels*2+5) + 1; i++){
             Row row =sheet.createRow(i);
 
@@ -147,6 +150,9 @@ public class XLSXTemplate implements ExcelTemplate {
      * @param sheet         excel sheet
      * @param oldParcels    amount of old parcels
      */
+    /*
+    todo Es ist nicht leicht verständlich was dieser Code macht - bitte auf avgbs-Anwendung von addMergedRegion treffenderen Methodennamen finden
+    */
     private void addMergedRegions(XSSFSheet sheet, int oldParcels) {
         if (oldParcels>1){
             sheet.addMergedRegion(new CellRangeAddress(0,0,1, oldParcels));
@@ -171,6 +177,7 @@ public class XLSXTemplate implements ExcelTemplate {
      * @param sheet     excel sheet
      */
     private void setDefaultCellSize(XSSFSheet sheet){
+        //todo Konstanten auslagern (public static final int... )
         sheet.setDefaultRowHeight((short) 300);
         sheet.setDefaultColumnWidth((short) 18.43);
 
@@ -182,7 +189,11 @@ public class XLSXTemplate implements ExcelTemplate {
      * @param oldParcels            amount of old parcels in parcel table
      * @param parcelsAffectedByDPR  amount of parcels in dpr table
      */
+    /*
+    todo Was macht diese Funktion? Sie heisst ....Height. Ruft setColumnWidth auf.
+     */
     private void setColumnHeight(XSSFSheet sheet, int oldParcels, int parcelsAffectedByDPR) {
+        //todo Konstanten auslagern (private static final int..) - also in dieser Methode die Zahlen 19, 253 und 14
         sheet.setColumnWidth(0,19*253);
         if (oldParcels >= parcelsAffectedByDPR) {
             sheet.setColumnWidth(oldParcels + 1, 14 * 253);
@@ -201,7 +212,7 @@ public class XLSXTemplate implements ExcelTemplate {
         Cell cell;
         for (int c = 1; c <= oldParcels; c++){
             cell = row.createCell(c);
-            cell.setCellValue("Alte Liegenschaften");
+            cell.setCellValue("Alte Liegenschaften"); //todo String auslagern in private static final....
 
             String color = "lightGray";
             String border_bottom = "";
@@ -342,7 +353,7 @@ public class XLSXTemplate implements ExcelTemplate {
                 border_right = "thin";
             } else if (c==oldParcels+1){
                 border_top = "thick";
-                cell.setCellValue("Neue Fläche");
+                cell.setCellValue("Neue Fläche");//todo "Neue Fläche" und obige "Grundstück-Nr." und "Neue Liegenschaften" in final Strings auslagern
             }
 
             XSSFCellStyle newStyle = getStyleForCell(color, border_bottom, border_top, border_left, border_right,
@@ -351,7 +362,7 @@ public class XLSXTemplate implements ExcelTemplate {
         }
 
 
-        row.setHeight((short) 600);
+        row.setHeight((short) 600); //todo auslagern (für alle rows)
     }
 
     /**
@@ -387,9 +398,9 @@ public class XLSXTemplate implements ExcelTemplate {
                 border_left = "thin";
                 border_right = "thin";
             } else if (c==oldParcels+1){
-                color = "lightGray";
+                color = "lightGray"; //todo Ganze Klasse: lightGray, thin, thick etc in static final Strings auslagern
                 indent = 0;
-                cell.setCellValue("[m2]");
+                cell.setCellValue("[m2]");//todo Final Strings für m2, Grundstück-Nr.
             }
             XSSFCellStyle newStyle = getStyleForCell(color, border_bottom, border_top, border_left, border_right,
                     indent, excelTemplate);
@@ -420,7 +431,7 @@ public class XLSXTemplate implements ExcelTemplate {
             if (c == 0) {
                 color = "lightGray";
                 indent = 0;
-                cell.setCellValue("Alte Fläche [m2]");
+                cell.setCellValue("Alte Fläche [m2]");//todo auslagern....
             } else if (c == 1) {
                 if (oldParcels > 1) {
                     border_right = "thin";
@@ -462,6 +473,13 @@ public class XLSXTemplate implements ExcelTemplate {
         }
 
 
+        /*
+        todo meist werden for Schlaufen mit c < totalSize terminiert. In diesem fall wäre als sprechender c < totalColumns zu schreiben
+        und totalColumns als oldParcels + otherColumnsCount zu deklarieren
+        int totalColumns = oldParcels + PARCELTABLE_OTHER_COLUMNS_COUNT
+
+        for (int c = 0; c < totalColumns; c++) { .....
+         */
         for (int c = 0; c <= oldParcels + 1; c++) {
             cell = row.createCell(c);
 
@@ -486,6 +504,7 @@ public class XLSXTemplate implements ExcelTemplate {
             } else if (c < oldParcels) {
                 border_left = "thin";
                 border_right = "thin";
+                //todo Auslagerungen....
             }
             XSSFCellStyle newStyle = getStyleForCell(color, border_bottom, border_top, border_left, border_right,
                     indent, excelTemplate);
@@ -521,6 +540,10 @@ public class XLSXTemplate implements ExcelTemplate {
             parcels = 1;
         }
 
+        /*
+        todo Kohäsion: Die Parceltable soll selbst Auskunft geben darüber wieviele Zeilen sie verwendet hat
+        --> Berechnung von rowStartIndex zügeln zu createParcelTable
+         */
         int rowStartIndex = (9 + 2 * newParcels - 1);
 
         XSSFSheet sheet = excelTemplate.getSheet("Mutationstabelle");
@@ -548,6 +571,7 @@ public class XLSXTemplate implements ExcelTemplate {
 
                 stylingEveryOtherDPRRow(row, i, rowStartIndex, parcels, dpr, excelTemplate);
 
+                //todo alle styling* Methoden gemäss den Feedbacks zu den parzellenStylings anpassen
             }
         }
 
@@ -749,6 +773,8 @@ public class XLSXTemplate implements ExcelTemplate {
         String border_bottom;
         String border_top;
         Cell cell;
+
+        //todo Die Methode besser dokumentieren indem anstelle der direkten Zahlen sprechende lokale Variablen eingesetzt werden
 
         if ((i-rowStartIndex) % 2 == 0){
             border_bottom = "thin";
