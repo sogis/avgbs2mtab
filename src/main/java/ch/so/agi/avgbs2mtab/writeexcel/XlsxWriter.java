@@ -6,6 +6,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+/*
+todo Grundsätzlich sind die folgenden Anpassungen zu machen:
+- Single Responsibility principle: Refactoring in Klassen welche die Parcellentabelle schreiben und Klassen welche die DPRTabelle schreiben (bitte mit mir zusammen diesen Teil des Refactorings durchgehen)
+- Viiieeeel mehr Variablen deklarieren und !nicht! einfach nackte Zahlen verwenden deren Bedeutung in einem halben Jahr niemand mehr kennt
+- Wiederkehrende Strings (z.B: Formatierungsanweisungen wie "thick" in Variablen auslagern)
+ */
 /**
  * The Class XlsxWriter generates the excel template and fills it with the data from the xml
  */

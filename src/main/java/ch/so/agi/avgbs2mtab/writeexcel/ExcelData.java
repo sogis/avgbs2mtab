@@ -39,6 +39,10 @@ public class ExcelData implements WriteExcel {
             OutputStream excelFile = new FileOutputStream(filePath);
             XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
 
+            /*
+            todo wieso ordered? Eine List ist per se nicht geordnet - Falls Interface dies leisten soll den Namen des Interfaces anpassen.
+            Etwa: dataExtractionParcel.getSortedOldParcelNumbers()
+            */
             List<Integer> orderedListOfOldParcelNumbers = dataExtractionParcel.getOldParcelNumbers();
             List<Integer> orderedListOfNewParcelNumbers = dataExtractionParcel.getNewParcelNumbers();
 
@@ -102,7 +106,7 @@ public class ExcelData implements WriteExcel {
 
         Row rowWithOldParcelNumbers =xlsxSheet.getRow(2);
 
-        Integer column = 1;
+        Integer column = 1; //todo aus 2 und 1 sprechende Konstanten machen
 
         for (Integer parcelNumber : orderedListOfOldParcelNumbers){
             Cell cell =rowWithOldParcelNumbers.getCell(column);
@@ -120,6 +124,7 @@ public class ExcelData implements WriteExcel {
     public void writeNewParcelsInTemplate(List<Integer> orderedListOfNewParcelNumbers,
                                           XSSFSheet xlsxSheet){
 
+        //todo aus Zahlen sprechende Konstanten machen
         int rowIndex = 1;
 
         for (Integer parcelNumber : orderedListOfNewParcelNumbers){
@@ -217,6 +222,7 @@ public class ExcelData implements WriteExcel {
 
         indexNewParcelNumber = getRowIndexOfNewParcelInTable(newParcelNumber, xlsxSheet);
 
+        //todo error Message gehört in if-Block
         String errorMessage = "Either the old parcel " + oldParcelNumber + " or the new parcel " + newParcelNumber +
                 " could not be found in the excel.";
 
