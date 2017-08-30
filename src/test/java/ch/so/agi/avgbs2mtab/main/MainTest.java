@@ -18,8 +18,6 @@ import java.util.Map;
 
 public class MainTest {
 
-    //todo noemi ErrorString-Referenzierung zeigen (Kein Vergleich auf neuen String)
-
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
