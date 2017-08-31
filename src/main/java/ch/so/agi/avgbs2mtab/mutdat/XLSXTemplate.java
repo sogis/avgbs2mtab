@@ -107,6 +107,8 @@ public class XLSXTemplate implements ExcelTemplate {
     @Override
     public XSSFWorkbook createWorkbook(String filePath) {
 
+        //todo Wo wird der Stream in jedem Fall wieder geschlossen?
+
         try {
             OutputStream ExcelFile = new FileOutputStream(filePath);
             XSSFWorkbook workbook = new XSSFWorkbook();
@@ -342,6 +344,7 @@ public class XLSXTemplate implements ExcelTemplate {
                 style.setBorderLeft(BorderStyle.THIN);
                 break;
         }
+
 
         switch (border_right) {
             case thick:

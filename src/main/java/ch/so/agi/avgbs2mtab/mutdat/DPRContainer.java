@@ -8,11 +8,11 @@ import java.util.*;
 
 
 public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtractionDPR {
-    Map<Integer,Map> map=new Hashtable<Integer,Map>(); //Haupt Map
-    HashMap<String, Integer> laysonrefandareamap = new HashMap<>(); //innere Map der Haupt-Map
-    HashMap<String, Integer> numberandrefmap = new HashMap<>(); //Map mit ref (String) und Parzellennummer (int)
-    HashMap<String, String> affectedparcelsmap = new HashMap<>(); //Eine kleine Map mit allen Parzellen die irgendwie betroffen sind.
-    HashMap<Integer, Integer> newareamap = new HashMap<>(); //HashMap mit den gesamtflächen der DPRs.
+    Map<Integer,Map> map=new Hashtable<Integer,Map>(); //Haupt Map //todo namen und doku und camelcase
+    HashMap<String, Integer> laysonrefandareamap = new HashMap<>(); //innere Map der Haupt-Map //todo namen und doku und camelcase
+    HashMap<String, Integer> numberandrefmap = new HashMap<>(); //Map mit ref (String) und Parzellennummer (int) //todo namen und doku und camelcase
+    HashMap<String, String> affectedparcelsmap = new HashMap<>(); //Eine kleine Map mit allen Parzellen die irgendwie betroffen sind. //todo guter name. camelcase beachten
+    HashMap<Integer, Integer> newareamap = new HashMap<>(); //HashMap mit den gesamtflächen der DPRs. //todo namen und doku und camelcase
 
     ////////////////////////////////////////////////////////
     // SET- Methoden ///////////////////////////////////////
@@ -64,7 +64,7 @@ public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtracti
     }
 
     @Override
-    public List<Integer> getParcelsAffectedByDPRs() {
+    public List<Integer> getParcelsAffectedByDPRs() { //todo Umweg über TreeMap ist unnötig - direkt in Liste adden und dann die liste sortieren
         HashMap<Integer,Integer> affectedparcelsnumbermap = new HashMap<>();
         for(String key : affectedparcelsmap.keySet()) {
             int keyparcelnumber = numberandrefmap.get(key);
@@ -76,7 +76,7 @@ public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtracti
     }
 
     @Override
-    public List<Integer> getNewDPRs() {
+    public List<Integer> getNewDPRs() { //todo sortierumweg
         Map<Integer,Map> sortedmap = new TreeMap<>(map);
         List<Integer> newdprs = new ArrayList<>(sortedmap.keySet());
         for (Integer key : newareamap.keySet()) {
@@ -117,6 +117,7 @@ public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtracti
         return roundingdifference;
     }
 
+    //todo wieso nicht einfach hm.containsKey()? Was ist der Zweck der Funktion?
     public static String getKeyFromValue(Map<String, Integer> hm, Integer value) {
         for (String key : hm.keySet()) {
             if (hm.get(key).equals(value)) {

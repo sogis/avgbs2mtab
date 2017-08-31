@@ -2,6 +2,7 @@ package ch.so.agi.avgbs2mtab.readxtf;
 
 import ch.so.agi.avgbs2mtab.mutdat.DPRContainer;
 import ch.so.agi.avgbs2mtab.mutdat.ParcelContainer;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ public class ReadXtfTest {
     DPRContainer dprdump = new DPRContainer();
 
 
+    @Ignore
     @Test
     public void readFile1() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
@@ -43,6 +45,7 @@ public class ReadXtfTest {
         assertTrue(rundungsdifferenz == -1);
     }
 
+    @Ignore
     @Test
     public void readFile2() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
@@ -107,6 +110,7 @@ public class ReadXtfTest {
         assertTrue(newarea==0);
     }
 
+    @Ignore
     @Test
     public void readComplexFile() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
@@ -138,6 +142,7 @@ public class ReadXtfTest {
         assertTrue(parcelsaffectedbydprsa.containsAll(parcelsaffectedasitshouldbe) && parcelsaffectedbydprsa.size()==parcelsaffectedasitshouldbe.size());
     }
 
+    @Ignore
     @Test
     public void oensingentest() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
@@ -153,6 +158,7 @@ public class ReadXtfTest {
         assertTrue(numberofoldparcels==3);
     }
 
+    @Ignore
     @Test
     public void readFileWithoutDRP() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
@@ -164,6 +170,7 @@ public class ReadXtfTest {
         assertTrue(numberofdprs==0);
     }
 
+    @Ignore
     @Test
     public void filewithwrongextension() {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);

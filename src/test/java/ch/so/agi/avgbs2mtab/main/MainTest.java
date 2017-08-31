@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -100,6 +101,7 @@ public class MainTest {
 
 
     //Parzelle geändert (Zugang), Parzelle gelöscht (an bestehende Parzellen)
+    @Ignore
     @Test
     public void correctValuesWrittenInExcelAtTransferAreaTo1OldParcels() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
@@ -128,6 +130,7 @@ public class MainTest {
     }
 
     //Neue Parzelle (Teile von bestehendenParzellen), Parzelle geändert (Teilabgang)
+    @Ignore
     @Test
     public void correctValuesWrittenInExcelAtNewParcelsFrom1OldParcel() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
@@ -209,6 +212,7 @@ public class MainTest {
     }
 
 
+    @Ignore
     @Test
     public void correctValuesCalculatedInExcel() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
@@ -236,6 +240,7 @@ public class MainTest {
         Assert.assertTrue(allValuesAreCorrect);
     }
 
+    @Ignore
     @Test
     public void correctValuesOfDPRsAndParcelsWrittenInExcel() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();

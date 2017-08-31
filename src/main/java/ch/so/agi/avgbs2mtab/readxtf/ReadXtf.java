@@ -1,12 +1,15 @@
 package ch.so.agi.avgbs2mtab.readxtf;
 
 import ch.interlis.iom.IomObject;
+import ch.interlis.iom_j.xtf.XtfReader;
 import ch.interlis.iox.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,20 +19,21 @@ import ch.so.agi.avgbs2mtab.mutdat.SetParcel;
 import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
 
 
-//todo Der XtfReader wird sowieso viermal aufgerufen. Bitte mit mir anschauen ob eine Aufteilung von ReadXtf in ReadDPR und ReadParcel den code lesbarer machen würde
-//todo Aufgrund der Eventstruktur des Readers von Claude haben wir eine hohe Codeverdoppelung - Bitte die Lösungsmuster dafür bei mir abholen
 /**
  * This Class contains methods to read xtf-files and write specific content to a hashtable
  */
 public class ReadXtf {
 
+    private static final Logger LOGGER = Logger.getLogger(ReadXtf.class.getName());
     private static final String ILI_MODELNAME ="GB2AV";
     private final String ILI_MUT= ILI_MODELNAME +".Mutationstabelle";
     private IoxReader ioxReader=null;
     private SetParcel parceldump;
     private SetDPR drpdump;
 
-    private static final Logger LOGGER = Logger.getLogger(ReadXtf.class.getName());
+    private HashSet<String> parcelMetadataSet = null; //todo Sprechender Name und Beschreibung
+    private HashMap<String,HashMap> dprMetadataMap = null; //todo Sprechender Name und Beschreibung
+
 
     public ReadXtf(SetParcel parceldump, SetDPR drpdump) {
 
@@ -37,27 +41,26 @@ public class ReadXtf {
         this.drpdump = drpdump;
     }
 
-    public void readFile(String xtffilepath) throws IOException {
-        LOGGER.log(Level.CONFIG,"Start reading the file");
+    public void readFile(String xtfFilePathString) throws IOException {
+        LOGGER.log(Level.CONFIG,"Start reading the transferfile with multiple passes");
 
-        //The parcelmetadatamap contains a set of Ref-keys from parcels affected by the mutation.
-        HashSet<String> parcelmetadatamap = readParcelMetadata(xtffilepath);
-        //The dprmetadatamap contains the ref-key as Key and a Map of ref-keys and areas from parcels, affected by the dpr.
-        HashMap<String,HashMap> dprmetadatamap = readDRPMetadata(xtffilepath);
+        Consumer<StartBasketEvent> getParcelMetadataFunc = this::getParcelMetadata;
+        Consumer<StartBasketEvent> getDRPMetadataFunc  = this::getDRPMetadata;
+        Consumer<StartBasketEvent> transferParcelFunc = this::transferParcel;
+        Consumer<StartBasketEvent> transferDPRFunc = this::transferDPR;
 
-        readValues(xtffilepath, parcelmetadatamap, dprmetadatamap);
+        File xtfFilePath = new File(xtfFilePathString);
+
+        parseTransferFile(xtfFilePath, getParcelMetadataFunc, true);
+        parseTransferFile(xtfFilePath, getDRPMetadataFunc, false);
+        parseTransferFile(xtfFilePath, transferParcelFunc, false);
+        parseTransferFile(xtfFilePath, transferDPRFunc, false);
     }
 
-
-    /////////////////////////////////////
-    //PARCEL META-DATA //////////////////
-    /////////////////////////////////////
-    private HashSet<String> readParcelMetadata(String xtffilepath) {
-
-        HashSet<String> parcelmetadatamap = new HashSet<>();
+    private void parseTransferFile(File xtfFilePath, Consumer innerFunction, boolean checkModelMatch){
         try{
             // open xml file
-            ioxReader=new ch.interlis.iom_j.xtf.XtfReader(new java.io.File(xtffilepath));
+            ioxReader= new XtfReader(xtfFilePath);
             // loop threw baskets
             IoxEvent event;
             while(true){
@@ -66,10 +69,12 @@ public class ReadXtf {
                 }else if(event instanceof StartBasketEvent){
                     StartBasketEvent se=(StartBasketEvent)event;
 
-                    assertModelIsAvGbs(se);
-                    //Hier beginnt das Auslesen der Metadaten!
-                    parcelmetadatamap = getParcelMetadata(se);
-                    ///////////////////////////////////////
+                    if(checkModelMatch){
+                        assertModelIsAvGbs(se);
+                    }
+
+                    innerFunction.accept(se);
+
                 }else if(event instanceof EndBasketEvent){
                 }else if(event instanceof StartTransferEvent){
                     StartTransferEvent se=(StartTransferEvent)event;
@@ -79,7 +84,6 @@ public class ReadXtf {
                     ioxReader.close();
                     ioxReader=null;
                     break;
-                }else {
                 }
             }
         }catch(Exception e){
@@ -87,7 +91,7 @@ public class ReadXtf {
                 throw (Avgbs2MtabException) e;
             }
             else {
-                throw new Avgbs2MtabException("error in reading xtf file", e);
+                throw new Avgbs2MtabException("Error in reading xtf file for innerFunction " + innerFunction, e);
             }
         }
         finally{
@@ -95,218 +99,86 @@ public class ReadXtf {
                 try{
                     ioxReader.close();
                 }catch(IoxException ex){
-                    LOGGER.log(Level.WARNING,"Got a IoxException: "+ex);
+                    throw new Avgbs2MtabException("Error closing IoxReader", ex);
                 }
                 ioxReader=null;
             }
         }
-        return parcelmetadatamap;
     }
 
-    private HashSet<String> getParcelMetadata(StartBasketEvent basket) throws IoxException {
-        // loop threw basket and find all "betroffeneGrundstuecke"
 
-        HashSet<String> oidbetroffenegrundstuecke = new HashSet<>();
-        IoxEvent event;
-        while (true) {
-            event = ioxReader.read();
-            if (event instanceof ObjectEvent) {
-                IomObject iomObj = ((ObjectEvent) event).getIomObject();
-                String aclass = iomObj.getobjecttag();
-
-                if (aclass.equals(ILI_MUT + ".AVMutationBetroffeneGrundstuecke")) {
-                    String ref = iomObj.getattrobj("betroffeneGrundstuecke",0).getobjectrefoid();
-
-                    oidbetroffenegrundstuecke.add(ref);
-                }
-            }
-            else if(event instanceof EndBasketEvent){
-                break;
-            }else{
-                throw new IllegalStateException("unexpected event "+event.getClass().getName());
-            }
-        }
-        return oidbetroffenegrundstuecke;
-    }
-
-    /////////////////////////////////////
-    //DPR META-DATA ////////////////////
-    /////////////////////////////////////
-    private HashMap<String, HashMap> readDRPMetadata(String xtffilepath) {
-        HashMap<String, HashMap> map = new HashMap<>();
-        try{
-            ioxReader=new ch.interlis.iom_j.xtf.XtfReader(new java.io.File(xtffilepath));
-            // loop threw baskets
+    private void getParcelMetadata(StartBasketEvent basket) {
+        // loop through basket and find all "betroffeneGrundstuecke"
+        HashSet<String> oidBetroffeneGrundstuecke = new HashSet<>();
+        try {
             IoxEvent event;
-            while(true){
-                event=ioxReader.read();;
-                if(event instanceof ObjectEvent){
-                }else if(event instanceof StartBasketEvent){
-                    StartBasketEvent se=(StartBasketEvent)event;
+            while (true) {
+                event = ioxReader.read();
+                if (event instanceof ObjectEvent) {
+                    IomObject iomObj = ((ObjectEvent) event).getIomObject();
+                    String aclass = iomObj.getobjecttag();
 
-                    assertModelIsAvGbs(se);
-                    //Hier beginnt das Auslesen der Metadaten!
-                    map = getDRPMetadata(se);
-                    ///////////////////////////////////////
-                }else if(event instanceof EndBasketEvent){
-                }else if(event instanceof StartTransferEvent){
-                    StartTransferEvent se=(StartTransferEvent)event;
-                    String sender=se.getSender();
-                }else if(event instanceof EndTransferEvent){
-                    System.out.flush();
-                    ioxReader.close();
-                    ioxReader=null;
+                    if (aclass.equals(ILI_MUT + ".AVMutationBetroffeneGrundstuecke")) {
+                        String ref = iomObj.getattrobj("betroffeneGrundstuecke", 0).getobjectrefoid();
+
+                        oidBetroffeneGrundstuecke.add(ref);
+                    }
+                } else if (event instanceof EndBasketEvent) {
                     break;
-                }else {
+                } else {
+                    throw new IllegalStateException("unexpected event " + event.getClass().getName());
                 }
             }
-        }catch(Exception e){
-            if(e instanceof Avgbs2MtabException){
-                throw (Avgbs2MtabException)e;
-            }
-            else{
-                throw new Avgbs2MtabException("Error reading xtf file ...", e);
-            }
         }
-        finally{
-            if(ioxReader!=null){
-                try{
-                    ioxReader.close();
-                }catch(IoxException ex){
-                    LOGGER.log(Level.WARNING,"Got a IoxException: "+ex);
-                }
-                ioxReader=null;
-            }
+        catch (IoxException ix){
+            throw new Avgbs2MtabException("IoxException in getParcelMetadata", ix);
         }
-        return map;
+        this.parcelMetadataSet = oidBetroffeneGrundstuecke;
     }
 
-    private HashMap<String, HashMap> getDRPMetadata(StartBasketEvent basket) throws IoxException {
+
+    private void getDRPMetadata(StartBasketEvent basket) {
         // loop threw basket and find all "betroffeneGrundstuecke"
 
-        HashMap<String,HashMap> dpranteilanliegenschaft = new HashMap<String, HashMap>();
+        HashMap<String,HashMap> dprAnteilAnLiegenschaft = new HashMap<String, HashMap>();
 
-        HashMap<String, Integer> liegtaufmap = new HashMap<String, Integer>();
-        IoxEvent event;
-        while (true) {
-            event = ioxReader.read();
-            if (event instanceof ObjectEvent) {
-                IomObject iomObj = ((ObjectEvent) event).getIomObject();
-                String aclass = iomObj.getobjecttag();
-
-                if (aclass.equals(ILI_MODELNAME + ".Grundstuecksbeschrieb.Anteil")) {
-                    String drpnumber = iomObj.getattrobj("flaeche",0).getobjectrefoid();
-                    String liegt_auf = iomObj.getattrobj("liegt_auf",0).getobjectrefoid();
-                    Integer area = Integer.parseInt(iomObj.getattrvalue("Flaechenmass"));
-
-                    if (dpranteilanliegenschaft.get(drpnumber) != null) {
-                        liegtaufmap = dpranteilanliegenschaft.get(drpnumber);
-                        liegtaufmap.put(liegt_auf,area);
-                    } else {
-                        liegtaufmap.put(liegt_auf, area);
-                    }
-                    dpranteilanliegenschaft.put(drpnumber,liegtaufmap);
-
-                }
-            }
-            else if(event instanceof EndBasketEvent){
-                break;
-            }else{
-                throw new IllegalStateException("unexpected event "+event.getClass().getName());
-            }
-        }
-        return dpranteilanliegenschaft;
-    }
-
-    /////////////////////////////////////
-    //Get Data /////////////////////////
-    /////////////////////////////////////
-
-    /**
-     * Main Method. Loop over Baskets and start the transfer of Parcel- and DPR-Values.
-     * @param xtffilepath
-     * @param parcelmetadatamap
-     * @param drpmetadatamap
-     */
-    private void readValues(String xtffilepath, HashSet<String> parcelmetadatamap, HashMap<String, HashMap> drpmetadatamap) {
-        try{
-            //Get Parcel-Information
-            // transferDPR(StartBasketEvent se, HashMap<String, HashMap> drpmetadatamap)
-            // transferParcel(StartBasketEvent basket, HashMap<String,String> metadatamap) {
-            ioxReader=new ch.interlis.iom_j.xtf.XtfReader(new java.io.File(xtffilepath));
-
-            IoxEvent event = ioxReader.read();
-            while(event != null){
-                event=ioxReader.read();;
-                if(event instanceof ObjectEvent){
-                }else if(event instanceof StartBasketEvent){
-                    StartBasketEvent se=(StartBasketEvent)event;
-
-                    assertModelIsAvGbs(se);
-
-                    //Main Parcel-Value-Function
-                    transferParcel(se, parcelmetadatamap);
-                    ///////////////////////////////////////
-                }else if(event instanceof EndBasketEvent){
-                }else if(event instanceof StartTransferEvent){
-                    StartTransferEvent se=(StartTransferEvent)event;
-                    String sender=se.getSender();
-                }else if(event instanceof EndTransferEvent){
-                    System.out.flush();
-                    ioxReader.close();
-                    ioxReader=null;
-                    break;
-                }else {
-                }
+        try {
+            HashMap<String, Integer> liegtaufmap = new HashMap<String, Integer>();
+            IoxEvent event;
+            while (true) {
                 event = ioxReader.read();
-            }
-            //Get DPR-Information
-            ioxReader=new ch.interlis.iom_j.xtf.XtfReader(new java.io.File(xtffilepath));
-            IoxEvent event3 = ioxReader.read();
-            while(event3 != null){
-                event3=ioxReader.read();
-                if(event3 instanceof ObjectEvent){
-                }else if(event3 instanceof StartBasketEvent){
-                    StartBasketEvent se=(StartBasketEvent)event3;
+                if (event instanceof ObjectEvent) {
+                    IomObject iomObj = ((ObjectEvent) event).getIomObject();
+                    String aclass = iomObj.getobjecttag();
 
-                    assertModelIsAvGbs(se);
-                    //Main DPR-Value-Function
-                    transferDPR(se, drpmetadatamap);
-                    ///////////////////////////////////////
-                }else if(event3 instanceof EndBasketEvent){
-                }else if(event3 instanceof StartTransferEvent){
-                    StartTransferEvent se=(StartTransferEvent)event3;
-                    String sender=se.getSender();
-                }else if(event3 instanceof EndTransferEvent){
-                    System.out.flush();
-                    ioxReader.close();
-                    ioxReader=null;
+                    if (aclass.equals(ILI_MODELNAME + ".Grundstuecksbeschrieb.Anteil")) {
+                        String drpnumber = iomObj.getattrobj("flaeche", 0).getobjectrefoid();
+                        String liegt_auf = iomObj.getattrobj("liegt_auf", 0).getobjectrefoid();
+                        Integer area = Integer.parseInt(iomObj.getattrvalue("Flaechenmass"));
+
+                        if (dprAnteilAnLiegenschaft.get(drpnumber) != null) {
+                            liegtaufmap = dprAnteilAnLiegenschaft.get(drpnumber);
+                            liegtaufmap.put(liegt_auf, area);
+                        } else {
+                            liegtaufmap.put(liegt_auf, area);
+                        }
+                        dprAnteilAnLiegenschaft.put(drpnumber, liegtaufmap);
+
+                    }
+                } else if (event instanceof EndBasketEvent) {
                     break;
-                }else {
+                } else {
+                    throw new IllegalStateException("unexpected event " + event.getClass().getName());
                 }
-                event3 = ioxReader.read();
-            }
-        }catch(Exception e){
-            LOGGER.log(Level.WARNING,"Error reading Values");
-            throw new RuntimeException(e);
-        }
-        finally{
-            if(ioxReader!=null){
-                try{
-                    ioxReader.close();
-                }catch(IoxException ex){
-                    LOGGER.log(Level.WARNING,"Got a IoxException: "+ex);
-                }
-                ioxReader=null;
             }
         }
+        catch (IoxException ix){
+            throw new Avgbs2MtabException("IoxException in getParcelMetadata", ix);
+        }
+        this.dprMetadataMap = dprAnteilAnLiegenschaft;
     }
 
-    /////////////////////////////////////
-    //Get ParcelData ////////////////////
-    /////////////////////////////////////
-
-    private void transferParcel(StartBasketEvent basket, HashSet<String> metadataset) {
+    private void transferParcel(StartBasketEvent basket) {
         try {
             //loop threw basket, find things and write them to the Container
             IoxEvent event2;
@@ -316,7 +188,7 @@ public class ReadXtf {
                     IomObject iomObj=((ObjectEvent)event2).getIomObject();
                     String aclass=iomObj.getobjecttag();
                     if(aclass.equals(ILI_MUT+".Liegenschaft")){
-                        getParcelLiegenschaft(metadataset, iomObj);
+                        getParcelLiegenschaft(iomObj);
                     }
                 }else if(event2 instanceof EndBasketEvent){
                     break;
@@ -324,14 +196,15 @@ public class ReadXtf {
                     throw new IllegalStateException("unexpected event "+event2.getClass().getName());
                 }
             }
-        }catch(IoxException ex){
-            LOGGER.log(Level.WARNING,"Got a Error in transferParcel: "+ex);
+        }
+        catch (IoxException ix){
+            throw new Avgbs2MtabException("IoxException thrown", ix);
         }
     }
 
-    private void getParcelLiegenschaft(HashSet<String> metadataset, IomObject iomObj) {
+    private void getParcelLiegenschaft(IomObject iomObj) {
         if(iomObj.getattrvalue("GrundstueckArt").equals("Liegenschaft")) {
-            if (metadataset.contains(iomObj.getobjectoid())) {
+            if (parcelMetadataSet.contains(iomObj.getobjectoid())) {
                 int parcelnumber = Integer.parseInt(iomObj.getattrobj("Nummer", 0).getattrvalue("Nummer"));
                 int area = Integer.parseInt(iomObj.getattrvalue("Flaechenmass"));
                 parceldump.setParcelNewArea(parcelnumber, area);
@@ -341,8 +214,8 @@ public class ReadXtf {
                     int roundingdifference = Integer.parseInt(iomObj.getattrvalue("Korrektur"));
                     parceldump.setParcelRoundingDifference(parcelnumber, roundingdifference);
                 } catch (NumberFormatException e) {
-                    //throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_NUMBERFORMAT, "NumberFormatException");
-                };                                    ;
+                    throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_NUMBERFORMAT, "NumberFormatException");
+                };
 
                 getZugaenge(iomObj, parcelnumber, area);
             }
@@ -372,7 +245,7 @@ public class ReadXtf {
     //Get DPRData    ////////////////////
     /////////////////////////////////////
 
-    private void transferDPR(StartBasketEvent se, HashMap<String, HashMap> drpmetadatamap) {
+    private void transferDPR(StartBasketEvent se) {
 
         try {
             //loop threw basket, find things and write them to the Container
@@ -382,7 +255,7 @@ public class ReadXtf {
                 if (event instanceof ObjectEvent) {
                     IomObject iomObj = ((ObjectEvent) event).getIomObject();
                     String aclass = iomObj.getobjecttag();
-                    getDPR(drpmetadatamap, iomObj, aclass);
+                    getDPR(dprMetadataMap, iomObj, aclass);
                     getDPRLiegenschaft(iomObj, aclass);
                     getDeletedDPR(iomObj, aclass);
                 }else if(event instanceof EndBasketEvent){
@@ -393,6 +266,7 @@ public class ReadXtf {
             }
         }catch(IoxException ex){
             LOGGER.log(Level.WARNING,"Got an Error in transferDPR: "+ex);
+            throw new Avgbs2MtabException("Error in transferDPR, see inner Exception", ex);
         }
     }
 
