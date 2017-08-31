@@ -11,6 +11,7 @@ public class Addition {
 
     Map<Integer,Integer> map=new Hashtable<Integer,Integer>();
 
+    //todo: KEINE Methoden die gleich heissen wie die Klasse
     public Map Addition(int addedfromnumber, int area) {
         map.put(addedfromnumber, area);
         return map;
