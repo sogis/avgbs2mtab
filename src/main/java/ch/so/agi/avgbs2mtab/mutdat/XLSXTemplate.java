@@ -62,6 +62,8 @@ public class XLSXTemplate implements ExcelTemplate {
     @Override
     public XSSFWorkbook createWorkbook(String filePath) {
 
+        //todo Wo wird der Stream in jedem Fall wieder geschlossen?
+
         try {
             OutputStream ExcelFile = new FileOutputStream(filePath);
             XSSFWorkbook workbook = new XSSFWorkbook();
@@ -278,7 +280,7 @@ public class XLSXTemplate implements ExcelTemplate {
             style.setIndention((short) indent);
         }
 
-        switch (border_bottom) {
+        switch (border_bottom) { //todo fehlender default case
             case "thick":
                 style.setBorderBottom(BorderStyle.THICK);
                 break;
@@ -289,7 +291,7 @@ public class XLSXTemplate implements ExcelTemplate {
                 style.setBorderBottom(BorderStyle.NONE);
         }
 
-        switch (border_top) {
+        switch (border_top) { //todo fehlender default case
             case "thick":
                 style.setBorderTop(BorderStyle.THICK);
                 break;
@@ -300,7 +302,7 @@ public class XLSXTemplate implements ExcelTemplate {
                 style.setBorderTop(BorderStyle.NONE);
         }
 
-        switch (border_left) {
+        switch (border_left) { //todo fehlender default case
             case "thick":
                 style.setBorderLeft(BorderStyle.THICK);
                 break;
@@ -309,7 +311,7 @@ public class XLSXTemplate implements ExcelTemplate {
                 break;
         }
 
-        switch (border_right) {
+        switch (border_right) { //todo fehlender default case
             case "thick":
                 style.setBorderRight(BorderStyle.THICK);
                 break;

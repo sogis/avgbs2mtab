@@ -215,8 +215,8 @@ public class ExcelData implements WriteExcel {
                                                      int area,
                                                      XSSFSheet xlsxSheet) {
 
-        Integer indexOldParcelNumber;
-        Integer indexNewParcelNumber;
+        int indexOldParcelNumber;
+        int indexNewParcelNumber;
 
         indexOldParcelNumber = getColumnIndexOfParcelInTable(oldParcelNumber, 2, xlsxSheet);
 
@@ -226,12 +226,7 @@ public class ExcelData implements WriteExcel {
         String errorMessage = "Either the old parcel " + oldParcelNumber + " or the new parcel " + newParcelNumber +
                 " could not be found in the excel.";
 
-        if (indexNewParcelNumber==null || indexOldParcelNumber==null){
-            LOGGER.log(Level.SEVERE, errorMessage);
-            throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, errorMessage);
-        } else {
-            writeValueIntoCell(indexNewParcelNumber, indexOldParcelNumber, xlsxSheet, area);
-        }
+        writeValueIntoCell(indexNewParcelNumber, indexOldParcelNumber, xlsxSheet, area);
     }
 
     /**
@@ -241,10 +236,10 @@ public class ExcelData implements WriteExcel {
      * @param xlsxSheet     excel sheet
      * @return              index of column
      */
-    private Integer getColumnIndexOfParcelInTable(int ParcelNumber,
+    private int getColumnIndexOfParcelInTable(int ParcelNumber,
                                                   int rowNumber,
                                                   XSSFSheet xlsxSheet){
-        Integer indexOldParcelNumber = null;
+        int indexOldParcelNumber = Integer.MIN_VALUE;
 
         Row row = xlsxSheet.getRow(rowNumber);
 
@@ -254,13 +249,13 @@ public class ExcelData implements WriteExcel {
                 break;
             }
         }
-        if (indexOldParcelNumber != null) {
-            return indexOldParcelNumber;
-        } else {
-            LOGGER.log(Level.SEVERE, "Could not find Parcel " + ParcelNumber);
+
+        if(indexOldParcelNumber == Integer.MIN_VALUE){
             throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, "Could not find Parcel " +
                     ParcelNumber);
         }
+
+        return indexOldParcelNumber;
     }
 
     /**
@@ -269,10 +264,10 @@ public class ExcelData implements WriteExcel {
      * @param xlsxSheet         excel sheet
      * @return                  index of row
      */
-    private Integer getRowIndexOfNewParcelInTable (int newParcelNumber,
+    private int getRowIndexOfNewParcelInTable (int newParcelNumber,
                                                    XSSFSheet xlsxSheet){
 
-        Integer indexNewParcelNumber = null;
+        int indexNewParcelNumber = Integer.MIN_VALUE;
 
         Iterator<Row> rowIterator = xlsxSheet.iterator();
         rowIterator.next();
@@ -287,13 +282,12 @@ public class ExcelData implements WriteExcel {
             }
         }
 
-        if (indexNewParcelNumber == null) {
-            LOGGER.log(Level.SEVERE, "Could not finde parcel " +  newParcelNumber);
+        if (indexNewParcelNumber == Integer.MIN_VALUE) {
             throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, "Could not find Parcel " +
                     newParcelNumber);
-        } else {
-            return indexNewParcelNumber;
         }
+
+        return indexNewParcelNumber;
     }
 
 
@@ -464,7 +458,7 @@ public class ExcelData implements WriteExcel {
                              int area,
                              XSSFSheet xlsxSheet) {
 
-        Integer rowNewParcelNumber = getRowIndexOfNewParcelInTable(newParcelNumber, xlsxSheet);
+        int rowNewParcelNumber = getRowIndexOfNewParcelInTable(newParcelNumber, xlsxSheet);
 
         try {
             Row row = xlsxSheet.getRow(rowNewParcelNumber);
