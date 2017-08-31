@@ -17,6 +17,51 @@ public class XLSXTemplate implements ExcelTemplate {
 
     private static final Logger LOGGER = Logger.getLogger( XLSXTemplate.class.getName());
 
+    private static final String xlsxSheetName = "Mutationstabelle";
+    private static final String thick ="thick";
+    private static final String thin ="thin";
+    private static final String lightGrayString = "lightGray";
+    private static final String noStyling = "";
+    private static final String fontName = "Arial";
+    private static final String parcelString = "Liegenschaften";
+    private static final String oldParcelString = "Alte " + parcelString;
+    private static final String newParcelString = "Neue " + parcelString;
+    private static final String parcelNumberString = "Grundstück-Nr.";
+    private static final String newAreaString = "Neue Fläche";
+    private static final String squareMeterString = "[m2]";
+    private static final String oldAreaString = "Alte Fläche " + squareMeterString;
+    private static final String roundingDifferenceString = "Rundungsdifferenz";
+    private static final String splittedRoundingDifferenceString = "Rundungs-differenz";
+    private static final String dprString = "Selbst. Recht";
+    private static final String dprAreaString = dprString + " Fläche";
+
+    private static final Integer aParcelOrADprNeedsTwoRows = 2;
+    private static final Integer rowsBesideParcelRows = 5;
+    private static final Integer widthMultiplicationFactor = 253;
+    private static final Integer widthOfFirstColumn = 19 * widthMultiplicationFactor;
+    private static final Integer widthOfLastParcelTableColumnAndTheFollowingColumn = 14 * widthMultiplicationFactor;
+    private static final Integer indentValue = 2;
+    private static final Integer noIndentValue = 0;
+    private static final Integer additionConstantToGetIndexOfLastColumnOfParcelTable = 1;
+    private static final Integer additionConstantToGetIndexOfRoundingDifferenceColumnOfDPRTable = 1;
+    private static final Integer additionConstantToGetIndexOfNewAreaColumnOfDPRTable = 2;
+
+    private static final short rowHeightOfTableHeaderAndFooter = 600;
+    private static final short defaultRowHeight = 300;
+    private static final short defaultColumnWidth = (short) 18.43;
+    private static final short fontHeight = 11;
+
+    private String color;
+    private String border_bottom;
+    private String border_top;
+    private String border_left;
+    private String border_right;
+    private Integer indent;
+
+    private Cell cell;
+
+
+
 
 
     public XSSFWorkbook createExcelTemplate (String filePath,MetadataOfParcelMutation metadataOfParcelMutation,
@@ -65,7 +110,7 @@ public class XLSXTemplate implements ExcelTemplate {
         try {
             OutputStream ExcelFile = new FileOutputStream(filePath);
             XSSFWorkbook workbook = new XSSFWorkbook();
-            workbook.createSheet("Mutationstabelle");
+            workbook.createSheet(xlsxSheetName);
             workbook.write(ExcelFile);
 
             return workbook;
@@ -88,13 +133,9 @@ public class XLSXTemplate implements ExcelTemplate {
     public void createParcelTable(XSSFWorkbook excelTemplate,String filePath, int newParcels, int oldParcels,
                                           int parcelsAffectedByDPR) {
 
-        /*
-        todo Da der Name des Sheets als "Key" verwendet wird diesen in private static final String auslagern
-        und an den entsprechenden Stellen den final String verwenden - ist so stabilerer Code
-         */
-        XSSFSheet sheet = excelTemplate.getSheet("Mutationstabelle");
+        XSSFSheet sheet = excelTemplate.getSheet(xlsxSheetName);
 
-        addMergedRegions(sheet, oldParcels);
+        mergeCellsToRegions(sheet, oldParcels);
 
         if (oldParcels == 0 || newParcels == 0){
             oldParcels = 1;
@@ -103,8 +144,7 @@ public class XLSXTemplate implements ExcelTemplate {
 
         setCellSize(sheet, oldParcels, parcelsAffectedByDPR);
 
-        //todo Namen: Die Zahlen 2,5,1 in sprechende lokale Variablen packen - dies erläutert den Code enorm
-        for (int i = 0; i < (newParcels*2+5) + 1; i++){
+        for (int i = 0; i <= (newParcels* aParcelOrADprNeedsTwoRows + rowsBesideParcelRows); i++){
             Row row =sheet.createRow(i);
 
             if (i==0) {
@@ -120,7 +160,7 @@ public class XLSXTemplate implements ExcelTemplate {
                 stylingThirdParcelRow(row, oldParcels, excelTemplate);
 
 
-            } else if (i==newParcels*2+5) {
+            } else if (i==newParcels* aParcelOrADprNeedsTwoRows +rowsBesideParcelRows) {
 
                 stylingLastParcelRow(row, oldParcels, excelTemplate);
 
@@ -150,11 +190,8 @@ public class XLSXTemplate implements ExcelTemplate {
      * @param sheet         excel sheet
      * @param oldParcels    amount of old parcels
      */
-    /*
-    todo Es ist nicht leicht verständlich was dieser Code macht - bitte auf avgbs-Anwendung von addMergedRegion treffenderen Methodennamen finden
-    */
-    private void addMergedRegions(XSSFSheet sheet, int oldParcels) {
-        if (oldParcels>1){
+    private void mergeCellsToRegions(XSSFSheet sheet, int oldParcels) {
+        if (oldParcels > 1){
             sheet.addMergedRegion(new CellRangeAddress(0,0,1, oldParcels));
             sheet.addMergedRegion(new CellRangeAddress(1,1,1, oldParcels));
         }
@@ -169,7 +206,7 @@ public class XLSXTemplate implements ExcelTemplate {
     private void setCellSize(XSSFSheet sheet, int oldParcels, int parcelsAffectedByDPR){
 
         setDefaultCellSize(sheet);
-        setColumnHeight(sheet, oldParcels, parcelsAffectedByDPR);
+        setColumnWidth(sheet, oldParcels, parcelsAffectedByDPR);
     }
 
     /**
@@ -177,9 +214,8 @@ public class XLSXTemplate implements ExcelTemplate {
      * @param sheet     excel sheet
      */
     private void setDefaultCellSize(XSSFSheet sheet){
-        //todo Konstanten auslagern (public static final int... )
-        sheet.setDefaultRowHeight((short) 300);
-        sheet.setDefaultColumnWidth((short) 18.43);
+        sheet.setDefaultRowHeight(defaultRowHeight);
+        sheet.setDefaultColumnWidth(defaultColumnWidth);
 
     }
 
@@ -189,15 +225,13 @@ public class XLSXTemplate implements ExcelTemplate {
      * @param oldParcels            amount of old parcels in parcel table
      * @param parcelsAffectedByDPR  amount of parcels in dpr table
      */
-    /*
-    todo Was macht diese Funktion? Sie heisst ....Height. Ruft setColumnWidth auf.
-     */
-    private void setColumnHeight(XSSFSheet sheet, int oldParcels, int parcelsAffectedByDPR) {
-        //todo Konstanten auslagern (private static final int..) - also in dieser Methode die Zahlen 19, 253 und 14
-        sheet.setColumnWidth(0,19*253);
+    private void setColumnWidth(XSSFSheet sheet, int oldParcels, int parcelsAffectedByDPR) {
+        sheet.setColumnWidth(0,widthOfFirstColumn);
         if (oldParcels >= parcelsAffectedByDPR) {
-            sheet.setColumnWidth(oldParcels + 1, 14 * 253);
-            sheet.setColumnWidth(oldParcels + 2, 14 * 253);
+            sheet.setColumnWidth(oldParcels + additionConstantToGetIndexOfLastColumnOfParcelTable,
+                    widthOfLastParcelTableColumnAndTheFollowingColumn);
+            sheet.setColumnWidth(oldParcels + additionConstantToGetIndexOfNewAreaColumnOfDPRTable,
+                    widthOfLastParcelTableColumnAndTheFollowingColumn);
         }
 
     }
@@ -209,34 +243,34 @@ public class XLSXTemplate implements ExcelTemplate {
      * @param excelTemplate     excel workbook
      */
     private void  stylingFirstParcelRow(Row row, int oldParcels, XSSFWorkbook excelTemplate) {
-        Cell cell;
+
         for (int c = 1; c <= oldParcels; c++){
             cell = row.createCell(c);
-            cell.setCellValue("Alte Liegenschaften"); //todo String auslagern in private static final....
+            cell.setCellValue(oldParcelString);
 
-            String color = "lightGray";
-            String border_bottom = "";
-            String border_top = "thick";
-            String border_left = "";
-            String border_right = "";
+            color = lightGrayString;
+            border_bottom = noStyling;
+            border_top = thick;
+            border_left = noStyling;
+            border_right = noStyling;
 
             if (c==1) {
                 if (oldParcels == 1) {
-                    border_left ="thick";
-                    border_right = "thick";
+                    border_left = thick;
+                    border_right = thick;
                 } else if (oldParcels > 1) {
-                    border_left = "thick";
+                    border_left = thick;
                 }
             } else if (c==oldParcels) {
-                border_right = "thick";
+                border_right = thick;
             }
 
-            XSSFCellStyle newStyle = getStyleForCell(color, border_bottom,
-                    border_top, border_left, border_right, 0, excelTemplate);
+            XSSFCellStyle newStyle = getStyleForCell(color, border_bottom, border_top, border_left, border_right,
+                    noIndentValue, excelTemplate);
             cell.setCellStyle(newStyle);
         }
 
-        row.setHeight((short) 600);
+        row.setHeight(rowHeightOfTableHeaderAndFooter);
 
     }
 
@@ -259,14 +293,14 @@ public class XLSXTemplate implements ExcelTemplate {
         XSSFColor lightGray = new XSSFColor(new java.awt.Color(217, 217,217));
 
         XSSFFont font = excelTemplate.createFont();
-        font.setFontHeightInPoints((short) 11);
-        font.setFontName("Arial");
+        font.setFontHeightInPoints(fontHeight);
+        font.setFontName(fontName);
         font.setItalic(false);
 
         style.setFont(font);
 
 
-        if (color.equals("lightGray")){
+        if (color.equals(lightGrayString)){
             style.setFillForegroundColor(lightGray);
             style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             style.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -279,41 +313,41 @@ public class XLSXTemplate implements ExcelTemplate {
         }
 
         switch (border_bottom) {
-            case "thick":
+            case thick:
                 style.setBorderBottom(BorderStyle.THICK);
                 break;
-            case "thin":
+            case thin:
                 style.setBorderBottom(BorderStyle.THIN);
                 break;
-            case "":
+            case noStyling:
                 style.setBorderBottom(BorderStyle.NONE);
         }
 
         switch (border_top) {
-            case "thick":
+            case thick:
                 style.setBorderTop(BorderStyle.THICK);
                 break;
-            case "thin":
+            case thin:
                 style.setBorderTop(BorderStyle.THIN);
                 break;
-            case "":
+            case noStyling:
                 style.setBorderTop(BorderStyle.NONE);
         }
 
         switch (border_left) {
-            case "thick":
+            case thick:
                 style.setBorderLeft(BorderStyle.THICK);
                 break;
-            case "thin":
+            case thin:
                 style.setBorderLeft(BorderStyle.THIN);
                 break;
         }
 
         switch (border_right) {
-            case "thick":
+            case thick:
                 style.setBorderRight(BorderStyle.THICK);
                 break;
-            case "thin":
+            case thin:
                 style.setBorderRight(BorderStyle.THIN);
                 break;
         }
@@ -329,40 +363,42 @@ public class XLSXTemplate implements ExcelTemplate {
      * @param excelTemplate     excel workbook
      */
     private void stylingSecondParcelRow(Row row, int oldParcels, XSSFWorkbook excelTemplate){
-        Cell cell;
-        for (int c = 0; c <= oldParcels +1; c++){
+
+        int totalSize = oldParcels + additionConstantToGetIndexOfLastColumnOfParcelTable;
+
+        for (int c = 0; c <= totalSize; c++){
             cell = row.createCell(c);
-            String color = "lightGray";
-            String border_bottom = "thin";
-            String border_top = "thin";
-            String border_left = "thick";
-            String border_right = "thick";
+            color = lightGrayString;
+            border_bottom = thin;
+            border_top = thin;
+            border_left = thick;
+            border_right = thick;
 
             if (c==0){
-                border_top = "thick";
-                cell.setCellValue("Neue Liegenschaften");
+                border_top = thick;
+                cell.setCellValue(newParcelString);
             } else if (c==1) {
                 if (oldParcels > 1) {
-                    border_right = "thin";
+                    border_right = thin;
                 }
-                cell.setCellValue("Grundstück-Nr.");
+                cell.setCellValue(parcelNumberString);
             } else if (c==oldParcels){
-                border_left = "thin";
+                border_left = thin;
             } else if (c<oldParcels) {
-                border_left = "thin";
-                border_right = "thin";
-            } else if (c==oldParcels+1){
-                border_top = "thick";
-                cell.setCellValue("Neue Fläche");//todo "Neue Fläche" und obige "Grundstück-Nr." und "Neue Liegenschaften" in final Strings auslagern
+                border_left = thin;
+                border_right = thin;
+            } else if (c==totalSize){
+                border_top = thick;
+                cell.setCellValue(newAreaString);
             }
 
             XSSFCellStyle newStyle = getStyleForCell(color, border_bottom, border_top, border_left, border_right,
-                    0, excelTemplate);
+                    noIndentValue, excelTemplate);
             cell.setCellStyle(newStyle);
         }
 
 
-        row.setHeight((short) 600); //todo auslagern (für alle rows)
+        row.setHeight(rowHeightOfTableHeaderAndFooter);
     }
 
     /**
@@ -372,42 +408,44 @@ public class XLSXTemplate implements ExcelTemplate {
      * @param excelTemplate     excel workbook
      */
     private void stylingThirdParcelRow (Row row, int oldParcels, XSSFWorkbook excelTemplate){
-        Cell cell;
-        for (int c = 0; c <= oldParcels +1; c++){
+
+        int totalSize = oldParcels + additionConstantToGetIndexOfLastColumnOfParcelTable;
+
+        for (int c = 0; c <= totalSize; c++){
             cell = row.createCell(c);
 
-            String color = "";
-            String border_bottom = "thick";
-            String border_top = "thin";
-            String border_left = "thick";
-            String border_right = "thick";
-            Integer indent = 2;
+            color = noStyling;
+            border_bottom = thick;
+            border_top = thin;
+            border_left = thick;
+            border_right = thick;
+            indent = indentValue;
 
 
             if (c==0){
-                color = "lightGray";
-                indent = 0;
-                cell.setCellValue("Grundstück-Nr.");
+                color = lightGrayString;
+                indent = noIndentValue;
+                cell.setCellValue(parcelNumberString);
             } else if (c==1) {
                 if (oldParcels > 1) {
-                    border_right = "thin";
+                    border_right = thin;
                 }
             } else if (c==oldParcels){
-                border_left = "thin";
+                border_left = thin;
             } else if (c<oldParcels) {
-                border_left = "thin";
-                border_right = "thin";
-            } else if (c==oldParcels+1){
-                color = "lightGray"; //todo Ganze Klasse: lightGray, thin, thick etc in static final Strings auslagern
-                indent = 0;
-                cell.setCellValue("[m2]");//todo Final Strings für m2, Grundstück-Nr.
+                border_left = thin;
+                border_right = thin;
+            } else if (c==totalSize){
+                color = lightGrayString;
+                indent = noIndentValue;
+                cell.setCellValue(squareMeterString);
             }
             XSSFCellStyle newStyle = getStyleForCell(color, border_bottom, border_top, border_left, border_right,
                     indent, excelTemplate);
             cell.setCellStyle(newStyle);
         }
 
-        row.setHeight((short) 600);
+        row.setHeight(rowHeightOfTableHeaderAndFooter);
     }
 
     /**
@@ -417,30 +455,32 @@ public class XLSXTemplate implements ExcelTemplate {
      * @param excelTemplate     excel workbook
      */
     private void stylingLastParcelRow(Row row, int oldParcels, XSSFWorkbook excelTemplate){
-        Cell cell;
-        for (int c = 0; c <= oldParcels + 1; c++) {
+
+        int totalSize = oldParcels + additionConstantToGetIndexOfLastColumnOfParcelTable;
+
+        for (int c = 0; c <= totalSize; c++) {
             cell = row.createCell(c);
 
-            String color = "";
-            String border_bottom = "thick";
-            String border_top = "thick";
-            String border_left = "thick";
-            String border_right = "thick";
-            Integer indent = 2;
+            color = noStyling;
+            border_bottom = thick;
+            border_top = thick;
+            border_left = thick;
+            border_right = thick;
+            indent = indentValue;
 
             if (c == 0) {
-                color = "lightGray";
-                indent = 0;
-                cell.setCellValue("Alte Fläche [m2]");//todo auslagern....
+                color = lightGrayString;
+                indent = noIndentValue;
+                cell.setCellValue(oldAreaString);
             } else if (c == 1) {
                 if (oldParcels > 1) {
-                    border_right = "thin";
+                    border_right = thin;
                 }
             } else if (c == oldParcels) {
-                border_left = "thin";
+                border_left = thin;
             } else if (c < oldParcels) {
-                border_left = "thin";
-                border_right = "thin";
+                border_left = thin;
+                border_right = thin;
             }
 
             XSSFCellStyle newStyle = getStyleForCell(color, border_bottom, border_top, border_left, border_right,
@@ -448,7 +488,7 @@ public class XLSXTemplate implements ExcelTemplate {
             cell.setCellStyle(newStyle);
         }
 
-        row.setHeight((short) 600);
+        row.setHeight(rowHeightOfTableHeaderAndFooter);
     }
 
     /**
@@ -460,51 +500,42 @@ public class XLSXTemplate implements ExcelTemplate {
      * @param excelTemplate     excel workbook
      */
     private void stylingEveryOtherParcelRow(Row row, int oldParcels, int newParcels, int i, XSSFWorkbook excelTemplate){
-        Cell cell;
-        String border_bottom;
-        String border_top;
 
-        if (i % 2 == 0){
-            border_bottom = "thin";
-            border_top = "";
+        if (i % aParcelOrADprNeedsTwoRows == 0){
+            border_bottom = thin;
+            border_top = noStyling;
         } else {
-            border_bottom = "";
-            border_top = "thin";
+            border_bottom = noStyling;
+            border_top = thin;
         }
 
 
-        /*
-        todo meist werden for Schlaufen mit c < totalSize terminiert. In diesem fall wäre als sprechender c < totalColumns zu schreiben
-        und totalColumns als oldParcels + otherColumnsCount zu deklarieren
-        int totalColumns = oldParcels + PARCELTABLE_OTHER_COLUMNS_COUNT
+        int totalSize = oldParcels + additionConstantToGetIndexOfLastColumnOfParcelTable;
 
-        for (int c = 0; c < totalColumns; c++) { .....
-         */
-        for (int c = 0; c <= oldParcels + 1; c++) {
+        for (int c = 0; c <= totalSize; c++) {
             cell = row.createCell(c);
 
-            String color = "";
-            String border_left = "thick";
-            String border_right = "thick";
-            Integer indent = 2;
+            color = noStyling;
+            border_left = thick;
+            border_right = thick;
+            indent = indentValue;
 
             if (c == 0) {
-                if (i==newParcels*2+5-1){
-                    border_bottom = "thick";
-                    border_top = "";
-                    indent = 0;
-                    cell.setCellValue("Rundungsdifferenz");
+                if (i==newParcels * aParcelOrADprNeedsTwoRows + rowsBesideParcelRows - 1){
+                    border_bottom = thick;
+                    border_top = noStyling;
+                    indent = noIndentValue;
+                    cell.setCellValue(roundingDifferenceString);
                 }
             } else if (c == 1) {
                 if (oldParcels > 1) {
-                    border_right = "thin";
+                    border_right = thin;
                 }
             } else if (c == oldParcels) {
-                border_left = "thin";
+                border_left = thin;
             } else if (c < oldParcels) {
-                border_left = "thin";
-                border_right = "thin";
-                //todo Auslagerungen....
+                border_left = thin;
+                border_right = thin;
             }
             XSSFCellStyle newStyle = getStyleForCell(color, border_bottom, border_top, border_left, border_right,
                     indent, excelTemplate);
@@ -544,16 +575,16 @@ public class XLSXTemplate implements ExcelTemplate {
         todo Kohäsion: Die Parceltable soll selbst Auskunft geben darüber wieviele Zeilen sie verwendet hat
         --> Berechnung von rowStartIndex zügeln zu createParcelTable
          */
-        int rowStartIndex = (9 + 2 * newParcels - 1);
+        int rowStartIndex = (9 + aParcelOrADprNeedsTwoRows * newParcels - 1);
 
-        XSSFSheet sheet = excelTemplate.getSheet("Mutationstabelle");
+        XSSFSheet sheet = excelTemplate.getSheet(xlsxSheetName);
 
         setColumnWidth(parcels, oldParcels, sheet);
 
         addMergedRegionsDPR(rowStartIndex, parcels, sheet);
 
 
-        for (int i = rowStartIndex; i < (rowStartIndex + 3 + 2 * dpr); i++) {
+        for (int i = rowStartIndex; i < (rowStartIndex + 3 + aParcelOrADprNeedsTwoRows * dpr); i++) {
             Row row = sheet.createRow(i);
             if (i == rowStartIndex) {
 
@@ -571,7 +602,6 @@ public class XLSXTemplate implements ExcelTemplate {
 
                 stylingEveryOtherDPRRow(row, i, rowStartIndex, parcels, dpr, excelTemplate);
 
-                //todo alle styling* Methoden gemäss den Feedbacks zu den parzellenStylings anpassen
             }
         }
 
@@ -595,8 +625,10 @@ public class XLSXTemplate implements ExcelTemplate {
      */
     private void setColumnWidth(int parcels, int oldParcels, XSSFSheet sheet){
         if (parcels > oldParcels) {
-            sheet.setColumnWidth(parcels+1,14*253);
-            sheet.setColumnWidth(parcels+2,14*253);
+            sheet.setColumnWidth(parcels + additionConstantToGetIndexOfLastColumnOfParcelTable,
+                    widthOfLastParcelTableColumnAndTheFollowingColumn);
+            sheet.setColumnWidth(parcels + additionConstantToGetIndexOfNewAreaColumnOfDPRTable,
+                    widthOfLastParcelTableColumnAndTheFollowingColumn);
         }
     }
 
@@ -614,7 +646,8 @@ public class XLSXTemplate implements ExcelTemplate {
         }
 
         sheet.addMergedRegion((new CellRangeAddress(rowStartIndex + 1, rowStartIndex + 2,
-                parcels + 1, parcels + 1)));
+                parcels + additionConstantToGetIndexOfRoundingDifferenceColumnOfDPRTable,
+                parcels + additionConstantToGetIndexOfRoundingDifferenceColumnOfDPRTable)));
     }
 
     /**
@@ -624,35 +657,34 @@ public class XLSXTemplate implements ExcelTemplate {
      * @param excelTemplate     excel workbook
      */
     private void stylingFirstDPRRow(Row row, int parcels, XSSFWorkbook excelTemplate){
-        Cell cell;
 
         for (int c = 1; c <= parcels; c++) {
             cell = row.createCell(c);
-            cell.setCellValue("Liegenschaften");
+            cell.setCellValue(parcelString);
 
-            String color = "lightGray";
-            String border_bottom = "";
-            String border_top = "thick";
-            String border_left = "";
-            String border_right = "";
+            color = lightGrayString;
+            border_bottom = noStyling;
+            border_top = thick;
+            border_left = noStyling;
+            border_right = noStyling;
 
             if (c == 1) {
                 if (parcels == 1) {
-                    border_left = "thick";
-                    border_right = "thick";
+                    border_left = thick;
+                    border_right = thick;
                 } else if (parcels > 1) {
-                    border_left="thick";
+                    border_left=thick;
                 }
             } else if (c == parcels) {
-                border_right = "thick";
+                border_right = thick;
             }
 
             XSSFCellStyle newStyle = getStyleForCell(color, border_bottom, border_top, border_left, border_right,
-                    0, excelTemplate);
+                    noIndentValue, excelTemplate);
             cell.setCellStyle(newStyle);
 
         }
-        row.setHeight((short) 600);
+        row.setHeight(rowHeightOfTableHeaderAndFooter);
     }
 
     /**
@@ -663,50 +695,51 @@ public class XLSXTemplate implements ExcelTemplate {
      * @param excelTemplate     excel workbook
      */
     private void stylingSecondDPRRow (Row row, int parcels, int oldParcels, XSSFWorkbook excelTemplate){
-        Cell cell;
 
-        for (int c = 0; c <= parcels + 2; c++){
+        int totalSize = parcels + additionConstantToGetIndexOfNewAreaColumnOfDPRTable;
+
+        for (int c = 0; c <= totalSize; c++){
             cell = row.createCell(c);
 
-            String color = "lightGray";
-            String border_bottom = "thin";
-            String border_top = "thin";
-            String border_left = "thin";
-            String border_right = "thin";
+            color = lightGrayString;
+            border_bottom = thin;
+            border_top = thin;
+            border_left = thin;
+            border_right = thin;
 
             if (c==0){
-                border_top = "thick";
-                border_left = "thick";
-                border_right = "thick";
-                cell.setCellValue("Selbst. Recht");
+                border_top = thick;
+                border_left = thick;
+                border_right = thick;
+                cell.setCellValue(dprString);
 
             } else if (c==1) {
-                border_left = "thick";
-                cell.setCellValue("Grundstück-Nr.");
-            } else if (c==parcels+1){
-                border_bottom = "";
-                border_top = "thick";
-                border_right = "thick";
+                border_left = thick;
+                cell.setCellValue(parcelNumberString);
+            } else if (c==parcels + additionConstantToGetIndexOfRoundingDifferenceColumnOfDPRTable){
+                border_bottom = noStyling;
+                border_top = thick;
+                border_right = thick;
                 if (parcels >= oldParcels) {
-                    cell.setCellValue("Rundungs-differenz");
+                    cell.setCellValue(splittedRoundingDifferenceString);
                 } else {
-                    cell.setCellValue("Rundungsdifferenz");
+                    cell.setCellValue(roundingDifferenceString);
                 }
-            }else if (c==parcels + 2){
-                border_top = "thick";
-                border_left = "thick";
-                border_right = "thick";
-                cell.setCellValue("Selbst. Recht Fläche");
+            }else if (c==totalSize){
+                border_top = thick;
+                border_left = thick;
+                border_right = thick;
+                cell.setCellValue(dprAreaString);
             }
             XSSFCellStyle newStyle = getStyleForCell(color, border_bottom, border_top, border_left, border_right,
-                    0, excelTemplate);
+                    noIndentValue, excelTemplate);
             if (c==0){
                 newStyle.setVerticalAlignment(VerticalAlignment.BOTTOM);
             }
             cell.setCellStyle(newStyle);
         }
 
-        row.setHeight((short) 600);
+        row.setHeight( rowHeightOfTableHeaderAndFooter);
     }
 
     /**
@@ -717,36 +750,36 @@ public class XLSXTemplate implements ExcelTemplate {
      */
     private void stylingRowWithDPRNumber(Row row, int parcels, XSSFWorkbook excelTemplate) {
 
-        Cell cell;
-        for (int c = 0; c <= parcels + 2; c++) {
+        int totalSize = parcels + additionConstantToGetIndexOfNewAreaColumnOfDPRTable;
+        for (int c = 0; c <= totalSize; c++) {
             cell = row.createCell(c);
 
-            String color = "lightGray";
-            String border_bottom = "thick";
-            String border_top = "thin";
-            String border_left = "thin";
-            String border_right = "thick";
-            Integer indent = 0;
+            color = lightGrayString;
+            border_bottom = thick;
+            border_top = thin;
+            border_left = thin;
+            border_right = thick;
+            indent = noIndentValue;
 
 
             if (c == 0) {
-                border_left = "thick";
-                cell.setCellValue("Grundstück-Nr.");
+                border_left = thick;
+                cell.setCellValue(parcelNumberString);
 
             } else if (c == 1) {
                 color = "";
-                border_left = "thick";
-                border_right = "thin";
+                border_left = thick;
+                border_right = thin;
                 indent = 2;
             } else if (c <= parcels && parcels != 1) {
-                color = "";
-                border_right = "thin";
+                color = noStyling;
+                border_right = thin;
                 indent = 2;
-            } else if (c == parcels + 1) {
-                border_top = "";
-            } else if (c == parcels + 2) {
-                border_left = "thick";
-                cell.setCellValue("[m2]");
+            } else if (c == parcels + additionConstantToGetIndexOfRoundingDifferenceColumnOfDPRTable) {
+                border_top = noStyling;
+            } else if (c == totalSize) {
+                border_left = thick;
+                cell.setCellValue(squareMeterString);
             }
             XSSFCellStyle newStyle = getStyleForCell(color, border_bottom, border_top, border_left, border_right,
                     indent, excelTemplate);
@@ -756,7 +789,7 @@ public class XLSXTemplate implements ExcelTemplate {
             cell.setCellStyle(newStyle);
         }
 
-        row.setHeight((short) 600);
+        row.setHeight(rowHeightOfTableHeaderAndFooter);
     }
 
     /**
@@ -770,71 +803,69 @@ public class XLSXTemplate implements ExcelTemplate {
      */
     private void stylingEveryOtherDPRRow(Row row, int i, int rowStartIndex, int parcels, int dpr,
                                          XSSFWorkbook excelTemplate ) {
-        String border_bottom;
-        String border_top;
-        Cell cell;
 
-        //todo Die Methode besser dokumentieren indem anstelle der direkten Zahlen sprechende lokale Variablen eingesetzt werden
+        int totalSize = parcels + additionConstantToGetIndexOfNewAreaColumnOfDPRTable;
 
-        if ((i-rowStartIndex) % 2 == 0){
-            border_bottom = "thin";
-            border_top = "";
+
+        if ((i-rowStartIndex) % aParcelOrADprNeedsTwoRows == 0){
+            border_bottom = thin;
+            border_top = noStyling;
         } else {
-            border_bottom = "";
-            border_top = "thin";
+            border_bottom = noStyling;
+            border_top = thin;
         }
-        for (int c = 0; c <= parcels + 2; c++) {
+        for (int c = 0; c <= totalSize; c++) {
             cell = row.createCell(c);
 
-            String color = "";
-            String border_left = "thick";
-            String border_right = "thick";
+            color = noStyling;
+            border_left = thick;
+            border_right = thick;
 
             if (c == 0) {
-                if (i==dpr * 2 + rowStartIndex + 2){
-                    border_bottom = "thick";
-                    border_top = "";
+                if (i==dpr * aParcelOrADprNeedsTwoRows + rowStartIndex + 2){
+                    border_bottom = thick;
+                    border_top = noStyling;
                     cell.setCellType(CellType.STRING);
                 } else {
-                    if (border_bottom.equals("thin")){
+                    if (border_bottom.equals(thin)){
                         cell.setCellType(CellType.STRING);
                     }
                 }
             } else if (c == 1) {
-                if (i==dpr * 2 + rowStartIndex + 2){
-                    border_bottom = "thick";
-                    border_top = "";
-                    border_right = "thin";
+                if (i==dpr * aParcelOrADprNeedsTwoRows + rowStartIndex + 2){
+                    border_bottom = thick;
+                    border_top = noStyling;
+                    border_right = thin;
                 } else {
-                    border_right = "thin";
+                    border_right = thin;
                 }
             } else if (c <= parcels && parcels != 1) {
-                if (i==dpr * 2 + rowStartIndex + 2){
-                    border_bottom = "thick";
-                    border_top = "";
-                    border_left = "thin";
-                    border_right = "thin";
+                if (i==dpr * aParcelOrADprNeedsTwoRows + rowStartIndex + 2){
+                    border_bottom = thick;
+                    border_top = noStyling;
+                    border_left = thin;
+                    border_right = thin;
                 } else {
-                    border_left = "thin";
-                    border_right = "thin";
+                    border_left = thin;
+                    border_right = thin;
                 }
-            } else if (c == parcels + 1) {
-                if (i==dpr * 2 + rowStartIndex + 2){
-                    border_bottom = "thick";
-                    border_top = "";
-                    border_left = "thin";
+            } else if (c == parcels + additionConstantToGetIndexOfRoundingDifferenceColumnOfDPRTable) {
+                if (i==dpr * aParcelOrADprNeedsTwoRows + rowStartIndex + 2){
+                    border_bottom = thick;
+                    border_top = noStyling;
+                    border_left = thin;
                 } else {
-                    border_left = "thin";
+                    border_left = thin;
                 }
-            } else if (c == parcels + 2) {
-                if (i==dpr * 2 + rowStartIndex + 2){
+            } else if (c == totalSize) {
+                if (i==dpr * aParcelOrADprNeedsTwoRows + rowStartIndex + 2){
 
-                    border_bottom = "thick";
-                    border_top = "";
+                    border_bottom = thick;
+                    border_top = noStyling;
                 }
             }
             XSSFCellStyle newStyle = getStyleForCell(color, border_bottom, border_top, border_left, border_right,
-                    2, excelTemplate);
+                    indentValue, excelTemplate);
             cell.setCellStyle(newStyle);
         }
     }
