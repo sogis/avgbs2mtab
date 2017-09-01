@@ -54,7 +54,7 @@ public class ParcelContainer implements SetParcel, MetadataOfParcelMutation, Dat
     ///////////////////////////////////
 
     @Override
-    public List<Integer> getOldParcelNumbers() {
+    public List<Integer> getOrderedListOfOldParcelNumbers() {
         List<Integer> oldparcelnumbers = new ArrayList<>();
         //Add all parcelnumbers in the inner-map from the main map to the oldparcelmap
         for(Integer key : map.keySet()) {
@@ -76,7 +76,7 @@ public class ParcelContainer implements SetParcel, MetadataOfParcelMutation, Dat
     }
 
     @Override
-    public List<Integer> getNewParcelNumbers() {
+    public List<Integer> getOrderedListOfNewParcelNumbers() {
         List<Integer> newparcelnumbers = new ArrayList<>(parcelnewareamap.keySet());
         Collections.sort(newparcelnumbers);
         return newparcelnumbers;
@@ -84,7 +84,7 @@ public class ParcelContainer implements SetParcel, MetadataOfParcelMutation, Dat
     @Override
     public Integer getAddedArea(int newparcel, int oldparcel) {
         Map addmap = map.get(newparcel);
-        Integer areaadded = 0;
+        Integer areaadded = null; //Todo: Etwas unglücklich, aber bisher unvermeidlich!
         if (addmap!=null) {
             areaadded = (Integer) addmap.get(oldparcel);
         }
@@ -105,13 +105,13 @@ public class ParcelContainer implements SetParcel, MetadataOfParcelMutation, Dat
 
     @Override
     public Integer getNumberOfOldParcels() {
-        Integer numberofoldparcels = getOldParcelNumbers().size();
+        Integer numberofoldparcels = getOrderedListOfOldParcelNumbers().size();
         return numberofoldparcels;
     }
 
     @Override
     public Integer getNumberOfNewParcels() {
-        Integer numberofnewparcels = getNewParcelNumbers().size();
+        Integer numberofnewparcels = getOrderedListOfNewParcelNumbers().size();
         return numberofnewparcels;
     }
 
