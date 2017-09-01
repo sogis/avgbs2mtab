@@ -64,7 +64,7 @@ public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtracti
     }
 
     @Override
-    public List<Integer> getParcelsAffectedByDPRs() { //todo Umweg über TreeMap ist unnötig - direkt in Liste adden und dann die liste sortieren
+    public List<Integer> getOrderedListOfParcelsAffectedByDPRs() { //todo Umweg über TreeMap ist unnötig - direkt in Liste adden und dann die liste sortieren
         HashMap<Integer,Integer> affectedparcelsnumbermap = new HashMap<>();
         for(String key : affectedparcelsmap.keySet()) {
             int keyparcelnumber = numberandrefmap.get(key);
@@ -76,7 +76,7 @@ public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtracti
     }
 
     @Override
-    public List<Integer> getNewDPRs() { //todo sortierumweg
+    public List<Integer> getOrderedListOfNewDPRs() { //todo sortierumweg
         Map<Integer,Map> sortedmap = new TreeMap<>(map);
         List<Integer> newdprs = new ArrayList<>(sortedmap.keySet());
         for (Integer key : newareamap.keySet()) {

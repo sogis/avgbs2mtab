@@ -4,9 +4,9 @@ import java.util.List;
 
 public interface DataExtractionDPR {
 
-    public List<Integer> getParcelsAffectedByDPRs();
+    public List<Integer> getOrderedListOfParcelsAffectedByDPRs();
 
-    public List<Integer> getNewDPRs();
+    public List<Integer> getOrderedListOfNewDPRs();
 
     public Integer getAddedAreaDPR(int parcelNumberAffectedByDPR, int dpr);
 

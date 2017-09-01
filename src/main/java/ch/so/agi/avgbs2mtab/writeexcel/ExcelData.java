@@ -54,13 +54,9 @@ public class ExcelData implements WriteExcel {
         try {
             OutputStream excelFile = new FileOutputStream(filePath);
             XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
-
-            /*
-            todo wieso ordered? Eine List ist per se nicht geordnet - Falls Interface dies leisten soll den Namen des Interfaces anpassen.
-            Etwa: dataExtractionParcel.getSortedOldParcelNumbers()
-            */
-            List<Integer> orderedListOfOldParcelNumbers = dataExtractionParcel.getOldParcelNumbers();
-            List<Integer> orderedListOfNewParcelNumbers = dataExtractionParcel.getNewParcelNumbers();
+            
+            List<Integer> orderedListOfOldParcelNumbers = dataExtractionParcel.getOrderedListOfOldParcelNumbers();
+            List<Integer> orderedListOfNewParcelNumbers = dataExtractionParcel.getOrderedListOfNewParcelNumbers();
 
             writeParcelsIntoParcelTable(orderedListOfOldParcelNumbers, orderedListOfNewParcelNumbers, xlsxSheet);
 
@@ -665,8 +661,8 @@ public class ExcelData implements WriteExcel {
             OutputStream ExcelFile = new FileOutputStream(filePath);
             XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
 
-            List<Integer> orderedListOfParcelNumbers = dataExtractionDPR.getParcelsAffectedByDPRs();
-            List<Integer> orderedListOfDPRs = dataExtractionDPR.getNewDPRs();
+            List<Integer> orderedListOfParcelNumbers = dataExtractionDPR.getOrderedListOfParcelsAffectedByDPRs();
+            List<Integer> orderedListOfDPRs = dataExtractionDPR.getOrderedListOfNewDPRs();
 
 
             Integer numberOfNewParcelsInParcelTable = metadataOfParcelMutation.getNumberOfNewParcels();
