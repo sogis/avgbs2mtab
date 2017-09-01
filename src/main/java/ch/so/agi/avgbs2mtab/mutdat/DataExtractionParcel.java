@@ -4,9 +4,9 @@ import java.util.List;
 
 public interface DataExtractionParcel {
 
-    public List<Integer> getOldParcelNumbers();
+    public List<Integer> getOrderedListOfOldParcelNumbers();
 
-    public List<Integer> getNewParcelNumbers();
+    public List<Integer> getOrderedListOfNewParcelNumbers();
 
     public Integer getAddedArea(int oldParcelNumber, int newParcelNumber);
 

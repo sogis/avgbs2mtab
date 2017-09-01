@@ -275,7 +275,7 @@ public class ReadXtf {
             for(Integer i=0;i<numberofdeletedparcels;++i) {
                 Integer nummer = Integer.parseInt(iomObj.getattrobj("geloeschteGrundstuecke", i).getattrvalue("Nummer"));
                 DataExtractionParcel parceldatagetter = (DataExtractionParcel)parceldump;
-                if(!parceldatagetter.getOldParcelNumbers().contains(nummer)&&!parceldatagetter.getNewParcelNumbers().contains(nummer)) {
+                if(!parceldatagetter.getOrderedListOfOldParcelNumbers().contains(nummer)&&!parceldatagetter.getOrderedListOfNewParcelNumbers().contains(nummer)) {
                     drpdump.setDPRNewArea(nummer, 0);
                 }
             }

@@ -2,7 +2,6 @@ package ch.so.agi.avgbs2mtab.readxtf;
 
 import ch.so.agi.avgbs2mtab.mutdat.DPRContainer;
 import ch.so.agi.avgbs2mtab.mutdat.ParcelContainer;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -19,7 +18,7 @@ public class ReadXtfTest {
     ParcelContainer parceldump = new ParcelContainer();
     DPRContainer dprdump = new DPRContainer();
 
-
+    //todo bitte sprechend - was macht der Test? Gute Beispiele für Benennung siehe Avgbs2mtabMainTest
     @Test
     public void readFile1() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
@@ -28,8 +27,8 @@ public class ReadXtfTest {
         int addedarea = parceldump.getAddedArea(90154,748);
         int numberofnewparcels = parceldump.getNumberOfNewParcels();
         int numberofoldparcels = parceldump.getNumberOfOldParcels();
-        List<Integer> newparcels = parceldump.getNewParcelNumbers();
-        List<Integer> oldparcels = parceldump.getOldParcelNumbers();
+        List<Integer> newparcels = parceldump.getOrderedListOfNewParcelNumbers();
+        List<Integer> oldparcels = parceldump.getOrderedListOfOldParcelNumbers();
         int restarea = parceldump.getRestAreaOfParcel(751);
         int newarea = parceldump.getNewArea(751);
         int rundungsdifferenz = parceldump.getRoundingDifference(753);
@@ -44,7 +43,7 @@ public class ReadXtfTest {
         assertTrue(rundungsdifferenz == -1);
     }
 
-
+    //todo sprechend
     @Test
     public void readFile2() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
@@ -53,8 +52,8 @@ public class ReadXtfTest {
         int addedarea = parceldump.getAddedArea(4004,695);
         int numberofnewparcels = parceldump.getNumberOfNewParcels();
         int numberofoldparcels = parceldump.getNumberOfOldParcels();
-        List<Integer> newparcels = parceldump.getNewParcelNumbers();
-        List<Integer> oldparcels = parceldump.getOldParcelNumbers();
+        List<Integer> newparcels = parceldump.getOrderedListOfNewParcelNumbers();
+        List<Integer> oldparcels = parceldump.getOrderedListOfOldParcelNumbers();
         int restarea = parceldump.getRestAreaOfParcel(701);
         int newarea = parceldump.getNewArea(701);
         int rundungsdifferenz = parceldump.getRoundingDifference(701);
@@ -70,6 +69,7 @@ public class ReadXtfTest {
         assertTrue(rundungsdifferenz == -1);
     }
 
+    //todo sprechend: Welcher fachliche Fall wird abgedeckt? - In Testname aufnehmen
     @Test
     public void readFileWithDPR() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
@@ -77,8 +77,8 @@ public class ReadXtfTest {
         xtfreader.readFile(classLoader.getResource("SO0200002407_40051_20150811.xtf").getPath());
         int numberofdprs = dprdump.getNumberOfDPRs();
         int numberofareasafected = dprdump.getNumberOfParcelsAffectedByDPRs();
-        List<Integer> parcelsaffectedbydprs = dprdump.getParcelsAffectedByDPRs();
-        List<Integer> newdprs = dprdump.getNewDPRs();
+        List<Integer> parcelsaffectedbydprs = dprdump.getOrderedListOfParcelsAffectedByDPRs();
+        List<Integer> newdprs = dprdump.getOrderedListOfNewDPRs();
         int getaddedarea = dprdump.getAddedAreaDPR(2141,40051);
         int newarea = dprdump.getNewAreaDPR(40051);
         int roundingdifference = dprdump.getRoundingDifferenceDPR(40051);
@@ -93,14 +93,15 @@ public class ReadXtfTest {
         assertTrue(roundingdifference == 0);
     }
 
+    //todo sprechend - klarer Methodenname - dieser darf auch lang sein
     @Test
     public void readFileWithDeleteDRP() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
         ClassLoader classLoader = getClass().getClassLoader();
         xtfreader.readFile(classLoader.getResource("SO0200002407_40061_20150814.xtf").getPath());
         int numberofdprs = dprdump.getNumberOfDPRs();
-        List<Integer> parcelsaffectedbydprsa = dprdump.getParcelsAffectedByDPRs();
-        List<Integer> newdprs = dprdump.getNewDPRs();
+        List<Integer> parcelsaffectedbydprsa = dprdump.getOrderedListOfParcelsAffectedByDPRs();
+        List<Integer> newdprs = dprdump.getOrderedListOfNewDPRs();
         int newarea = dprdump.getNewAreaDPR(40051);
         assertTrue(numberofdprs==1);
         assertTrue(parcelsaffectedbydprsa.size()==0);
@@ -109,6 +110,7 @@ public class ReadXtfTest {
         assertTrue(newarea==0);
     }
 
+    //todo sprechend - was ist am getesteten File "complex"?
     @Test
     public void readComplexFile() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
@@ -116,8 +118,8 @@ public class ReadXtfTest {
         xtfreader.readFile(classLoader.getResource("SO0200002427_809_20170529.xtf").getPath());
         int numberofnewparcels = parceldump.getNumberOfNewParcels();
         int numberofoldparcels = parceldump.getNumberOfOldParcels();
-        List<Integer> newparcels = parceldump.getNewParcelNumbers();
-        List<Integer> oldparcels = parceldump.getOldParcelNumbers();
+        List<Integer> newparcels = parceldump.getOrderedListOfNewParcelNumbers();
+        List<Integer> oldparcels = parceldump.getOrderedListOfOldParcelNumbers();
         int gotareafromoldparcel = parceldump.getAddedArea(1273,1864);
         int restarea = parceldump.getRestAreaOfParcel(1273);
         assertTrue(numberofnewparcels==3);
@@ -130,8 +132,8 @@ public class ReadXtfTest {
         assertTrue(restarea==352);
         int numberofdprs = dprdump.getNumberOfDPRs();
         int numberofareasafected = dprdump.getNumberOfParcelsAffectedByDPRs();
-        List<Integer> parcelsaffectedbydprsa = dprdump.getParcelsAffectedByDPRs();
-        List<Integer> newdprs = dprdump.getNewDPRs();
+        List<Integer> parcelsaffectedbydprsa = dprdump.getOrderedListOfParcelsAffectedByDPRs();
+        List<Integer> newdprs = dprdump.getOrderedListOfNewDPRs();
         assertTrue(numberofdprs==1);
         assertTrue(numberofareasafected==1);
         List<Integer> newdprsastheyshouldbe = Arrays.asList(1941);
@@ -140,13 +142,14 @@ public class ReadXtfTest {
         assertTrue(parcelsaffectedbydprsa.containsAll(parcelsaffectedasitshouldbe) && parcelsaffectedbydprsa.size()==parcelsaffectedasitshouldbe.size());
     }
 
+    //todo sprechend
     @Test
     public void oensingentest() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
         ClassLoader classLoader = getClass().getClassLoader();
         xtfreader.readFile(classLoader.getResource("SO0200002407_4002_20150807.xtf").getPath());
-        List<Integer> newparcels = parceldump.getNewParcelNumbers();
-        List<Integer> oldparcels = parceldump.getOldParcelNumbers();
+        List<Integer> newparcels = parceldump.getOrderedListOfNewParcelNumbers();
+        List<Integer> oldparcels = parceldump.getOrderedListOfOldParcelNumbers();
         int numberofoldparcels = parceldump.getNumberOfOldParcels();
         List<Integer> newparcelsasitshouldbe = Arrays.asList(2199);
         List<Integer> oldparcelsasitshouldbe = Arrays.asList(681,682,2199);
@@ -155,17 +158,19 @@ public class ReadXtfTest {
         assertTrue(numberofoldparcels==3);
     }
 
+    //todo sprechend
     @Test
     public void readFileWithoutDRP() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
         ClassLoader classLoader = getClass().getClassLoader();
         xtfreader.readFile(classLoader.getResource("SO0200002407_4002_20150807.xtf").getPath());
         int numberofdprs = dprdump.getNumberOfDPRs();
-        List<Integer> parcelsaffectedbydprsa = dprdump.getParcelsAffectedByDPRs();
-        List<Integer> newdprs = dprdump.getNewDPRs();
+        List<Integer> parcelsaffectedbydprsa = dprdump.getOrderedListOfParcelsAffectedByDPRs();
+        List<Integer> newdprs = dprdump.getOrderedListOfNewDPRs();
         assertTrue(numberofdprs==0);
     }
 
+    //todo sprechender und camelCase
     @Test
     public void filewithwrongextension() {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);

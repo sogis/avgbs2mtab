@@ -1,5 +1,7 @@
-package ch.so.agi.avgbs2mtab.mutdat;
+package ch.so.agi.avgbs2mtab.writeexcel;
 
+import ch.so.agi.avgbs2mtab.mutdat.MetadataOfDPRMutation;
+import ch.so.agi.avgbs2mtab.mutdat.MetadataOfParcelMutation;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
@@ -60,11 +62,15 @@ public class XLSXTemplate implements ExcelTemplate {
 
     private Cell cell;
 
-
-
-
-
-    public XSSFWorkbook createExcelTemplate (String filePath,MetadataOfParcelMutation metadataOfParcelMutation,
+    /**
+     *
+     * Gets metadata and creates an excel template, with two styled tables
+     * @param filePath                  path, where excel file should be saved to
+     * @param metadataOfParcelMutation  MetadataOfParcelMutation
+     * @param metadataOfDPRMutation     MetadataOfDPRMutation
+     * @return                          excel template, with two styled tables
+     */
+    XSSFWorkbook createExcelTemplate (String filePath,MetadataOfParcelMutation metadataOfParcelMutation,
                                              MetadataOfDPRMutation metadataOfDPRMutation ) {
 
         Integer numberOfNewParcels = metadataOfParcelMutation.getNumberOfNewParcels();
@@ -79,6 +85,12 @@ public class XLSXTemplate implements ExcelTemplate {
 
     /**
      * generates an excel template, with two styled tables
+     * @param filePath                          path, where excel file should be saved to
+     * @param numberOfNewParcels                amount of new parcels
+     * @param numberOfOldParcels                amount of old parcels
+     * @param numberOfParcelsAffectedByDPRs     amount of parcels which ar affected by dprs
+     * @param numberOfDPRs                      amount of dprs
+     * @return                                  excel template with two styled tables
      */
     private XSSFWorkbook generateWorkbookTemplate(String filePath, int numberOfNewParcels, int numberOfOldParcels,
                                                   int numberOfParcelsAffectedByDPRs, int numberOfDPRs){
@@ -107,13 +119,12 @@ public class XLSXTemplate implements ExcelTemplate {
     @Override
     public XSSFWorkbook createWorkbook(String filePath) {
 
-        //todo Wo wird der Stream in jedem Fall wieder geschlossen?
-
         try {
             OutputStream ExcelFile = new FileOutputStream(filePath);
             XSSFWorkbook workbook = new XSSFWorkbook();
             workbook.createSheet(xlsxSheetName);
             workbook.write(ExcelFile);
+            ExcelFile.close();
 
             return workbook;
 

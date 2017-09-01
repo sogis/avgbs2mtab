@@ -1,6 +1,7 @@
 package ch.so.agi.avgbs2mtab.mutdat;
 
 
+import ch.so.agi.avgbs2mtab.writeexcel.XLSXTemplate;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
@@ -13,11 +14,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+//todo Verschieben in package writeexcel
 public class XLSXTemplateTest {
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    //todo Dies ist ein SonnenpfadTest - richtig? camelCase
     @Test
     public void WorkbookCreatedOnWritablePath() throws Exception {
 
@@ -30,10 +33,11 @@ public class XLSXTemplateTest {
             xlsxTemplate.createWorkbook(filePath);
         } catch (Exception e) {
             throw new RuntimeException(e);
+            //todo Anstatt eine RuntimeException werfen Assert.fail nutzen mit sprechender Meldung
         }
-
     }
 
+    //todo camelCase
     @Test
     public void CorrectStyledCellsInExcel() throws Exception {
         File excelFile = folder.newFile("test.xlsx");
@@ -59,6 +63,7 @@ public class XLSXTemplateTest {
         }
     }
 
+    //todo camelCase
     @Test
     public void CorrectStyledCellsInExcelWithoutAnyParcelsAndDPRs() throws Exception {
         File excelFile = folder.newFile("test.xlsx");
