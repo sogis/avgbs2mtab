@@ -64,26 +64,27 @@ public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtracti
     }
 
     @Override
-    public List<Integer> getParcelsAffectedByDPRs() { //todo Umweg über TreeMap ist unnötig - direkt in Liste adden und dann die liste sortieren
-        HashMap<Integer,Integer> affectedparcelsnumbermap = new HashMap<>();
+    public List<Integer> getParcelsAffectedByDPRs() {
+        List<Integer> parcelsaffectedmydprs = new ArrayList<>();
         for(String key : affectedparcelsmap.keySet()) {
             int keyparcelnumber = numberandrefmap.get(key);
-            affectedparcelsnumbermap.put(keyparcelnumber,keyparcelnumber);
+            if(!parcelsaffectedmydprs.contains(keyparcelnumber)) {
+                parcelsaffectedmydprs.add(keyparcelnumber);
+            }
         }
-        Map<Integer,Integer> sortedmap = new TreeMap<>(affectedparcelsnumbermap); //sortiert die Map der grösse der keys nach
-        List<Integer> parcelsaffectedmydprs = new ArrayList<>(sortedmap.keySet());
+        Collections.sort(parcelsaffectedmydprs);
         return parcelsaffectedmydprs;
     }
 
     @Override
-    public List<Integer> getNewDPRs() { //todo sortierumweg
-        Map<Integer,Map> sortedmap = new TreeMap<>(map);
-        List<Integer> newdprs = new ArrayList<>(sortedmap.keySet());
+    public List<Integer> getNewDPRs() {
+        List<Integer> newdprs = new ArrayList<>(map.keySet());
         for (Integer key : newareamap.keySet()) {
             if(newareamap.get(key).equals(0)) {
                 newdprs.add(key);
             }
         }
+        Collections.sort(newdprs);
         return newdprs;
     }
 

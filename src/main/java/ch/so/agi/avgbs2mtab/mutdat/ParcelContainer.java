@@ -21,47 +21,22 @@ public class ParcelContainer implements SetParcel, MetadataOfParcelMutation, Dat
         //Versuch die Parcelmap aus der main-map zu holen und füge den neuen Wert hinzu. Hat es noch keine Parcelmap von dieser Parzelle, dann leg eine neue an.
         //Schlussendlich füge die Parcemap (neu oder alt) wieder zur main-map hinzu.
 
-        Map<Integer,Integer> parcelmap = new Hashtable<>(); //Maps der Zugänge der jeweiligen neuen Parzelle innerhalb der Haupt Map.
-        if (map.get(newparcelnumber) != null) {
-            parcelmap = map.get(newparcelnumber);
-            parcelmap.put(oldparcelnumber,area);
-        } else {
-            parcelmap.put(oldparcelnumber,area);
-        }
-        map.put(newparcelnumber,parcelmap);
-
-
-        /*
-        todo etwa so? - Dann brauchts auch keinen Kommentar da der Code sich selbst erklärt
         Map<Integer,Integer> parcelmap = map.get(newparcelnumber);
         if(parcelmap == null){
             parcelmap = new Hashtable<Integer, Integer>();
             map.put(newparcelnumber, parcelmap);
         }
         parcelmap.put(oldparcelnumber, area);
-        */
     }
 
     @Override
-    public void setParcelNewArea(int newparcelnumber, int newarea) { //todo wieso try catch? - weg damit...
-        try {
+    public void setParcelNewArea(int newparcelnumber, int newarea) {
             parcelnewareamap.put(newparcelnumber,newarea);
-        } catch (Exception e) {
-            System.out.println("Fehler in der Methode setParcelNewArea");
-            throw new RuntimeException(e);
-        }
-
     }
 
     @Override
-    public void setParcelOldArea(int oldparcelnumber, int oldarea) { //todo wieso try catch? - weg damit...
-        try {
+    public void setParcelOldArea(int oldparcelnumber, int oldarea) {
             parcelrestareamap.put(oldparcelnumber,oldarea);
-        } catch (Exception e) {
-            System.out.println("Fehler in der Methode setParcelNewArea");
-            throw new RuntimeException(e);
-        }
-
     }
 
     @Override
@@ -70,14 +45,8 @@ public class ParcelContainer implements SetParcel, MetadataOfParcelMutation, Dat
     }
 
     @Override
-    public void setParcelRoundingDifference(int parcel, int roundingdifference) { //todo wieso try catch? - weg damit...
-        try {
+    public void setParcelRoundingDifference(int parcel, int roundingdifference) {
             parcelroundingdifferencemap.put(parcel,roundingdifference); //todo camel case!!
-        } catch (Exception e) {
-            System.out.println("Fehler in der Methode setParcelRoundingDifference");
-            throw new RuntimeException(e);
-        }
-
     }
 
     ////////////////////////////////////
@@ -86,35 +55,36 @@ public class ParcelContainer implements SetParcel, MetadataOfParcelMutation, Dat
 
     @Override
     public List<Integer> getOldParcelNumbers() {
-        HashMap<Integer,Integer> oldparcelmap = new HashMap<>();
+        List<Integer> oldparcelnumbers = new ArrayList<>();
         //Add all parcelnumbers in the inner-map from the main map to the oldparcelmap
         for(Integer key : map.keySet()) {
             Map internalmap = map.get(key);
             for(Object keyoldparcels : internalmap.keySet()) {
-                oldparcelmap.put((Integer) keyoldparcels,(Integer) keyoldparcels);
+                if(!oldparcelnumbers.contains(keyoldparcels)) {
+                    oldparcelnumbers.add((Integer) keyoldparcels);
+                }
             }
         }
         //Add also all parcelnumbers from parcelrestareamap to the oldparcelmap
         for(Integer key : parcelrestareamap.keySet()) {
-            oldparcelmap.put(key,key);
+            if(!oldparcelnumbers.contains(key)) {
+                oldparcelnumbers.add(key);
+            }
         }
-        Map<Integer,Integer> sortedmap = new TreeMap<>(oldparcelmap); //sortiert die Map der grösse der keys nach
-        List<Integer> oldparcelnumbers = new ArrayList<>(sortedmap.keySet()); //todo TreeMap ist überflüssig - gleich in List einfügen und diese am Schluss sortieren
+        Collections.sort(oldparcelnumbers);
         return oldparcelnumbers;
     }
 
     @Override
     public List<Integer> getNewParcelNumbers() {
-        Map<Integer,Integer> sortedmap = new TreeMap<>(parcelnewareamap); //sortiert die Map der grösse der keys nach
-        List<Integer> newparcelnumbers = new ArrayList<>(sortedmap.keySet()); //todo TreeMap ist überflüssig
+        List<Integer> newparcelnumbers = new ArrayList<>(parcelnewareamap.keySet());
+        Collections.sort(newparcelnumbers);
         return newparcelnumbers;
     }
-
-    //todo Einen Rückgabewert von Null ist häufig keine gute Idee - insbesondere in einer Methode die Teil eins Interface ist!
     @Override
     public Integer getAddedArea(int newparcel, int oldparcel) {
         Map addmap = map.get(newparcel);
-        Integer areaadded = null;
+        Integer areaadded = 0;
         if (addmap!=null) {
             areaadded = (Integer) addmap.get(oldparcel);
         }
@@ -122,8 +92,8 @@ public class ParcelContainer implements SetParcel, MetadataOfParcelMutation, Dat
     }
 
     @Override
-    public Integer getNewArea(int newParcelNumber) {//todo int Integer
-        int newarea = parcelnewareamap.get(newParcelNumber);
+    public Integer getNewArea(int newParcelNumber) {
+        Integer newarea = parcelnewareamap.get(newParcelNumber);
         return newarea;
     }
 
@@ -134,20 +104,20 @@ public class ParcelContainer implements SetParcel, MetadataOfParcelMutation, Dat
     }
 
     @Override
-    public Integer getNumberOfOldParcels() { //todo int Integer
-        int numberofoldparcels = getOldParcelNumbers().size();
+    public Integer getNumberOfOldParcels() {
+        Integer numberofoldparcels = getOldParcelNumbers().size();
         return numberofoldparcels;
     }
 
     @Override
-    public Integer getNumberOfNewParcels() { //todo int Integer
-        int numberofnewparcels = getNewParcelNumbers().size();
+    public Integer getNumberOfNewParcels() {
+        Integer numberofnewparcels = getNewParcelNumbers().size();
         return numberofnewparcels;
     }
 
     @Override
-    public Integer getRestAreaOfParcel(int oldParcelNumber) { //todo int Integer
-        int restarea = parcelrestareamap.get(oldParcelNumber);
+    public Integer getRestAreaOfParcel(int oldParcelNumber) {
+        Integer restarea = parcelrestareamap.get(oldParcelNumber);
         return restarea;
     }
 

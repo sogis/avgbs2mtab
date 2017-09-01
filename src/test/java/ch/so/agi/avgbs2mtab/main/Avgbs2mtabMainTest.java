@@ -232,8 +232,7 @@ public class Avgbs2mtabMainTest {
                 xlsxDataNumeric,
                 expectedValuesString,
                 xlsxDataString);
-
-
+        
         Assert.assertTrue(allValuesAreCorrect);
     }
 
