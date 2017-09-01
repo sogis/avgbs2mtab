@@ -210,12 +210,11 @@ public class ReadXtf {
                 parceldump.setParcelNewArea(parcelnumber, area);
                 parceldump.setParcelOldArea(parcelnumber,area); //vorläufig wird die alte Fläche = neue Fläche gesetzt.
 
-                try {
-                    int roundingdifference = Integer.parseInt(iomObj.getattrvalue("Korrektur"));
-                    parceldump.setParcelRoundingDifference(parcelnumber, roundingdifference);
-                } catch (NumberFormatException e) {
-                    throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_NUMBERFORMAT, "NumberFormatException");
-                };
+                String roundingDiffString = iomObj.getattrvalue("Korrektur");
+                if(roundingDiffString != null && roundingDiffString.length() > 0){
+                    int roundingDifference = Integer.parseInt(roundingDiffString);
+                    parceldump.setParcelRoundingDifference(parcelnumber, roundingDifference);
+                }
 
                 getZugaenge(iomObj, parcelnumber, area);
             }
