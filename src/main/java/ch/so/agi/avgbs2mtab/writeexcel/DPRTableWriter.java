@@ -1,7 +1,6 @@
 package ch.so.agi.avgbs2mtab.writeexcel;
 
 import ch.so.agi.avgbs2mtab.mutdat.DataExtractionDPR;
-import ch.so.agi.avgbs2mtab.mutdat.XLSXTemplate;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;

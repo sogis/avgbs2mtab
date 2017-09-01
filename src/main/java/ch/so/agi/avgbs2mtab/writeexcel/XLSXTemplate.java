@@ -1,5 +1,7 @@
-package ch.so.agi.avgbs2mtab.mutdat;
+package ch.so.agi.avgbs2mtab.writeexcel;
 
+import ch.so.agi.avgbs2mtab.mutdat.MetadataOfDPRMutation;
+import ch.so.agi.avgbs2mtab.mutdat.MetadataOfParcelMutation;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
@@ -10,7 +12,6 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 //todo Ist dies eine Util-Klasse? Sprich sind nicht alle Methoden darin statisch? Falls ja diese auch mit keyword static versehen...
-//todo Verschieben in package writeexcel
 /**
  * The class XLSXTemplate generates an excel template, where the two tables (parcel and dpr table) are already styled
  */
@@ -69,7 +70,7 @@ public class XLSXTemplate implements ExcelTemplate {
      * @param metadataOfDPRMutation     MetadataOfDPRMutation
      * @return                          excel template, with two styled tables
      */
-    public XSSFWorkbook createExcelTemplate (String filePath,MetadataOfParcelMutation metadataOfParcelMutation,
+    XSSFWorkbook createExcelTemplate (String filePath,MetadataOfParcelMutation metadataOfParcelMutation,
                                              MetadataOfDPRMutation metadataOfDPRMutation ) {
 
         Integer numberOfNewParcels = metadataOfParcelMutation.getNumberOfNewParcels();

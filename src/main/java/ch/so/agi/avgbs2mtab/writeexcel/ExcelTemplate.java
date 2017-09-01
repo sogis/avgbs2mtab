@@ -1,4 +1,4 @@
-package ch.so.agi.avgbs2mtab.mutdat;
+package ch.so.agi.avgbs2mtab.writeexcel;
 
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;

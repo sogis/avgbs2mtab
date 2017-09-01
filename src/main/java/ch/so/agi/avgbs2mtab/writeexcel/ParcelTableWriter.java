@@ -1,7 +1,6 @@
 package ch.so.agi.avgbs2mtab.writeexcel;
 
 import ch.so.agi.avgbs2mtab.mutdat.DataExtractionParcel;
-import ch.so.agi.avgbs2mtab.mutdat.XLSXTemplate;
 import ch.so.agi.avgbs2mtab.util.Avgbs2MtabException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;

@@ -1,6 +1,7 @@
 package ch.so.agi.avgbs2mtab.mutdat;
 
 
+import ch.so.agi.avgbs2mtab.writeexcel.XLSXTemplate;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;

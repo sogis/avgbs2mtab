@@ -1,6 +1,5 @@
 package ch.so.agi.avgbs2mtab.writeexcel;
 
-import ch.so.agi.avgbs2mtab.mutdat.XLSXTemplate;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.junit.Assert;
