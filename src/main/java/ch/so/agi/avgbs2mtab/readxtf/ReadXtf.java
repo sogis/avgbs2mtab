@@ -31,8 +31,8 @@ public class ReadXtf {
     private SetParcel parceldump;
     private SetDPR drpdump;
 
-    private HashSet<String> parcelMetadataSet = null; //todo Sprechender Name und Beschreibung
-    private HashMap<String,HashMap> dprMetadataMap = null; //todo Sprechender Name und Beschreibung
+    private HashSet<String> parcelMetadataSet = null; //contains all the Refs that are affected in this Mutation.
+    private HashMap<String,HashMap> dprMetadataMap = null; //contains the metadata of the drps.
 
 
     public ReadXtf(SetParcel parceldump, SetDPR drpdump) {

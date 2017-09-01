@@ -18,9 +18,8 @@ public class ReadXtfTest {
     ParcelContainer parceldump = new ParcelContainer();
     DPRContainer dprdump = new DPRContainer();
 
-    //todo bitte sprechend - was macht der Test? Gute Beispiele für Benennung siehe Avgbs2mtabMainTest
     @Test
-    public void readFile1() throws Exception {
+    public void readBigMutationWith14Parcels() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
         ClassLoader classLoader = getClass().getClassLoader();
         xtfreader.readFile(classLoader.getResource("SO0200002407_4003_20150807.xtf").getPath());
@@ -43,9 +42,8 @@ public class ReadXtfTest {
         assertTrue(rundungsdifferenz == -1);
     }
 
-    //todo sprechend
     @Test
-    public void readFile2() throws Exception {
+    public void readMutationWith7Parcls() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
         ClassLoader classLoader = getClass().getClassLoader();
         xtfreader.readFile(classLoader.getResource("SO0200002407_4004_20150810.xtf").getPath());
@@ -69,9 +67,8 @@ public class ReadXtfTest {
         assertTrue(rundungsdifferenz == -1);
     }
 
-    //todo sprechend: Welcher fachliche Fall wird abgedeckt? - In Testname aufnehmen
     @Test
-    public void readFileWithDPR() throws Exception {
+    public void readMutationWithNewDpr() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
         ClassLoader classLoader = getClass().getClassLoader();
         xtfreader.readFile(classLoader.getResource("SO0200002407_40051_20150811.xtf").getPath());
@@ -93,9 +90,8 @@ public class ReadXtfTest {
         assertTrue(roundingdifference == 0);
     }
 
-    //todo sprechend - klarer Methodenname - dieser darf auch lang sein
     @Test
-    public void readFileWithDeleteDRP() throws Exception {
+    public void readMutationWithDeleteDRP() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
         ClassLoader classLoader = getClass().getClassLoader();
         xtfreader.readFile(classLoader.getResource("SO0200002407_40061_20150814.xtf").getPath());
@@ -110,9 +106,8 @@ public class ReadXtfTest {
         assertTrue(newarea==0);
     }
 
-    //todo sprechend - was ist am getesteten File "complex"?
     @Test
-    public void readComplexFile() throws Exception {
+    public void readMutationWithParcelsAndDPRs() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
         ClassLoader classLoader = getClass().getClassLoader();
         xtfreader.readFile(classLoader.getResource("SO0200002427_809_20170529.xtf").getPath());
@@ -142,9 +137,8 @@ public class ReadXtfTest {
         assertTrue(parcelsaffectedbydprsa.containsAll(parcelsaffectedasitshouldbe) && parcelsaffectedbydprsa.size()==parcelsaffectedasitshouldbe.size());
     }
 
-    //todo sprechend
     @Test
-    public void oensingentest() throws Exception {
+    public void readMutation3ParcelsToOne() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
         ClassLoader classLoader = getClass().getClassLoader();
         xtfreader.readFile(classLoader.getResource("SO0200002407_4002_20150807.xtf").getPath());
@@ -153,33 +147,10 @@ public class ReadXtfTest {
         int numberofoldparcels = parceldump.getNumberOfOldParcels();
         List<Integer> newparcelsasitshouldbe = Arrays.asList(2199);
         List<Integer> oldparcelsasitshouldbe = Arrays.asList(681,682,2199);
+        int numberofdprs = dprdump.getNumberOfDPRs();
         assertTrue(newparcels.containsAll(newparcelsasitshouldbe) && newparcels.size()==newparcelsasitshouldbe.size());
         assertTrue(oldparcels.containsAll(oldparcelsasitshouldbe) && oldparcels.size()==oldparcelsasitshouldbe.size());
         assertTrue(numberofoldparcels==3);
-    }
-
-    //todo sprechend
-    @Test
-    public void readFileWithoutDRP() throws Exception {
-        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
-        ClassLoader classLoader = getClass().getClassLoader();
-        xtfreader.readFile(classLoader.getResource("SO0200002407_4002_20150807.xtf").getPath());
-        int numberofdprs = dprdump.getNumberOfDPRs();
-        List<Integer> parcelsaffectedbydprsa = dprdump.getOrderedListOfParcelsAffectedByDPRs();
-        List<Integer> newdprs = dprdump.getOrderedListOfNewDPRs();
         assertTrue(numberofdprs==0);
-    }
-
-    //todo sprechender und camelCase
-    @Test
-    public void filewithwrongextension() {
-        ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
-        ClassLoader classLoader = getClass().getClassLoader();
-        try {
-            xtfreader.readFile(classLoader.getResource("SO0200002407_4001_20150806_wrong_type.xml").getPath());
-        }catch (IOException e) {
-            System.out.println("Got IOException as Expected. "+e);
-
-        }
     }
 }
