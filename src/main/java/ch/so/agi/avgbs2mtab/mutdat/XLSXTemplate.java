@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 //todo Ist dies eine Util-Klasse? Sprich sind nicht alle Methoden darin statisch? Falls ja diese auch mit keyword static versehen...
+//todo Verschieben in package writeexcel
 /**
  * The class XLSXTemplate generates an excel template, where the two tables (parcel and dpr table) are already styled
  */

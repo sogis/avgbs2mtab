@@ -13,11 +13,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/*
+todo: Bitte lass dich nicht von den notierten todos Fehlleiten - Die Tests in dieser Klasse zeigen mir
+dass du über hervorragende logisch-analytische Denkfähigkeit verfügst und diese beim Programmieren anwenden kannst
+SEHR GUTE ARBEIT!!!!!!!!!
+ */
 public class ExcelDataTest {
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    //todo sprechender wenn's geht. Welcher Fall ist abgedeckt?
     @Test
     public void oldParcelsCorrectlyWrittenToExcel() throws Exception {
 
@@ -44,6 +50,7 @@ public class ExcelDataTest {
 
     }
 
+    //todo sprechender wenn's geht. Welcher Fall ist abgedeckt?
     @Test
     public void newParcelsCorrectlyWrittenToExcel() throws Exception {
 
@@ -180,6 +187,7 @@ public class ExcelDataTest {
 
     }
 
+    //todo sprechender wenn's geht: Sowohl die alten und neuen oder nur die alten oder nur die neuen?
     @Test
     public void writeParcelsCorrectlyInDPRTable() throws Exception{
 
@@ -211,6 +219,7 @@ public class ExcelDataTest {
             throw new RuntimeException(e);
         }
     }
+
 
     @Test
     public void writeAllDPRsCorrectlyInDPRTable() throws Exception {
@@ -259,6 +268,7 @@ public class ExcelDataTest {
         }
     }
 
+    //todo: Brauchts noch einen Test "writeOldAreasCorrectlyInDPRTable()"
     @Test
     public void writeNewAreasCorrectlyInDPRTable() throws Exception {
 
