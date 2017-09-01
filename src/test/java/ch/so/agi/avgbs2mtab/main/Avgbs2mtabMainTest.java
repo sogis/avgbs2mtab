@@ -99,7 +99,7 @@ public class Avgbs2mtabMainTest {
     }
     */
 
-
+    //todo Für mich ist TransferAreaTo1OldParcels nicht verständlich...
     //Parzelle geändert (Zugang), Parzelle gelöscht (an bestehende Parzellen)
     @Test
     public void correctValuesWrittenInExcelAtTransferAreaTo1OldParcels() throws Exception {
@@ -128,6 +128,7 @@ public class Avgbs2mtabMainTest {
         Assert.assertTrue(allValuesAreCorrect);
     }
 
+    //Hier stolpere ich über das gleiche - Verstehe From1OldParcel nicht. FromOneOldParcel?
     //Neue Parzelle (Teile von bestehendenParzellen), Parzelle geändert (Teilabgang)
     @Test
     public void correctValuesWrittenInExcelAtNewParcelsFrom1OldParcel() throws Exception {

@@ -18,7 +18,7 @@ public class ReadXtfTest {
     ParcelContainer parceldump = new ParcelContainer();
     DPRContainer dprdump = new DPRContainer();
 
-
+    //todo bitte sprechend - was macht der Test? Gute Beispiele für Benennung siehe Avgbs2mtabMainTest
     @Test
     public void readFile1() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
@@ -43,7 +43,7 @@ public class ReadXtfTest {
         assertTrue(rundungsdifferenz == -1);
     }
 
-
+    //todo sprechend
     @Test
     public void readFile2() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
@@ -69,6 +69,7 @@ public class ReadXtfTest {
         assertTrue(rundungsdifferenz == -1);
     }
 
+    //todo sprechend: Welcher fachliche Fall wird abgedeckt? - In Testname aufnehmen
     @Test
     public void readFileWithDPR() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
@@ -92,6 +93,7 @@ public class ReadXtfTest {
         assertTrue(roundingdifference == 0);
     }
 
+    //todo sprechend - klarer Methodenname - dieser darf auch lang sein
     @Test
     public void readFileWithDeleteDRP() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
@@ -108,6 +110,7 @@ public class ReadXtfTest {
         assertTrue(newarea==0);
     }
 
+    //todo sprechend - was ist am getesteten File "complex"?
     @Test
     public void readComplexFile() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
@@ -139,6 +142,7 @@ public class ReadXtfTest {
         assertTrue(parcelsaffectedbydprsa.containsAll(parcelsaffectedasitshouldbe) && parcelsaffectedbydprsa.size()==parcelsaffectedasitshouldbe.size());
     }
 
+    //todo sprechend
     @Test
     public void oensingentest() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
@@ -154,6 +158,7 @@ public class ReadXtfTest {
         assertTrue(numberofoldparcels==3);
     }
 
+    //todo sprechend
     @Test
     public void readFileWithoutDRP() throws Exception {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
@@ -165,6 +170,7 @@ public class ReadXtfTest {
         assertTrue(numberofdprs==0);
     }
 
+    //todo sprechender und camelCase
     @Test
     public void filewithwrongextension() {
         ReadXtf xtfreader = new ReadXtf(parceldump, dprdump);
