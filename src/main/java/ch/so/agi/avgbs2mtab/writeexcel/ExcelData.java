@@ -24,9 +24,25 @@ public class ExcelData implements WriteExcel {
 
     private static final Logger LOGGER = Logger.getLogger( XLSXTemplate.class.getName());
 
+    private static final Integer startIndexOfColumn = 1;
+    private static final Integer rowIndexOfOldParcels = 2;
+    private static final Integer aParcelOrADprNeedsTwoRows = 2;
+    private static final Integer startIndexOfRow = 2;
+    private static final Integer columnIndexOfNewParcelRow = 0;
+    private static final Integer additionConstantToGetToRoundingDifferenceRow = 4; //empty, new Area, square Meter, 2
+                                                                                   // cells rounding difference
+                                                                                   // (-1 because index starts with 0)
+    private static final Integer additionConstantToGetToOldAreaRow = additionConstantToGetToRoundingDifferenceRow + 1;
+    private static final Integer additionConstantToGetToParcelNumberRowInDPRTable =
+            additionConstantToGetToOldAreaRow + 5;
+    private static final Integer additionConstantToGetToFirstRowWithDPRNumber =
+            additionConstantToGetToParcelNumberRowInDPRTable + 2;
+
+
+
     /**
      * gets the parcel data from the container and writes it into the parcel table from the prepared exceltemplate
-     * @param filePath                  Path, where the excel-template should be writen to
+     * @param filePath                  Path, where the excel-template should be written to
      * @param workbook                  Excel-workbook
      * @param dataExtractionParcel      Methods to get data from container
      */
@@ -104,9 +120,9 @@ public class ExcelData implements WriteExcel {
     public void writeOldParcelsInTemplate(List<Integer> orderedListOfOldParcelNumbers,
                                           XSSFSheet xlsxSheet) {
 
-        Row rowWithOldParcelNumbers =xlsxSheet.getRow(2);
+        Row rowWithOldParcelNumbers =xlsxSheet.getRow(rowIndexOfOldParcels);
 
-        Integer column = 1; //todo aus 2 und 1 sprechende Konstanten machen
+        Integer column = startIndexOfColumn;
 
         for (Integer parcelNumber : orderedListOfOldParcelNumbers){
             Cell cell =rowWithOldParcelNumbers.getCell(column);
@@ -124,12 +140,13 @@ public class ExcelData implements WriteExcel {
     public void writeNewParcelsInTemplate(List<Integer> orderedListOfNewParcelNumbers,
                                           XSSFSheet xlsxSheet){
 
-        //todo aus Zahlen sprechende Konstanten machen
-        int rowIndex = 1;
+
+        int amountOfParcels = 1;
 
         for (Integer parcelNumber : orderedListOfNewParcelNumbers){
-            writeValueIntoCell(2+2*rowIndex, 0, xlsxSheet, parcelNumber);
-            rowIndex++;
+            writeValueIntoCell(startIndexOfRow + aParcelOrADprNeedsTwoRows * amountOfParcels,
+                    columnIndexOfNewParcelRow, xlsxSheet, parcelNumber);
+            amountOfParcels++;
         }
     }
 
@@ -215,18 +232,21 @@ public class ExcelData implements WriteExcel {
                                                      int area,
                                                      XSSFSheet xlsxSheet) {
 
-        int indexOldParcelNumber;
-        int indexNewParcelNumber;
+        Integer indexOldParcelNumber;  //todo: Korrektur von Oliver eigentlich int indexOldParcelNumber
+        Integer indexNewParcelNumber;  //todo: Korrektur von Oliver eigentlich int indexNewParcelNumber
 
-        indexOldParcelNumber = getColumnIndexOfParcelInTable(oldParcelNumber, 2, xlsxSheet);
+        indexOldParcelNumber = getColumnIndexOfParcelInTable(oldParcelNumber, rowIndexOfOldParcels, xlsxSheet);
 
         indexNewParcelNumber = getRowIndexOfNewParcelInTable(newParcelNumber, xlsxSheet);
 
-        //todo error Message gehört in if-Block
-        String errorMessage = "Either the old parcel " + oldParcelNumber + " or the new parcel " + newParcelNumber +
-                " could not be found in the excel.";
-
-        writeValueIntoCell(indexNewParcelNumber, indexOldParcelNumber, xlsxSheet, area);
+        if (indexNewParcelNumber==null || indexOldParcelNumber==null){
+            String errorMessage = "Either the old parcel " + oldParcelNumber + " or the new parcel " + newParcelNumber +
+                    " could not be found in the excel.";
+            LOGGER.log(Level.SEVERE, errorMessage);
+            throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, errorMessage);
+        } else {
+            writeValueIntoCell(indexNewParcelNumber, indexOldParcelNumber, xlsxSheet, area);
+        }
     }
 
     /**
@@ -274,7 +294,7 @@ public class ExcelData implements WriteExcel {
 
         while(rowIterator.hasNext()){
             Row row1 = rowIterator.next();
-            Cell cell1 = row1.getCell(0);
+            Cell cell1 = row1.getCell(columnIndexOfNewParcelRow);
 
             if (cell1.getCellTypeEnum() == CellType.NUMERIC && cell1.getNumericCellValue() == newParcelNumber){
                 indexNewParcelNumber = cell1.getRowIndex();
@@ -283,6 +303,7 @@ public class ExcelData implements WriteExcel {
         }
 
         if (indexNewParcelNumber == Integer.MIN_VALUE) {
+            LOGGER.log(Level.SEVERE, "Could not find parcel " +  newParcelNumber);
             throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, "Could not find Parcel " +
                     newParcelNumber);
         }
@@ -329,13 +350,13 @@ public class ExcelData implements WriteExcel {
                                         int numberOfNewParcels,
                                         XSSFSheet xlsxSheet) {
 
-        Integer columnOldParcelNumber = getColumnIndexOfParcelInTable(oldParcelNumber, 2, xlsxSheet);
+        Integer columnOldParcelNumber = getColumnIndexOfParcelInTable(oldParcelNumber, rowIndexOfOldParcels , xlsxSheet);
 
-        Integer rowOldParcelNumber = 5 + 2 * numberOfNewParcels - 1;
-
-        String errorMessage = "The old parcel "+ oldParcelNumber + " could not be found in the excel.";
+        Integer rowOldParcelNumber = additionConstantToGetToRoundingDifferenceRow + aParcelOrADprNeedsTwoRows *
+                numberOfNewParcels;
 
         if (columnOldParcelNumber==null){
+            String errorMessage = "The old parcel "+ oldParcelNumber + " could not be found in the excel.";
             LOGGER.log(Level.SEVERE, errorMessage);
             throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, errorMessage);
         } else {
@@ -419,7 +440,7 @@ public class ExcelData implements WriteExcel {
                                               int roundingDifferenceSum,
                                               XSSFSheet xlsxSheet){
 
-        int rowNumber = 5 + 2 * NumberOfNewParcels - 1;
+        int rowNumber = additionConstantToGetToRoundingDifferenceRow + aParcelOrADprNeedsTwoRows * NumberOfNewParcels;
         int columnNumber = NumberOfOldParcels + 1;
 
         if (roundingDifferenceSum != 0) {
@@ -550,15 +571,14 @@ public class ExcelData implements WriteExcel {
                              int numberOfnewParcels,
                              XSSFSheet xlsxSheet){
 
-        Integer columnOldParcelNumber = getColumnIndexOfParcelInTable(oldParcelNumber, 2, xlsxSheet);
+        Integer columnOldParcelNumber = getColumnIndexOfParcelInTable(oldParcelNumber, rowIndexOfOldParcels, xlsxSheet);
 
-        Integer rowOldParcelArea = 6 + 2 * numberOfnewParcels -1;
-
-        String errorMessage = "The old parcel " + oldParcelNumber + " could not be found in the excel.";
+        Integer rowOldParcelArea = additionConstantToGetToOldAreaRow + aParcelOrADprNeedsTwoRows * numberOfnewParcels;
 
         if (columnOldParcelNumber != null){
             writeValueIntoCell(rowOldParcelArea, columnOldParcelNumber, xlsxSheet, oldArea);
         } else {
+            String errorMessage = "The old parcel " + oldParcelNumber + " could not be found in the excel.";
             LOGGER.log(Level.SEVERE, errorMessage);
             throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, errorMessage);
         }
@@ -607,6 +627,8 @@ public class ExcelData implements WriteExcel {
         Integer numberOfOldParcels = oldAreas.size();
         Integer numberOfNewParcels = newAreas.size();
 
+        Integer columnIndexOfNewAreas = numberOfOldParcels + 1;
+
 
         for (Map.Entry<Integer, Integer> entry : oldAreas.entrySet()){
             sumOldAreas += entry.getValue();
@@ -618,7 +640,8 @@ public class ExcelData implements WriteExcel {
         sumNewAreas = sumNewAreas + roundingDifference;
 
         if (sumOldAreas.equals( sumNewAreas)){
-            writeValueIntoCell(5 + 2 * numberOfNewParcels, 1 + numberOfOldParcels, xlsxSheet,
+            writeValueIntoCell(additionConstantToGetToOldAreaRow + aParcelOrADprNeedsTwoRows * numberOfNewParcels,
+                    columnIndexOfNewAreas, xlsxSheet,
                     sumOldAreas);
         } else {
             LOGGER.log(Level.SEVERE, "The sum of the old areas is not equal to the sum of the new areas.");
@@ -704,7 +727,8 @@ public class ExcelData implements WriteExcel {
 
         Integer column = 1;
 
-        Integer indexOfParcelRow = calculateIndexOfParcelRow(newParcelNumber, 10);
+        Integer indexOfParcelRow =
+                calculateIndexOfParcelRow(newParcelNumber, additionConstantToGetToParcelNumberRowInDPRTable);
 
 
         for (Integer parcelNumber : orderedListOfParcelNumbersAffectedByDPRs){
@@ -726,9 +750,9 @@ public class ExcelData implements WriteExcel {
         int indexOfParcelRow;
 
         if (newParcelNumber == 0){
-            indexOfParcelRow = 2 + constant;
+            indexOfParcelRow = aParcelOrADprNeedsTwoRows + constant;
         } else {
-            indexOfParcelRow = newParcelNumber*2 + constant;
+            indexOfParcelRow = newParcelNumber * aParcelOrADprNeedsTwoRows + constant;
         }
 
         return indexOfParcelRow;
@@ -746,7 +770,7 @@ public class ExcelData implements WriteExcel {
                                     int newParcelNumber,
                                     XSSFSheet xlsxSheet) {
 
-        Integer rowIndex = calculateIndexOfParcelRow(newParcelNumber, 12);
+        Integer rowIndex = calculateIndexOfParcelRow(newParcelNumber, additionConstantToGetToFirstRowWithDPRNumber);
 
         for (Integer dpr : orderedListOfDPRs){
 
@@ -816,7 +840,8 @@ public class ExcelData implements WriteExcel {
                                           int newParcelNumber,
                                           XSSFSheet xlsxSheet) {
 
-        Integer indexOfParcelRow = calculateIndexOfParcelRow(newParcelNumber, 10);
+        Integer indexOfParcelRow =
+                calculateIndexOfParcelRow(newParcelNumber, additionConstantToGetToParcelNumberRowInDPRTable);
 
         int indexParcel = getColumnIndexOfParcelInTable(parcelNumberAffectedByDPR, indexOfParcelRow, xlsxSheet);
 
@@ -915,7 +940,8 @@ public class ExcelData implements WriteExcel {
         Integer rowDPRNumber;
         Integer columnRoundingDifference;
 
-        Integer indexOfParcelRow = calculateIndexOfParcelRow(newParcelNumber, 10);
+        Integer indexOfParcelRow =
+                calculateIndexOfParcelRow(newParcelNumber, additionConstantToGetToParcelNumberRowInDPRTable);
 
         rowDPRNumber = getRowIndexOfDPRInTable(indexOfParcelRow, dpr, xlsxSheet);
 
@@ -958,7 +984,8 @@ public class ExcelData implements WriteExcel {
                                 int newParcelNumber,
                                 XSSFSheet xlsxSheet) {
 
-        Integer indexOfParcelRow = calculateIndexOfParcelRow(newParcelNumber, 10);
+        Integer indexOfParcelRow =
+                calculateIndexOfParcelRow(newParcelNumber, additionConstantToGetToParcelNumberRowInDPRTable);
 
         Integer rowDPRNumber = getRowIndexOfDPRInTable(indexOfParcelRow, dpr, xlsxSheet);
 
