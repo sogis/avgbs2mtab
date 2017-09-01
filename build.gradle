@@ -8,6 +8,7 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: "com.jfrog.artifactory"
 apply plugin: "com.github.johnrengelman.shadow"
+//apply plugin: 'findbugs'
 
 group 'ch.so.agi.avgbs2mtab'
 version '0.9.1'
@@ -83,4 +84,14 @@ def setPropertyDefaultValue(propertyName, defaultValue) {
         ext[propertyName] = defaultValue
     }
 }
+
+/*
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
+}
+*/
+
 

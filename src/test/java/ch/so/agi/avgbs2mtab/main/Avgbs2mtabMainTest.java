@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class MainTest {
+public class Avgbs2mtabMainTest {
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -101,7 +101,6 @@ public class MainTest {
 
 
     //Parzelle geändert (Zugang), Parzelle gelöscht (an bestehende Parzellen)
-    @Ignore
     @Test
     public void correctValuesWrittenInExcelAtTransferAreaTo1OldParcels() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
@@ -130,7 +129,6 @@ public class MainTest {
     }
 
     //Neue Parzelle (Teile von bestehendenParzellen), Parzelle geändert (Teilabgang)
-    @Ignore
     @Test
     public void correctValuesWrittenInExcelAtNewParcelsFrom1OldParcel() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
@@ -212,7 +210,6 @@ public class MainTest {
     }
 
 
-    @Ignore
     @Test
     public void correctValuesCalculatedInExcel() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
@@ -240,7 +237,7 @@ public class MainTest {
         Assert.assertTrue(allValuesAreCorrect);
     }
 
-    @Ignore
+
     @Test
     public void correctValuesOfDPRsAndParcelsWrittenInExcel() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
