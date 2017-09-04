@@ -123,25 +123,14 @@ class ParcelTableWriter {
                                                      int area,
                                                      XSSFSheet xlsxSheet) {
 
-        Integer indexOldParcelNumber;  //todo: Korrektur von Oliver eigentlich int indexOldParcelNumber
-        Integer indexNewParcelNumber;  //todo: Korrektur von Oliver eigentlich int indexNewParcelNumber
+        Integer indexOldParcelNumber;
+        Integer indexNewParcelNumber;
 
         indexOldParcelNumber = writingUtils.getColumnIndexOfParcelInTable(oldParcelNumber, rowIndexOfOldParcels, xlsxSheet);
-
         indexNewParcelNumber = writingUtils.getRowIndexOfNewParcelInTable(newParcelNumber, xlsxSheet);
 
-        if (indexNewParcelNumber==null || indexOldParcelNumber==null){
-            String errorMessage = "Either the old parcel " + oldParcelNumber + " or the new parcel " + newParcelNumber +
-                    " could not be found in the excel.";
-            LOGGER.log(Level.SEVERE, errorMessage);
-            throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, errorMessage);
-        } else {
-            writingUtils.writeValueIntoCell(indexNewParcelNumber, indexOldParcelNumber, xlsxSheet, area);
-        }
+        writingUtils.writeValueIntoCell(indexNewParcelNumber, indexOldParcelNumber, xlsxSheet, area);
     }
-
-
-
 
     /**
      * Writes all rounding differences of the parcel table into parcel table

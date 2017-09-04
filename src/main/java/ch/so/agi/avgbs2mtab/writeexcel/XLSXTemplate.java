@@ -11,7 +11,7 @@ import java.io.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
-//todo Ist dies eine Util-Klasse? Sprich sind nicht alle Methoden darin statisch? Falls ja diese auch mit keyword static versehen...
+
 /**
  * The class XLSXTemplate generates an excel template, where the two tables (parcel and dpr table) are already styled
  */
@@ -585,10 +585,6 @@ public class XLSXTemplate implements ExcelTemplate {
             parcels = 1;
         }
 
-        /*
-        todo Kohäsion: Die Parceltable soll selbst Auskunft geben darüber wieviele Zeilen sie verwendet hat
-        --> Berechnung von rowStartIndex zügeln zu createParcelTable
-         */
         int rowStartIndex = (9 + aParcelOrADprNeedsTwoRows * newParcels - 1);
 
         XSSFSheet sheet = excelTemplate.getSheet(xlsxSheetName);

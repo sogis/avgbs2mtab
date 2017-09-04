@@ -14,7 +14,6 @@ public interface DataExtractionParcel {
 
     public Integer getRoundingDifference(int oldParcelNumber);
 
-    //todo Rename: getRemainingAreaOfParcel(int parcelNumber);
     public Integer getRestAreaOfParcel(int oldParcelNumber);
 
 }

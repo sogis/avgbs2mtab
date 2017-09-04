@@ -118,15 +118,13 @@ public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtracti
         return roundingdifference;
     }
 
-    //todo wieso nicht einfach hm.containsKey()? Was ist der Zweck der Funktion?
-    //containsKey liefert einen Boolean zurück (Ja, der Key existiert). Was ich aber brauche, ist der Key als String.
-    //Ich habe einen Wert (Nummer) und brauche den Key (String).
     public static String getKeyFromValue(Map<String, Integer> hm, Integer value) {
         for (String key : hm.keySet()) {
             if (hm.get(key).equals(value)) {
                 return key;
             }
         }
+
         return null;
     }
 }
