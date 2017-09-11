@@ -154,7 +154,14 @@ public class ReadXtf {
                     if (aclass.equals(ILI_MODELNAME + ".Grundstuecksbeschrieb.Anteil")) {
                         String drpnumber = iomObj.getattrobj("flaeche", 0).getobjectrefoid();
                         String liegt_auf = iomObj.getattrobj("liegt_auf", 0).getobjectrefoid();
-                        Integer area = Integer.parseInt(iomObj.getattrvalue("Flaechenmass"));
+                        String flaechenmass = iomObj.getattrvalue("Flaechenmass");
+                        Integer area;
+                        if (flaechenmass.contains(".")){
+                            Float float_flaechenmass = Float.parseFloat(flaechenmass);
+                            area = Math.round(float_flaechenmass);
+                        } else {
+                            area = Integer.parseInt(flaechenmass);
+                        }
 
                         if (dprAnteilAnLiegenschaft.get(drpnumber) != null) {
                             liegtaufmap = dprAnteilAnLiegenschaft.get(drpnumber);

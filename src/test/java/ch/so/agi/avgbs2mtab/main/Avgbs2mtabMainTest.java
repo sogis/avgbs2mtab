@@ -266,6 +266,33 @@ public class Avgbs2mtabMainTest {
 
     }
 
+    @Test
+    public void worksWithDecimalValues() throws Exception {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File xtfFile = new File(classLoader.getResource("SO0200002578_39732-01_20170908.xml").getFile());
+        File outputFilePath = validOutputFilePath();
+
+        Avgbs2mtabMain.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
+
+        XSSFSheet xlsxSheet = openExcelSheet(outputFilePath.getAbsolutePath());
+
+        HashMap<String, Double> xlsxDataNumeric = generateHashMapFromNumericValuesInExcel(xlsxSheet);
+        HashMap<String, String> xlsxDataString = generateHashMapFromStringValuesInExcel(xlsxSheet);
+
+        HashMap<String, String> expectedValuesString =
+                generateHashMapOfExpectedStringValuesOfSO0200002578_39732_01_20170908();
+        HashMap<String, Double> expectedValuesNumeric =
+                generateHashMapOfExpectedNumericValuesOfSO0200002578_39732_01_20170908();
+
+        Boolean allValuesAreCorrect = checkIfValuesAreCorrect(expectedValuesNumeric,
+                xlsxDataNumeric,
+                expectedValuesString,
+                xlsxDataString);
+
+
+        Assert.assertTrue(allValuesAreCorrect);
+    }
+
 
 
     private File createFileWithoutXTFExtension() throws Exception {
@@ -835,6 +862,47 @@ public class Avgbs2mtabMainTest {
         expectedValuesNumeric.put("B19", (double) 1238);
 
         expectedValuesNumeric.put("D19", (double) 1238);
+
+        return expectedValuesNumeric;
+    }
+
+    private HashMap<String, String> generateHashMapOfExpectedStringValuesOfSO0200002578_39732_01_20170908() {
+        HashMap<String, String> expectedValuesString = new HashMap<>();
+
+        expectedValuesString.put("A2", "Neue Liegenschaften");
+        expectedValuesString.put("A3", "Grundstück-Nr.");
+        expectedValuesString.put("A7", "Rundungsdifferenz");
+        expectedValuesString.put("A8", "Alte Fläche [m2]");
+
+        expectedValuesString.put("B1", "Alte Liegenschaften");
+        expectedValuesString.put("B2", "Grundstück-Nr.");
+
+        expectedValuesString.put("C2", "Neue Fläche");
+        expectedValuesString.put("C3", "[m2]");
+
+        expectedValuesString.put("A12", "Selbst. Recht");
+        expectedValuesString.put("A13", "Grundstück-Nr.");
+        expectedValuesString.put("A15", "(1635)");
+
+        expectedValuesString.put("B11", "Liegenschaften");
+        expectedValuesString.put("B12", "Grundstück-Nr.");
+
+        expectedValuesString.put("C12", "Rundungs-differenz");
+
+        expectedValuesString.put("D12", "Selbst. Recht Fläche");
+        expectedValuesString.put("D13", "[m2]");
+
+        return expectedValuesString;
+    }
+
+    private HashMap<String, Double> generateHashMapOfExpectedNumericValuesOfSO0200002578_39732_01_20170908() {
+        HashMap<String, Double> expectedValuesNumeric = new HashMap<>();
+
+
+        expectedValuesNumeric.put("B13", (double) 1606);
+        expectedValuesNumeric.put("B15", (double) 893);
+
+        expectedValuesNumeric.put("D15", (double) 893);
 
         return expectedValuesNumeric;
     }
