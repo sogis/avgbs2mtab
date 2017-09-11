@@ -155,13 +155,8 @@ public class ReadXtf {
                         String drpnumber = iomObj.getattrobj("flaeche", 0).getobjectrefoid();
                         String liegt_auf = iomObj.getattrobj("liegt_auf", 0).getobjectrefoid();
                         String flaechenmass = iomObj.getattrvalue("Flaechenmass");
-                        Integer area;
-                        if (flaechenmass.contains(".")){
-                            Float float_flaechenmass = Float.parseFloat(flaechenmass);
-                            area = Math.round(float_flaechenmass);
-                        } else {
-                            area = Integer.parseInt(flaechenmass);
-                        }
+                        Double double_flaechenmass = Double.parseDouble(flaechenmass);
+                        int area = (int) double_flaechenmass.doubleValue();
 
                         if (dprAnteilAnLiegenschaft.get(drpnumber) != null) {
                             liegtaufmap = dprAnteilAnLiegenschaft.get(drpnumber);
@@ -213,7 +208,9 @@ public class ReadXtf {
         if(iomObj.getattrvalue("GrundstueckArt").equals("Liegenschaft")) {
             if (parcelMetadataSet.contains(iomObj.getobjectoid())) {
                 int parcelnumber = Integer.parseInt(iomObj.getattrobj("Nummer", 0).getattrvalue("Nummer"));
-                int area = Integer.parseInt(iomObj.getattrvalue("Flaechenmass"));
+                String flaechenmass = iomObj.getattrvalue("Flaechenmass");
+                Double double_flaechenmass = Double.parseDouble(flaechenmass);
+                int area = (int) double_flaechenmass.doubleValue();
                 parceldump.setParcelNewArea(parcelnumber, area);
                 parceldump.setParcelOldArea(parcelnumber,area); //vorläufig wird die alte Fläche = neue Fläche gesetzt.
 
@@ -305,7 +302,9 @@ public class ReadXtf {
             if (iomObj.getattrvalue("GrundstueckArt").startsWith("SelbstRecht")) { //Selbstrecht.* ?
                 if (drpmetadatamap.containsKey(iomObj.getobjectoid())) {
                     int parcelnumber = Integer.parseInt(iomObj.getattrobj("Nummer", 0).getattrvalue("Nummer"));
-                    int newarea = Integer.parseInt(iomObj.getattrvalue("Flaechenmass"));
+                    String flaechenmass = iomObj.getattrvalue("Flaechenmass");
+                    Double double_flaechenmass = Double.parseDouble(flaechenmass);
+                    int newarea = (int) double_flaechenmass.doubleValue();
                     String parcelref = iomObj.getobjectoid();
                     Map internalmap = drpmetadatamap.get(iomObj.getobjectoid());
                     for (Object key : internalmap.keySet()) {
