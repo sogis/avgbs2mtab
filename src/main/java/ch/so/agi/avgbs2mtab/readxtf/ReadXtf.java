@@ -154,9 +154,7 @@ public class ReadXtf {
                     if (aclass.equals(ILI_MODELNAME + ".Grundstuecksbeschrieb.Anteil")) {
                         String drpnumber = iomObj.getattrobj("flaeche", 0).getobjectrefoid();
                         String liegt_auf = iomObj.getattrobj("liegt_auf", 0).getobjectrefoid();
-                        String flaechenmass = iomObj.getattrvalue("Flaechenmass");
-                        Double double_flaechenmass = Double.parseDouble(flaechenmass);
-                        int area = (int) double_flaechenmass.doubleValue();
+                        int area = (int) Double.parseDouble(iomObj.getattrvalue("Flaechenmass"));
 
                         if (dprAnteilAnLiegenschaft.get(drpnumber) != null) {
                             liegtaufmap = dprAnteilAnLiegenschaft.get(drpnumber);
@@ -208,9 +206,7 @@ public class ReadXtf {
         if(iomObj.getattrvalue("GrundstueckArt").equals("Liegenschaft")) {
             if (parcelMetadataSet.contains(iomObj.getobjectoid())) {
                 int parcelnumber = Integer.parseInt(iomObj.getattrobj("Nummer", 0).getattrvalue("Nummer"));
-                String flaechenmass = iomObj.getattrvalue("Flaechenmass");
-                Double double_flaechenmass = Double.parseDouble(flaechenmass);
-                int area = (int) double_flaechenmass.doubleValue();
+                int area = (int) Double.parseDouble(iomObj.getattrvalue("Flaechenmass"));
                 parceldump.setParcelNewArea(parcelnumber, area);
                 parceldump.setParcelOldArea(parcelnumber,area); //vorläufig wird die alte Fläche = neue Fläche gesetzt.
 
@@ -230,7 +226,7 @@ public class ReadXtf {
             int additionsum = 0;
             for (int i = 0; i < iomObj.getattrvaluecount("Zugang"); i++) {
                 int oldparcelnumber = Integer.parseInt(iomObj.getattrobj("Zugang", i).getattrobj("von", 0).getattrvalue("Nummer"));
-                int additionarea = Integer.parseInt(iomObj.getattrobj("Zugang", i).getattrvalue("Flaechenmass"));
+                int additionarea = (int) Double.parseDouble(iomObj.getattrobj("Zugang", i).getattrvalue("Flaechenmass"));
                 parceldump.setParcelAddition(parcelnumber, oldparcelnumber, additionarea);
                 additionsum += additionarea;
             }
@@ -302,9 +298,7 @@ public class ReadXtf {
             if (iomObj.getattrvalue("GrundstueckArt").startsWith("SelbstRecht")) { //Selbstrecht.* ?
                 if (drpmetadatamap.containsKey(iomObj.getobjectoid())) {
                     int parcelnumber = Integer.parseInt(iomObj.getattrobj("Nummer", 0).getattrvalue("Nummer"));
-                    String flaechenmass = iomObj.getattrvalue("Flaechenmass");
-                    Double double_flaechenmass = Double.parseDouble(flaechenmass);
-                    int newarea = (int) double_flaechenmass.doubleValue();
+                    int newarea = (int) Double.parseDouble(iomObj.getattrvalue("Flaechenmass"));
                     String parcelref = iomObj.getobjectoid();
                     Map internalmap = drpmetadatamap.get(iomObj.getobjectoid());
                     for (Object key : internalmap.keySet()) {
