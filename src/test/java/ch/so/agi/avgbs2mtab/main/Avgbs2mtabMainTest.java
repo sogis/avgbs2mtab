@@ -99,10 +99,10 @@ public class Avgbs2mtabMainTest {
     }
     */
 
-    //todo Für mich ist TransferAreaTo1OldParcels nicht verständlich...
+
     //Parzelle geändert (Zugang), Parzelle gelöscht (an bestehende Parzellen)
     @Test
-    public void correctValuesWrittenInExcelAtTransferAreaTo1OldParcels() throws Exception {
+    public void correctValuesWrittenInExcelAtTransferThreeOldAreasToOneOldParcels() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002407_4002_20150807.xtf").getFile());
         File outputFilePath = validOutputFilePath();

@@ -1,4 +1,4 @@
-package ch.so.agi.avgbs2mtab.mutdat;
+package ch.so.agi.avgbs2mtab.writeexcel;
 
 
 import ch.so.agi.avgbs2mtab.writeexcel.XLSXTemplate;
@@ -14,32 +14,26 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-//todo Verschieben in package writeexcel
+
 public class XLSXTemplateTest {
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    //todo Dies ist ein SonnenpfadTest - richtig? camelCase
     @Test
-    public void WorkbookCreatedOnWritablePath() throws Exception {
+    public void workbookCreatedOnWritablePath() throws Exception {
 
         File excelFile = folder.newFile("test.xlsx");
 
         String filePath = excelFile.getAbsolutePath();
         XLSXTemplate xlsxTemplate = new XLSXTemplate();
 
-        try {
-            xlsxTemplate.createWorkbook(filePath);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-            //todo Anstatt eine RuntimeException werfen Assert.fail nutzen mit sprechender Meldung
-        }
+        xlsxTemplate.createWorkbook(filePath);
     }
 
-    //todo camelCase
+
     @Test
-    public void CorrectStyledCellsInExcel() throws Exception {
+    public void correctStyledCellsInExcel() throws Exception {
         File excelFile = folder.newFile("test.xlsx");
         String filePath = excelFile.getAbsolutePath();
 
@@ -63,9 +57,9 @@ public class XLSXTemplateTest {
         }
     }
 
-    //todo camelCase
+
     @Test
-    public void CorrectStyledCellsInExcelWithoutAnyParcelsAndDPRs() throws Exception {
+    public void correctStyledCellsInExcelWithoutAnyParcelsAndDPRs() throws Exception {
         File excelFile = folder.newFile("test.xlsx");
         String filePath = excelFile.getAbsolutePath();
 
