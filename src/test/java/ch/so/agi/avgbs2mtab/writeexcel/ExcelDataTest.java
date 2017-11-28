@@ -29,8 +29,8 @@ public class ExcelDataTest {
         ParcelTableWriter parcelTableWriter = new ParcelTableWriter();
 
 
-        List<Integer> oldParcels = generateOldParcels();
-        List<Integer> newParcels = generateNewParcels();
+        List<String> oldParcels = generateOldParcels();
+        List<String> newParcels = generateNewParcels();
 
         try {
             XSSFWorkbook newWorkbook = xlsxTemplate.createWorkbook(filePath);
@@ -121,9 +121,9 @@ public class ExcelDataTest {
 
             XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
 
-            parcelTableWriter.writeOldArea(695,657, 7, xlsxSheet);
-            parcelTableWriter.writeOldArea(696,608, 7, xlsxSheet);
-            parcelTableWriter.writeOldArea(697,816, 7, xlsxSheet);
+            parcelTableWriter.writeOldArea("695",657, 7, xlsxSheet);
+            parcelTableWriter.writeOldArea("696",608, 7, xlsxSheet);
+            parcelTableWriter.writeOldArea("697",816, 7, xlsxSheet);
 
 
             Assert.assertTrue(checkOldAreas(newWorkbook));
@@ -191,10 +191,10 @@ public class ExcelDataTest {
         XLSXTemplate xlsxTemplate = new XLSXTemplate();
         DPRTableWriter dprTableWriter = new DPRTableWriter();
 
-        List<Integer> oldParcels = generateOldParcels();
-        List<Integer> newParcels = generateNewParcels();
-        List<Integer> parcels = generateParcels();
-        List<Integer> dpr = generateDPR();
+        List<String> oldParcels = generateOldParcels();
+        List<String> newParcels = generateNewParcels();
+        List<String> parcels = generateParcels();
+        List<String> dpr = generateDPR();
 
         try {
 
@@ -316,44 +316,44 @@ public class ExcelDataTest {
 
     }
 
-    private List<Integer> generateOldParcels() {
-        List<Integer> oldparcels = new ArrayList<>();
-        oldparcels.add(695);
-        oldparcels.add(696);
-        oldparcels.add(697);
-        oldparcels.add(701);
-        oldparcels.add(870);
-        oldparcels.add(874);
+    private List<String> generateOldParcels() {
+        List<String> oldparcels = new ArrayList<>();
+        oldparcels.add("695");
+        oldparcels.add("696");
+        oldparcels.add("697");
+        oldparcels.add("701");
+        oldparcels.add("870");
+        oldparcels.add("874");
 
         return oldparcels;
     }
 
-    private List <Integer> generateNewParcels() {
-        List<Integer> newParcels = new ArrayList<>();
-        newParcels.add(695);
-        newParcels.add(696);
-        newParcels.add(697);
-        newParcels.add(701);
-        newParcels.add(870);
-        newParcels.add(874);
-        newParcels.add(4004);
+    private List <String> generateNewParcels() {
+        List<String> newParcels = new ArrayList<>();
+        newParcels.add("695");
+        newParcels.add("696");
+        newParcels.add("697");
+        newParcels.add("701");
+        newParcels.add("870");
+        newParcels.add("874");
+        newParcels.add("4004");
 
         return newParcels;
     }
 
-    private List<Integer> generateParcels() {
-        List<Integer> parcels = new ArrayList<>();
-        parcels.add(2174);
-        parcels.add(2175);
-        parcels.add(2176);
+    private List<String> generateParcels() {
+        List<String> parcels = new ArrayList<>();
+        parcels.add("2174");
+        parcels.add("2175");
+        parcels.add("2176");
 
         return parcels;
     }
 
-    private List<Integer> generateDPR() {
-        List<Integer> dpr = new ArrayList<>();
-        dpr.add(40053);
-        dpr.add(15828);
+    private List<String> generateDPR() {
+        List<String> dpr = new ArrayList<>();
+        dpr.add("40053");
+        dpr.add("15828");
 
         return dpr;
     }
@@ -368,28 +368,29 @@ public class ExcelDataTest {
 
         Row row = xlsxSheet.getRow(2);
         for (Cell cell : row){
+            System.out.println("Cell = "+cell.getStringCellValue());
             if (cell.getColumnIndex()== 1){
-                if(cell.getNumericCellValue()!=695){
+                if(!cell.getStringCellValue().equals("695")){
                     allOldParcelsAreCorrect = false;
                 }
             } else if (cell.getColumnIndex()== 2) {
-                if (cell.getNumericCellValue() != 696) {
+                if (!cell.getStringCellValue().equals("696")) {
                     allOldParcelsAreCorrect = false;
                 }
             } else if (cell.getColumnIndex()== 3) {
-                if (cell.getNumericCellValue() != 697) {
+                if (!cell.getStringCellValue().equals("697")) {
                     allOldParcelsAreCorrect = false;
                 }
             } else if (cell.getColumnIndex()== 4) {
-                if (cell.getNumericCellValue() != 701) {
+                if (!cell.getStringCellValue().equals("701")) {
                     allOldParcelsAreCorrect = false;
                 }
             }  else if (cell.getColumnIndex()== 5) {
-                if (cell.getNumericCellValue() != 870) {
+                if (!cell.getStringCellValue().equals("870")) {
                     allOldParcelsAreCorrect = false;
                 }
             } else if (cell.getColumnIndex()== 6) {
-                if (cell.getNumericCellValue() != 874) {
+                if (!cell.getStringCellValue().equals("874")) {
                     allOldParcelsAreCorrect = false;
                 }
             }
@@ -399,9 +400,9 @@ public class ExcelDataTest {
 
     private XSSFWorkbook insertParcels(String filePath, XLSXTemplate xlsxTemplate, ParcelTableWriter parcelTableWriter) throws Exception {
 
-        List<Integer> oldParcels = generateOldParcels();
-        List<Integer> newParcels = generateNewParcels();
-        List<Integer> parcels = generateParcels();
+        List<String> oldParcels = generateOldParcels();
+        List<String> newParcels = generateNewParcels();
+        List<String> parcels = generateParcels();
 
         XSSFWorkbook newWorkbook = xlsxTemplate.createWorkbook(filePath);
         XSSFSheet sheet = newWorkbook.getSheet("Mutationstabelle");
@@ -423,35 +424,39 @@ public class ExcelDataTest {
             Row row = xlsxSheet.getRow(2 + 2*i);
             Cell cell = row.getCell(0);
 
+            System.out.println("Cell "+i+" = "+cell.getStringCellValue());
+
             if (i == 1) {
-                if(cell.getNumericCellValue()!=695){
+                if(!cell.getStringCellValue().equals("695")){
                     allNewParcelsAreCorrect = false;
                 }
             } else if (i == 2){
-                if(cell.getNumericCellValue()!=696){
+                if(!cell.getStringCellValue().equals("696")){
                     allNewParcelsAreCorrect = false;
                 }
             } else if (i == 3){
-                if(cell.getNumericCellValue()!=697){
+                if(!cell.getStringCellValue().equals("697")){
                     allNewParcelsAreCorrect = false;
                 }
             } else if (i == 4){
-                if(cell.getNumericCellValue()!=701){
+                if(!cell.getStringCellValue().equals("701")){
                     allNewParcelsAreCorrect = false;
                 }
             } else if (i == 5){
-                if(cell.getNumericCellValue()!=870){
+                if(!cell.getStringCellValue().equals("870")){
                     allNewParcelsAreCorrect = false;
                 }
             } else if (i == 6){
-                if(cell.getNumericCellValue()!=874){
+                if(!cell.getStringCellValue().equals("874")){
                     allNewParcelsAreCorrect = false;
                 }
             } else if (i == 7){
-                if(cell.getNumericCellValue()!=4004){
+                if(!cell.getStringCellValue().equals("4004")){
                     allNewParcelsAreCorrect = false;
                 }
             }
+            System.out.println("allNewParcelsAreCorrect = "+allNewParcelsAreCorrect);
+
         }
 
         return allNewParcelsAreCorrect;
@@ -459,20 +464,20 @@ public class ExcelDataTest {
 
     private void insertInflowAndOutflows(ParcelTableWriter parcelTableWriter,
                                                  XSSFSheet xlsxSheet) {
-        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair(695, 695,416, xlsxSheet);
-        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair(696, 696,507, xlsxSheet);
-        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair(697, 697,687, xlsxSheet);
-        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair(696, 701,1, xlsxSheet);
-        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair(697, 701,1, xlsxSheet);
-        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair(701, 701,1112, xlsxSheet);
-        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair(870, 870,611, xlsxSheet);
-        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair(874, 874,1939, xlsxSheet);
-        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair(695, 4004,242, xlsxSheet);
-        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair(696, 4004,100, xlsxSheet);
-        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair(697, 4004,129, xlsxSheet);
-        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair(701, 4004,1, xlsxSheet);
-        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair(870, 4004,39, xlsxSheet);
-        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair(874, 4004,81, xlsxSheet);
+        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair("695", "695",416, xlsxSheet);
+        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair("696", "696",507, xlsxSheet);
+        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair("697", "697",687, xlsxSheet);
+        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair("696", "701",1, xlsxSheet);
+        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair("697", "701",1, xlsxSheet);
+        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair("701", "701",1112, xlsxSheet);
+        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair("870", "870",611, xlsxSheet);
+        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair("874", "874",1939, xlsxSheet);
+        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair("695", "4004",242, xlsxSheet);
+        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair("696", "4004",100, xlsxSheet);
+        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair("697", "4004",129, xlsxSheet);
+        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair("701", "4004",1, xlsxSheet);
+        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair("870", "4004",39, xlsxSheet);
+        parcelTableWriter.writeInflowAndOutflowOfOneParcelPair("874", "4004",81, xlsxSheet);
 
     }
 
@@ -485,17 +490,17 @@ public class ExcelDataTest {
             Row row = xlsxSheet.getRow(2 + 2 * i);
             if (i == 1) {
                 Cell cell = row.getCell(1);
-                if (cell.getNumericCellValue() != 416) {
+                if (!cell.getStringCellValue().equals("416")) {
                     allInflowsAndOutflowsAreCorrect = false;
                 }
             } else if (i == 2) {
                 Cell cell = row.getCell(2);
-                if (cell.getNumericCellValue() != 507) {
+                if (!cell.getStringCellValue().equals("507")) {
                     allInflowsAndOutflowsAreCorrect = false;
                 }
             } else if (i == 3) {
                 Cell cell = row.getCell(3);
-                if (cell.getNumericCellValue() != 687) {
+                if (!cell.getStringCellValue().equals("687")) {
                     allInflowsAndOutflowsAreCorrect = false;
                 }
             } else if (i == 4) {
@@ -506,12 +511,12 @@ public class ExcelDataTest {
                 }
             } else if (i == 5) {
                 Cell cell = row.getCell(5);
-                if (cell.getNumericCellValue() != 611) {
+                if (!cell.getStringCellValue().equals("611")) {
                     allInflowsAndOutflowsAreCorrect = false;
                 }
             } else if (i == 6) {
                 Cell cell = row.getCell(6);
-                if (cell.getNumericCellValue() != 1939) {
+                if (!cell.getStringCellValue().equals("1939")) {
                     allInflowsAndOutflowsAreCorrect = false;
                 }
             } else if (i == 7) {
@@ -531,9 +536,9 @@ public class ExcelDataTest {
 
     private void insertRoundingDifferences(ParcelTableWriter parcelTableWriter,
                                                    XSSFSheet xlsxSheet){
-        parcelTableWriter.writeRoundingDifference(695, -1, 7, xlsxSheet);
-        parcelTableWriter.writeRoundingDifference(697, -1, 7, xlsxSheet);
-        parcelTableWriter.writeRoundingDifference(701, 1, 7, xlsxSheet);
+        parcelTableWriter.writeRoundingDifference("695", -1, 7, xlsxSheet);
+        parcelTableWriter.writeRoundingDifference("697", -1, 7, xlsxSheet);
+        parcelTableWriter.writeRoundingDifference("701", 1, 7, xlsxSheet);
     }
 
 
@@ -576,13 +581,13 @@ public class ExcelDataTest {
                                         XSSFSheet xlsxSheet) {
 
 
-        parcelTableWriter.writeNewArea(695, 416, xlsxSheet);
-        parcelTableWriter.writeNewArea(696, 507, xlsxSheet);
-        parcelTableWriter.writeNewArea(697, 687, xlsxSheet);
-        parcelTableWriter.writeNewArea(701, 1114, xlsxSheet);
-        parcelTableWriter.writeNewArea(870, 611, xlsxSheet);
-        parcelTableWriter.writeNewArea(874, 1939, xlsxSheet);
-        parcelTableWriter.writeNewArea(4004, 592, xlsxSheet);
+        parcelTableWriter.writeNewArea("695", 416, xlsxSheet);
+        parcelTableWriter.writeNewArea("696", 507, xlsxSheet);
+        parcelTableWriter.writeNewArea("697", 687, xlsxSheet);
+        parcelTableWriter.writeNewArea("701", 1114, xlsxSheet);
+        parcelTableWriter.writeNewArea("870", 611, xlsxSheet);
+        parcelTableWriter.writeNewArea("874", 1939, xlsxSheet);
+        parcelTableWriter.writeNewArea("4004", 592, xlsxSheet);
 
     }
 
@@ -628,14 +633,14 @@ public class ExcelDataTest {
 
     }
 
-    private HashMap<Integer, Integer> oldAreas() {
-        HashMap<Integer, Integer> areas = new HashMap<>();
-        areas.put(695, 657);
-        areas.put(696, 608);
-        areas.put(697, 816);
-        areas.put(701, 1114);
-        areas.put(870, 650);
-        areas.put(874, 2020);
+    private HashMap<String, Integer> oldAreas() {
+        HashMap<String, Integer> areas = new HashMap<>();
+        areas.put("695", 657);
+        areas.put("696", 608);
+        areas.put("697", 816);
+        areas.put("701", 1114);
+        areas.put("870", 650);
+        areas.put("874", 2020);
 
         return areas;
     }
@@ -661,7 +666,7 @@ public class ExcelDataTest {
 
         Row row = xlsxSheet.getRow(19);
         Cell cell = row.getCell(7);
-        if (cell.getNumericCellValue() != 5865) {
+        if (!cell.getStringCellValue().equals("5865")) {
             sumOfAreasIsCorrect = false;
         }
 
@@ -676,15 +681,15 @@ public class ExcelDataTest {
         Row row = xlsxSheet.getRow(24);
         for (Cell cell : row){
             if (cell.getColumnIndex()== 1){
-                if(cell.getNumericCellValue()!=2174){
+                if(!cell.getStringCellValue().equals("2174")){
                     allParcelsAreCorrect = false;
                 }
             } else if (cell.getColumnIndex()== 2) {
-                if (cell.getNumericCellValue() != 2175) {
+                if (!cell.getStringCellValue().equals("2175")) {
                     allParcelsAreCorrect = false;
                 }
             } else if (cell.getColumnIndex()== 3) {
-                if (cell.getNumericCellValue() != 2176) {
+                if (!cell.getStringCellValue().equals("2176")) {
                     allParcelsAreCorrect = false;
                 }
             }
@@ -695,10 +700,10 @@ public class ExcelDataTest {
 
     private XSSFWorkbook insertDPR(String filePath, XLSXTemplate xlsxTemplate, DPRTableWriter dprTableWriter) {
 
-        List<Integer> oldParcels = generateOldParcels();
-        List<Integer> newParcels = generateNewParcels();
-        List<Integer> parcels = generateParcels();
-        List<Integer> dpr = generateDPR();
+        List<String> oldParcels = generateOldParcels();
+        List<String> newParcels = generateNewParcels();
+        List<String> parcels = generateParcels();
+        List<String> dpr = generateDPR();
 
         XSSFWorkbook newWorkbook = xlsxTemplate.createWorkbook(filePath);
         xlsxTemplate.createParcelTable(newWorkbook,filePath, newParcels.size(),oldParcels.size(),
@@ -728,11 +733,11 @@ public class ExcelDataTest {
     private void insertDPRFlows(DPRTableWriter dprTableWriter,
                                         XSSFSheet xlsxSheet) {
         Integer numberNewParcels = generateNewParcels().size();
-        dprTableWriter.writeDPRInflowAndOutflows(2174, 40053,1175, numberNewParcels,
+        dprTableWriter.writeDPRInflowAndOutflows("2174", "40053",1175, numberNewParcels,
                 xlsxSheet);
-        dprTableWriter.writeDPRInflowAndOutflows(2175, 40053,2481, numberNewParcels,
+        dprTableWriter.writeDPRInflowAndOutflows("2175", "40053",2481, numberNewParcels,
                 xlsxSheet);
-        dprTableWriter.writeDPRInflowAndOutflows(2176, 40053,5, numberNewParcels, xlsxSheet);
+        dprTableWriter.writeDPRInflowAndOutflows("2176", "40053",5, numberNewParcels, xlsxSheet);
 
     }
 
@@ -755,8 +760,8 @@ public class ExcelDataTest {
                                            XSSFSheet xlsxSheet) {
 
         Integer numberNewParcels = generateNewParcels().size();
-        dprTableWriter.writeNewDPRArea(40053,3660, numberNewParcels, xlsxSheet);
-        dprTableWriter.writeNewDPRArea(15828,0, numberNewParcels, xlsxSheet);
+        dprTableWriter.writeNewDPRArea("40053",3660, numberNewParcels, xlsxSheet);
+        dprTableWriter.writeNewDPRArea("15828",0, numberNewParcels, xlsxSheet);
 
     }
 
@@ -777,7 +782,7 @@ public class ExcelDataTest {
 
         Integer numberNewParcels = generateNewParcels().size();
         XSSFSheet xlsxSheet = newWorkbook.getSheet("Mutationstabelle");
-        dprTableWriter.writeDPRRoundingDifference(40053, -1, numberNewParcels, xlsxSheet);
+        dprTableWriter.writeDPRRoundingDifference("40053", -1, numberNewParcels, xlsxSheet);
     }
 
     private boolean checkDPRRoundingDifferences(XSSFWorkbook workbook){
@@ -792,4 +797,3 @@ public class ExcelDataTest {
         return allRoundingDifferencesAreCorrect;
     }
 }
-

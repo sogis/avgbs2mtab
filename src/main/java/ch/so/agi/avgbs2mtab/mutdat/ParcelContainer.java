@@ -7,43 +7,43 @@ import java.util.*;
  */
 public class ParcelContainer implements SetParcel, MetadataOfParcelMutation, DataExtractionParcel {
 
-    Map<Integer,Map> mainParcelMap =new Hashtable<Integer,Map>(); //The main parcel-map.
-    Map<Integer,Integer> parcelNewAreaMap = new Hashtable<>(); //Map contains the new area of a parcel.
-    Map<Integer,Integer> parcelRemainingAreaMap = new Hashtable<>(); //Map contains the remaining-area of a Parcel (Diagonale).
-    Map<Integer,Integer> parcelRoundingDifferenceMap = new Hashtable<>(); //Map contains the roundingdifference.
+    Map<String,Map> mainParcelMap = new Hashtable<>(); //The main parcel-map.
+    Map<String,Integer> parcelNewAreaMap = new Hashtable<>(); //Map contains the new area of a parcel.
+    Map<String,Integer> parcelRemainingAreaMap = new Hashtable<>(); //Map contains the remaining-area of a Parcel (Diagonale).
+    Map<String,Integer> parcelRoundingDifferenceMap = new Hashtable<>(); //Map contains the roundingdifference.
 
     ///////////////////////////////////////////////
     // SET-Methoden //////////////////////////////
     //////////////////////////////////////////////
 
     @Override
-    public void setParcelAddition(int newparcelnumber, int oldparcelnumber, int area) {
+    public void setParcelAddition(String newparcelnumber, String oldparcelnumber, int area) {
 
-        Map<Integer,Integer> parcelmap = mainParcelMap.get(newparcelnumber);
+        Map<String,Integer> parcelmap = mainParcelMap.get(newparcelnumber);
         if(parcelmap == null){
-            parcelmap = new Hashtable<Integer, Integer>();
+            parcelmap = new Hashtable<String, Integer>();
             mainParcelMap.put(newparcelnumber, parcelmap);
         }
         parcelmap.put(oldparcelnumber, area);
     }
 
     @Override
-    public void setParcelNewArea(int newparcelnumber, int newarea) {
+    public void setParcelNewArea(String newparcelnumber, int newarea) {
             parcelNewAreaMap.put(newparcelnumber,newarea);
     }
 
     @Override
-    public void setParcelOldArea(int oldparcelnumber, int oldarea) {
+    public void setParcelOldArea(String oldparcelnumber, int oldarea) {
             parcelRemainingAreaMap.put(oldparcelnumber,oldarea);
     }
 
     @Override
-    public void delParcelOldArea(int oldparcelnumber) {
+    public void delParcelOldArea(String oldparcelnumber) {
         parcelRemainingAreaMap.remove(oldparcelnumber);
     }
 
     @Override
-    public void setParcelRoundingDifference(int parcel, int roundingdifference) {
+    public void setParcelRoundingDifference(String parcel, int roundingdifference) {
             parcelRoundingDifferenceMap.put(parcel,roundingdifference);
     }
 
@@ -52,19 +52,19 @@ public class ParcelContainer implements SetParcel, MetadataOfParcelMutation, Dat
     ///////////////////////////////////
 
     @Override
-    public List<Integer> getOrderedListOfOldParcelNumbers() {
-        List<Integer> oldparcelnumbers = new ArrayList<>();
+    public List<String> getOrderedListOfOldParcelNumbers() {
+        List<String> oldparcelnumbers = new ArrayList<>();
         //Add all parcelnumbers in the inner-mainDprMap from the main mainDprMap to the oldparcelmap
-        for(Integer key : mainParcelMap.keySet()) {
+        for(String key : mainParcelMap.keySet()) {
             Map internalmap = mainParcelMap.get(key);
             for(Object keyoldparcels : internalmap.keySet()) {
                 if(!oldparcelnumbers.contains(keyoldparcels)) {
-                    oldparcelnumbers.add((Integer) keyoldparcels);
+                    oldparcelnumbers.add((String) keyoldparcels);
                 }
             }
         }
         //Add also all parcelnumbers from parcelRemainingAreaMap to the oldparcelmap
-        for(Integer key : parcelRemainingAreaMap.keySet()) {
+        for(String key : parcelRemainingAreaMap.keySet()) {
             if(!oldparcelnumbers.contains(key)) {
                 oldparcelnumbers.add(key);
             }
@@ -74,13 +74,13 @@ public class ParcelContainer implements SetParcel, MetadataOfParcelMutation, Dat
     }
 
     @Override
-    public List<Integer> getOrderedListOfNewParcelNumbers() {
-        List<Integer> newparcelnumbers = new ArrayList<>(parcelNewAreaMap.keySet());
+    public List<String> getOrderedListOfNewParcelNumbers() {
+        List<String> newparcelnumbers = new ArrayList<>(parcelNewAreaMap.keySet());
         Collections.sort(newparcelnumbers);
         return newparcelnumbers;
     }
     @Override
-    public Integer getAddedArea(int newparcel, int oldparcel) {
+    public Integer getAddedArea(String newparcel, String oldparcel) {
         Map addmap = mainParcelMap.get(newparcel);
         Integer areaadded = null; //Etwas unglücklich, aber bisher unvermeidlich!
         if (addmap!=null) {
@@ -90,13 +90,13 @@ public class ParcelContainer implements SetParcel, MetadataOfParcelMutation, Dat
     }
 
     @Override
-    public Integer getNewArea(int newParcelNumber) {
+    public Integer getNewArea(String newParcelNumber) {
         Integer newarea = parcelNewAreaMap.get(newParcelNumber);
         return newarea;
     }
 
     @Override
-    public Integer getRoundingDifference(int oldParcelNumber) {
+    public Integer getRoundingDifference(String oldParcelNumber) {
         Integer roundingdifference = parcelRoundingDifferenceMap.get(oldParcelNumber);
         return roundingdifference;
     }
@@ -114,7 +114,7 @@ public class ParcelContainer implements SetParcel, MetadataOfParcelMutation, Dat
     }
 
     @Override
-    public Integer getRestAreaOfParcel(int oldParcelNumber) {
+    public Integer getRestAreaOfParcel(String oldParcelNumber) {
         Integer restarea = parcelRemainingAreaMap.get(oldParcelNumber);
         return restarea;
     }

@@ -4,16 +4,16 @@ import java.util.List;
 
 public interface DataExtractionParcel {
 
-    public List<Integer> getOrderedListOfOldParcelNumbers();
+    public List<String> getOrderedListOfOldParcelNumbers();
 
-    public List<Integer> getOrderedListOfNewParcelNumbers();
+    public List<String> getOrderedListOfNewParcelNumbers();
 
-    public Integer getAddedArea(int oldParcelNumber, int newParcelNumber);
+    public Integer getAddedArea(String oldParcelNumber, String newParcelNumber);
 
-    public Integer getNewArea(int newParcelNumber);
+    public Integer getNewArea(String newParcelNumber);
 
-    public Integer getRoundingDifference(int oldParcelNumber);
+    public Integer getRoundingDifference(String oldParcelNumber);
 
-    public Integer getRestAreaOfParcel(int oldParcelNumber);
+    public Integer getRestAreaOfParcel(String oldParcelNumber);
 
 }

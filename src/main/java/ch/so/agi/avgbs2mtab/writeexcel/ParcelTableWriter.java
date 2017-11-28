@@ -32,8 +32,8 @@ class ParcelTableWriter {
      * @param orderedListOfNewParcelNumbers List of new parcel numbers
      * @param xlsxSheet                     excel sheet
      */
-    void writeParcelsIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
-                                             List<Integer> orderedListOfNewParcelNumbers,
+    void writeParcelsIntoParcelTable(List<String> orderedListOfOldParcelNumbers,
+                                             List<String> orderedListOfNewParcelNumbers,
                                              XSSFSheet xlsxSheet){
 
         LOGGER.log(Level.FINER, "Write number of new and old parcels into parcel table");
@@ -47,14 +47,14 @@ class ParcelTableWriter {
      * @param orderedListOfOldParcelNumbers List of old parcel numbers
      * @param xlsxSheet                     excel sheet
      */
-    void writeOldParcelsInTemplate(List<Integer> orderedListOfOldParcelNumbers,
-                                          XSSFSheet xlsxSheet) {
+    void writeOldParcelsInTemplate(List<String> orderedListOfOldParcelNumbers,
+                                   XSSFSheet xlsxSheet) {
 
         Row rowWithOldParcelNumbers =xlsxSheet.getRow(rowIndexOfOldParcels);
 
         Integer column = startIndexOfColumn;
 
-        for (Integer parcelNumber : orderedListOfOldParcelNumbers){
+        for (String parcelNumber : orderedListOfOldParcelNumbers){
             Cell cell =rowWithOldParcelNumbers.getCell(column);
             cell.setCellValue(parcelNumber);
             column++;
@@ -66,13 +66,13 @@ class ParcelTableWriter {
      * @param orderedListOfNewParcelNumbers List of new parcel numbers
      * @param xlsxSheet                     excel sheet
      */
-    void writeNewParcelsInTemplate(List<Integer> orderedListOfNewParcelNumbers,
-                                          XSSFSheet xlsxSheet){
+    void writeNewParcelsInTemplate(List<String> orderedListOfNewParcelNumbers,
+                                   XSSFSheet xlsxSheet){
 
 
         int amountOfParcels = 1;
 
-        for (Integer parcelNumber : orderedListOfNewParcelNumbers){
+        for (String parcelNumber : orderedListOfNewParcelNumbers){
             writingUtils.writeValueIntoCell(startIndexOfRow + aParcelOrADprNeedsTwoRows * amountOfParcels,
                     columnIndexOfNewParcelRow, xlsxSheet, parcelNumber);
             amountOfParcels++;
@@ -89,16 +89,16 @@ class ParcelTableWriter {
      * @param dataExtractionParcel          get-methods for container
      * @param xlsxSheet                     excel sheet
      */
-    void writeAllInflowsAndOutFlowsIntoParcelTable (List<Integer> orderedListOfOldParcelNumbers,
-                                                            List<Integer> orderedListOfNewParcelNumbers,
+    void writeAllInflowsAndOutFlowsIntoParcelTable (List<String> orderedListOfOldParcelNumbers,
+                                                            List<String> orderedListOfNewParcelNumbers,
                                                             DataExtractionParcel dataExtractionParcel,
                                                             XSSFSheet xlsxSheet) {
 
         LOGGER.log(Level.FINER, "Write all inflows and outflows of each parcel into parcel table.");
 
 
-        for (int oldParcel : orderedListOfOldParcelNumbers) {
-            for (int newParcel : orderedListOfNewParcelNumbers) {
+        for (String oldParcel : orderedListOfOldParcelNumbers) {
+            for (String newParcel : orderedListOfNewParcelNumbers) {
 
                 Integer area = writingUtils.getAreaOfFlowBetweenOldAndNewParcel(oldParcel, newParcel, dataExtractionParcel);
 
@@ -118,13 +118,13 @@ class ParcelTableWriter {
      * @param area              area flow
      * @param xlsxSheet         excel sheet
      */
-    void writeInflowAndOutflowOfOneParcelPair(int oldParcelNumber,
-                                                     int newParcelNumber,
+    void writeInflowAndOutflowOfOneParcelPair(String oldParcelNumber,
+                                                     String newParcelNumber,
                                                      int area,
                                                      XSSFSheet xlsxSheet) {
 
-        Integer indexOldParcelNumber;
-        Integer indexNewParcelNumber;
+        int indexOldParcelNumber;
+        int indexNewParcelNumber;
 
         indexOldParcelNumber = writingUtils.getColumnIndexOfParcelInTable(oldParcelNumber, rowIndexOfOldParcels, xlsxSheet);
         indexNewParcelNumber = writingUtils.getRowIndexOfNewParcelInTable(newParcelNumber, xlsxSheet);
@@ -139,14 +139,14 @@ class ParcelTableWriter {
      * @param dataExtractionParcel          get-methods for container
      * @param xlsxSheet                     excel sheet
      */
-    void writeAllRoundingDifferenceIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
-                                                           List<Integer> orderedListOfNewParcelNumbers,
+    void writeAllRoundingDifferenceIntoParcelTable(List<String> orderedListOfOldParcelNumbers,
+                                                           List<String> orderedListOfNewParcelNumbers,
                                                            DataExtractionParcel dataExtractionParcel,
                                                            XSSFSheet xlsxSheet) {
 
         LOGGER.log(Level.FINER, "Write the rounding difference for each parcel into parcel table.");
 
-        for (int oldParcel : orderedListOfOldParcelNumbers) {
+        for (String oldParcel : orderedListOfOldParcelNumbers) {
 
             Integer roundingDifference =  dataExtractionParcel.getRoundingDifference(oldParcel);
 
@@ -164,10 +164,10 @@ class ParcelTableWriter {
      * @param numberOfNewParcels    amount of new parcels
      * @param xlsxSheet             excel sheet
      */
-    void writeRoundingDifference(int oldParcelNumber,
-                                        int roundingDifference,
-                                        int numberOfNewParcels,
-                                        XSSFSheet xlsxSheet) {
+    void writeRoundingDifference(String oldParcelNumber,
+                                 int roundingDifference,
+                                 int numberOfNewParcels,
+                                 XSSFSheet xlsxSheet) {
 
         Integer columnOldParcelNumber = writingUtils.getColumnIndexOfParcelInTable(oldParcelNumber, rowIndexOfOldParcels , xlsxSheet);
 
@@ -191,8 +191,8 @@ class ParcelTableWriter {
      * @param dataExtractionParcel          get-methods for container
      * @param xlsxSheet                     excel sheet
      */
-    void writeSumOfRoundingDifferenceIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
-                                                             List<Integer> orderedListOfNewParcelNumbers,
+    void writeSumOfRoundingDifferenceIntoParcelTable(List<String> orderedListOfOldParcelNumbers,
+                                                             List<String> orderedListOfNewParcelNumbers,
                                                              DataExtractionParcel dataExtractionParcel,
                                                              XSSFSheet xlsxSheet) {
 
@@ -233,13 +233,13 @@ class ParcelTableWriter {
      * @param dataExtractionParcel          get-methods for container
      * @param xlsxSheet                     excel sheet
      */
-    void writeAllNewAreasIntoParcelTable(List<Integer> orderedListOfNewParcelNumbers,
+    void writeAllNewAreasIntoParcelTable(List<String> orderedListOfNewParcelNumbers,
                                                  DataExtractionParcel dataExtractionParcel,
                                                  XSSFSheet xlsxSheet) {
 
         LOGGER.log(Level.FINER, "Write for each parcel the new area into parcel table.");
 
-        for (int newParcel : orderedListOfNewParcelNumbers){
+        for (String newParcel : orderedListOfNewParcelNumbers){
 
             int newArea = dataExtractionParcel.getNewArea(newParcel);
 
@@ -253,7 +253,7 @@ class ParcelTableWriter {
      * @param area              value of area
      * @param xlsxSheet         excel sheet
      */
-    void writeNewArea(int newParcelNumber,
+    void writeNewArea(String newParcelNumber,
                              int area,
                              XSSFSheet xlsxSheet) {
 
@@ -278,18 +278,18 @@ class ParcelTableWriter {
      * @param dataExtractionParcel          DataExtractionParcel
      * @param xlsxSheet                     excel sheet
      */
-    void writeAllOldAreasIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
-                                                 List<Integer> orderedListOfNewParcelNumbers,
+    void writeAllOldAreasIntoParcelTable(List<String> orderedListOfOldParcelNumbers,
+                                                 List<String> orderedListOfNewParcelNumbers,
                                                  DataExtractionParcel dataExtractionParcel,
                                                  XSSFSheet xlsxSheet) {
 
         LOGGER.log(Level.FINER,"Write for each old parcel the old area into parcel table.");
 
 
-        HashMap<Integer, Integer> oldAreaHashMap = writingUtils.getAllOldAreas(orderedListOfNewParcelNumbers,
+        HashMap<String, Integer> oldAreaHashMap = writingUtils.getAllOldAreas(orderedListOfNewParcelNumbers,
                 orderedListOfOldParcelNumbers, dataExtractionParcel);
 
-        for (int oldParcel : orderedListOfOldParcelNumbers) {
+        for (String oldParcel : orderedListOfOldParcelNumbers) {
             Integer oldArea = oldAreaHashMap.get(oldParcel);
 
             writeOldArea(oldParcel, oldArea, orderedListOfNewParcelNumbers.size(), xlsxSheet);
@@ -303,10 +303,10 @@ class ParcelTableWriter {
      * @param numberOfnewParcels    amount of new parcels
      * @param xlsxSheet             excel sheet
      */
-    void writeOldArea(int oldParcelNumber,
-                             int oldArea,
-                             int numberOfnewParcels,
-                             XSSFSheet xlsxSheet){
+    void writeOldArea(String oldParcelNumber,
+                      int oldArea,
+                      int numberOfnewParcels,
+                      XSSFSheet xlsxSheet){
 
         Integer columnOldParcelNumber = writingUtils.getColumnIndexOfParcelInTable(oldParcelNumber, rowIndexOfOldParcels, xlsxSheet);
 
@@ -329,14 +329,14 @@ class ParcelTableWriter {
      * @param dataExtractionParcel          get-methods for container
      * @param xlsxSheet                     excel sheet
      */
-    void writeAreaSumIntoParcelTable(List<Integer> orderedListOfOldParcelNumbers,
-                                             List<Integer> orderedListOfNewParcelNumbers,
+    void writeAreaSumIntoParcelTable(List<String> orderedListOfOldParcelNumbers,
+                                             List<String> orderedListOfNewParcelNumbers,
                                              DataExtractionParcel dataExtractionParcel,
                                              XSSFSheet xlsxSheet) {
 
         LOGGER.log(Level.FINER, "Write the sum of the areas into parcel table.");
 
-        HashMap<Integer, Integer> oldAreaHashMap = writingUtils.getAllOldAreas(orderedListOfNewParcelNumbers,
+        HashMap<String, Integer> oldAreaHashMap = writingUtils.getAllOldAreas(orderedListOfNewParcelNumbers,
                 orderedListOfOldParcelNumbers, dataExtractionParcel);
 
         if (orderedListOfNewParcelNumbers.size() != 0 && orderedListOfOldParcelNumbers.size() != 0) {
@@ -353,10 +353,10 @@ class ParcelTableWriter {
      * @param roundingDifference    sum of all rounding differences
      * @param xlsxSheet             excel sheet
      */
-    void writeAreaSum(HashMap<Integer, Integer> oldAreas,
-                             List<Integer> newAreas,
-                             int roundingDifference,
-                             XSSFSheet xlsxSheet){
+    void writeAreaSum(HashMap<String, Integer> oldAreas,
+                      List<Integer> newAreas,
+                      int roundingDifference,
+                      XSSFSheet xlsxSheet){
 
         Integer sumOldAreas = 0;
         Integer sumNewAreas = 0;
@@ -367,7 +367,7 @@ class ParcelTableWriter {
         Integer columnIndexOfNewAreas = numberOfOldParcels + 1;
 
 
-        for (Map.Entry<Integer, Integer> entry : oldAreas.entrySet()){
+        for (Map.Entry<String, Integer> entry : oldAreas.entrySet()){
             sumOldAreas += entry.getValue();
         }
 

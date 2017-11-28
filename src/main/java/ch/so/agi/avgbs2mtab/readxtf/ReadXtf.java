@@ -154,7 +154,7 @@ public class ReadXtf {
                     if (aclass.equals(ILI_MODELNAME + ".Grundstuecksbeschrieb.Anteil")) {
                         String drpnumber = iomObj.getattrobj("flaeche", 0).getobjectrefoid();
                         String liegt_auf = iomObj.getattrobj("liegt_auf", 0).getobjectrefoid();
-                        int area = (int) Double.parseDouble(iomObj.getattrvalue("Flaechenmass"));
+                        int area = (int) Double.parseDouble(iomObj.getattrvalue("Flaechenmass"))*10;
 
                         if (dprAnteilAnLiegenschaft.get(drpnumber) != null) {
                             liegtaufmap = dprAnteilAnLiegenschaft.get(drpnumber);
@@ -205,8 +205,8 @@ public class ReadXtf {
     private void getParcelLiegenschaft(IomObject iomObj) {
         if(iomObj.getattrvalue("GrundstueckArt").equals("Liegenschaft")) {
             if (parcelMetadataSet.contains(iomObj.getobjectoid())) {
-                int parcelnumber = Integer.parseInt(iomObj.getattrobj("Nummer", 0).getattrvalue("Nummer"));
-                int area = (int) Double.parseDouble(iomObj.getattrvalue("Flaechenmass"));
+                String parcelnumber = iomObj.getattrobj("Nummer", 0).getattrvalue("Nummer");
+                int area = (int) Double.parseDouble(iomObj.getattrvalue("Flaechenmass"))*10;
                 parceldump.setParcelNewArea(parcelnumber, area);
                 parceldump.setParcelOldArea(parcelnumber,area); //vorläufig wird die alte Fläche = neue Fläche gesetzt.
 
@@ -221,12 +221,12 @@ public class ReadXtf {
         }
     }
 
-    private void getZugaenge(IomObject iomObj, int parcelnumber, int area) {
+    private void getZugaenge(IomObject iomObj, String parcelnumber, int area) {
         if (iomObj.getattrvaluecount("Zugang") > 0) {
             int additionsum = 0;
             for (int i = 0; i < iomObj.getattrvaluecount("Zugang"); i++) {
-                int oldparcelnumber = Integer.parseInt(iomObj.getattrobj("Zugang", i).getattrobj("von", 0).getattrvalue("Nummer"));
-                int additionarea = (int) Double.parseDouble(iomObj.getattrobj("Zugang", i).getattrvalue("Flaechenmass"));
+                String oldparcelnumber = iomObj.getattrobj("Zugang", i).getattrobj("von", 0).getattrvalue("Nummer");
+                int additionarea = (int) Double.parseDouble(iomObj.getattrobj("Zugang", i).getattrvalue("Flaechenmass"))*10;
                 parceldump.setParcelAddition(parcelnumber, oldparcelnumber, additionarea);
                 additionsum += additionarea;
             }
@@ -273,7 +273,7 @@ public class ReadXtf {
         if (aclass.equals(ILI_MUT + ".AVMutation")) {
             Integer numberofdeletedparcels = iomObj.getattrvaluecount("geloeschteGrundstuecke");
             for(Integer i=0;i<numberofdeletedparcels;++i) {
-                Integer nummer = Integer.parseInt(iomObj.getattrobj("geloeschteGrundstuecke", i).getattrvalue("Nummer"));
+                String nummer = iomObj.getattrobj("geloeschteGrundstuecke", i).getattrvalue("Nummer");
                 DataExtractionParcel parceldatagetter = (DataExtractionParcel)parceldump;
                 if(!parceldatagetter.getOrderedListOfOldParcelNumbers().contains(nummer)&&!parceldatagetter.getOrderedListOfNewParcelNumbers().contains(nummer)) {
                     drpdump.setDPRNewArea(nummer, 0);
@@ -286,7 +286,7 @@ public class ReadXtf {
         if (aclass.equals(ILI_MUT + ".Liegenschaft")) {
             Integer numbercount = iomObj.getattrvaluecount("Nummer");
             for (int i = 0;i<numbercount;++i) {
-                int parcelnumber = Integer.parseInt(iomObj.getattrobj("Nummer", i).getattrvalue("Nummer"));
+                String parcelnumber = iomObj.getattrobj("Nummer", i).getattrvalue("Nummer");
                 String parcelref = iomObj.getobjectoid();
                 drpdump.setDPRNumberAndRef(parcelref, parcelnumber);
             }
@@ -297,8 +297,8 @@ public class ReadXtf {
         if (aclass.equals(ILI_MUT + ".Flaeche")) {
             if (iomObj.getattrvalue("GrundstueckArt").startsWith("SelbstRecht")) { //Selbstrecht.* ?
                 if (drpmetadatamap.containsKey(iomObj.getobjectoid())) {
-                    int parcelnumber = Integer.parseInt(iomObj.getattrobj("Nummer", 0).getattrvalue("Nummer"));
-                    int newarea = (int) Double.parseDouble(iomObj.getattrvalue("Flaechenmass"));
+                    String parcelnumber = iomObj.getattrobj("Nummer", 0).getattrvalue("Nummer");
+                    int newarea = (int) Double.parseDouble(iomObj.getattrvalue("Flaechenmass"))*10;
                     String parcelref = iomObj.getobjectoid();
                     Map internalmap = drpmetadatamap.get(iomObj.getobjectoid());
                     for (Object key : internalmap.keySet()) {

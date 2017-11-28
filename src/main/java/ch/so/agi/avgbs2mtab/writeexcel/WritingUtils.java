@@ -48,10 +48,10 @@ class WritingUtils {
      * @param xlsxSheet     excel sheet
      * @param value         number of dpr as a string
      */
-    void writeValueIntoCell(Integer rowIndex,
-                                    Integer columnIndex,
-                                    XSSFSheet xlsxSheet,
-                                    String value){
+    void writeValueIntoCell(int rowIndex,
+                            Integer columnIndex,
+                            XSSFSheet xlsxSheet,
+                            String value){
 
         XSSFRow row = xlsxSheet.getRow(rowIndex);
         XSSFCell cell =row.getCell(columnIndex);
@@ -66,15 +66,16 @@ class WritingUtils {
      * @param xlsxSheet     excel sheet
      * @return              index of column
      */
-    int getColumnIndexOfParcelInTable(int ParcelNumber,
-                                              int rowNumber,
-                                              XSSFSheet xlsxSheet){
+    int getColumnIndexOfParcelInTable(String ParcelNumber,
+                                      int rowNumber,
+                                      XSSFSheet xlsxSheet){
         int indexOldParcelNumber = Integer.MIN_VALUE;
 
         Row row = xlsxSheet.getRow(rowNumber);
 
         for (Cell cell : row) {
-            if (cell.getCellTypeEnum() == CellType.NUMERIC && cell.getNumericCellValue() == ParcelNumber) {
+            System.out.println("Celltype = "+cell.getCellTypeEnum());
+            if (cell.getCellTypeEnum() == CellType.STRING && cell.getStringCellValue() == ParcelNumber) {
                 indexOldParcelNumber = cell.getColumnIndex();
                 break;
             }
@@ -84,6 +85,7 @@ class WritingUtils {
             throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, "Could not find Parcel " +
                     ParcelNumber);
         }
+        System.out.println("indexOfOldParcelNumber "+ParcelNumber+" = "+indexOldParcelNumber);
 
         return indexOldParcelNumber;
     }
@@ -94,8 +96,8 @@ class WritingUtils {
      * @param xlsxSheet         excel sheet
      * @return                  index of row
      */
-    int getRowIndexOfNewParcelInTable (int newParcelNumber,
-                                               XSSFSheet xlsxSheet){
+    int getRowIndexOfNewParcelInTable (String newParcelNumber,
+                                       XSSFSheet xlsxSheet){
 
         int indexNewParcelNumber = Integer.MIN_VALUE;
 
@@ -106,7 +108,7 @@ class WritingUtils {
             Row row1 = rowIterator.next();
             Cell cell1 = row1.getCell(columnIndexOfNewParcelRow);
 
-            if (cell1.getCellTypeEnum() == CellType.NUMERIC && cell1.getNumericCellValue() == newParcelNumber){
+            if (cell1.getCellTypeEnum() == CellType.NUMERIC && cell1.getStringCellValue() == newParcelNumber){
                 indexNewParcelNumber = cell1.getRowIndex();
                 break;
             }
@@ -127,12 +129,12 @@ class WritingUtils {
      * @param dataExtractionParcel          get-methods for container
      * @return                              list of new areas
      */
-    List<Integer> getAllNewAreas (List<Integer> orderedListOfNewParcelNumbers,
-                                          DataExtractionParcel dataExtractionParcel) {
+    List<Integer> getAllNewAreas (List<String> orderedListOfNewParcelNumbers,
+                                  DataExtractionParcel dataExtractionParcel) {
 
         List<Integer> newAreaList = new ArrayList<>();
 
-        for (int newParcel : orderedListOfNewParcelNumbers) {
+        for (String newParcel : orderedListOfNewParcelNumbers) {
             newAreaList.add(dataExtractionParcel.getNewArea(newParcel));
         }
 
@@ -146,12 +148,12 @@ class WritingUtils {
      * @param dataExtractionParcel          get-methods for container
      * @return                              sum of all rounding differences
      */
-    Integer calculateRoundingDifference(List<Integer> orderedListOfOldParcelNumbers,
-                                                DataExtractionParcel dataExtractionParcel) {
+    Integer calculateRoundingDifference(List<String> orderedListOfOldParcelNumbers,
+                                        DataExtractionParcel dataExtractionParcel) {
 
         Integer roundingDifference = 0;
 
-        for (int oldParcel : orderedListOfOldParcelNumbers) {
+        for (String oldParcel : orderedListOfOldParcelNumbers) {
             Integer newRoundingDifference = dataExtractionParcel.getRoundingDifference(oldParcel);
             if (newRoundingDifference != null) {
                 roundingDifference += newRoundingDifference;
@@ -190,8 +192,8 @@ class WritingUtils {
      * @return                  row index of dpr
      */
     Integer getRowIndexOfDPRInTable(int indexOfParcelRow,
-                                            int dpr,
-                                            XSSFSheet xlsxSheet){
+                                    String dpr,
+                                    XSSFSheet xlsxSheet){
 
         int lastRow = xlsxSheet.getLastRowNum();
         Integer indexDPR = null;
@@ -202,7 +204,7 @@ class WritingUtils {
 
             if (cell1.getCellTypeEnum() == CellType.STRING){
 
-                int dprNumber = getDPRNumberFromCell(cell1);
+                String dprNumber = getDPRNumberFromCell(cell1);
 
                 if (dprNumber == dpr){
                     indexDPR = cell1.getRowIndex();
@@ -225,11 +227,11 @@ class WritingUtils {
      * @param cell  excel cell
      * @return      number of dpr
      */
-    Integer getDPRNumberFromCell(Cell cell){
+    String getDPRNumberFromCell(Cell cell){
         String dprString = cell.getStringCellValue();
         int dprStringLength = dprString.length();
 
-        return Integer.parseInt(dprString.substring(1, (dprStringLength-1)));
+        return dprString.substring(1, (dprStringLength-1));
     }
 
     /**
@@ -239,22 +241,22 @@ class WritingUtils {
      * @param dataExtractionParcel          get-methods for parcel container
      * @return                              hashmap with all old areas
      */
-    HashMap<Integer, Integer> getAllOldAreas(List<Integer> orderedListOfNewParcelNumbers,
-                                                    List<Integer> orderedListOfOldParcelNumbers,
-                                                    DataExtractionParcel dataExtractionParcel) {
+    HashMap<String, Integer> getAllOldAreas(List<String> orderedListOfNewParcelNumbers,
+                                             List<String> orderedListOfOldParcelNumbers,
+                                             DataExtractionParcel dataExtractionParcel) {
 
         LOGGER.log(Level.FINER, "Calculating for each old parcel the old area.");
 
-        HashMap<Integer, Integer> oldAreaHashMap = new HashMap<>();
+        HashMap<String, Integer> oldAreaHashMap = new HashMap<>();
         Integer oldArea;
         Integer area;
         Integer roundingDifference;
 
-        for (int oldParcel : orderedListOfOldParcelNumbers) {
+        for (String oldParcel : orderedListOfOldParcelNumbers) {
             oldArea = 0;
-            for (int newParcel : orderedListOfNewParcelNumbers) {
+            for (String newParcel : orderedListOfNewParcelNumbers) {
 
-                area = getAreaOfFlowBetweenOldAndNewParcel(oldParcel, newParcel, dataExtractionParcel);
+                area = getAreaOfFlowBetweenOldAndNewParcel(oldParcel, newParcel, dataExtractionParcel)/10;
 
                 if (area != null) {
                     oldArea += area;
@@ -285,16 +287,16 @@ class WritingUtils {
      * @param dataExtractionParcel  get-methods for container
      * @return                      area flow
      */
-    Integer getAreaOfFlowBetweenOldAndNewParcel(int oldParcel,
-                                                        int newParcel,
-                                                        DataExtractionParcel dataExtractionParcel){
+    Integer getAreaOfFlowBetweenOldAndNewParcel(String oldParcel,
+                                                String newParcel,
+                                                DataExtractionParcel dataExtractionParcel){
 
         Integer area;
 
         if (oldParcel != newParcel) {
-            area = dataExtractionParcel.getAddedArea(newParcel, oldParcel);
+            area = dataExtractionParcel.getAddedArea(newParcel, oldParcel)/10;
         } else {
-            area = dataExtractionParcel.getRestAreaOfParcel(oldParcel);
+            area = dataExtractionParcel.getRestAreaOfParcel(oldParcel)/10;
         }
 
         return area;

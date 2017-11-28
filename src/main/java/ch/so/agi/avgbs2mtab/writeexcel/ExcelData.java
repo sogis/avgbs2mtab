@@ -37,8 +37,8 @@ class ExcelData {
             OutputStream excelFile = new FileOutputStream(filePath);
             XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
 
-            List<Integer> orderedListOfOldParcelNumbers = dataExtractionParcel.getOrderedListOfOldParcelNumbers();
-            List<Integer> orderedListOfNewParcelNumbers = dataExtractionParcel.getOrderedListOfNewParcelNumbers();
+            List<String> orderedListOfOldParcelNumbers = dataExtractionParcel.getOrderedListOfOldParcelNumbers();
+            List<String> orderedListOfNewParcelNumbers = dataExtractionParcel.getOrderedListOfNewParcelNumbers();
 
             parcelTableWriter.writeParcelsIntoParcelTable(orderedListOfOldParcelNumbers, orderedListOfNewParcelNumbers,
                     xlsxSheet);
@@ -88,8 +88,8 @@ class ExcelData {
             OutputStream ExcelFile = new FileOutputStream(filePath);
             XSSFSheet xlsxSheet = workbook.getSheet("Mutationstabelle");
 
-            List<Integer> orderedListOfParcelNumbers = dataExtractionDPR.getOrderedListOfParcelsAffectedByDPRs();
-            List<Integer> orderedListOfDPRs = dataExtractionDPR.getOrderedListOfNewDPRs();
+            List<String> orderedListOfParcelNumbers = dataExtractionDPR.getOrderedListOfParcelsAffectedByDPRs();
+            List<String> orderedListOfDPRs = dataExtractionDPR.getOrderedListOfNewDPRs();
 
 
             Integer numberOfNewParcelsInParcelTable = metadataOfParcelMutation.getNumberOfNewParcels();

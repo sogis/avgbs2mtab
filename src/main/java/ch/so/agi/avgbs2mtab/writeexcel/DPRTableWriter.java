@@ -29,10 +29,10 @@ class DPRTableWriter {
      * @param numberOfNewParcelsInParcelTable   amount of new parcels in parcel table
      * @param xlsxSheet                         excel sheet
      */
-    void writeParcelsAndDPRsIntoTable(List<Integer> orderedListOfParcelNumbers,
-                                              List<Integer> orderedListOfDPRs,
-                                              int numberOfNewParcelsInParcelTable,
-                                              XSSFSheet xlsxSheet) {
+    void writeParcelsAndDPRsIntoTable(List<String> orderedListOfParcelNumbers,
+                                      List<String> orderedListOfDPRs,
+                                      int numberOfNewParcelsInParcelTable,
+                                      XSSFSheet xlsxSheet) {
 
         LOGGER.log(Level.FINER, "Write the numbers of dprs and parcels into dpr table");
 
@@ -46,9 +46,9 @@ class DPRTableWriter {
      * @param newParcelNumber                           amount of new parcels in parcel table
      * @param xlsxSheet                                 excel sheet
      */
-    void writeParcelsAffectedByDPRsInTemplate(List<Integer> orderedListOfParcelNumbersAffectedByDPRs,
-                                                     int newParcelNumber,
-                                                     XSSFSheet xlsxSheet) {
+    void writeParcelsAffectedByDPRsInTemplate(List<String> orderedListOfParcelNumbersAffectedByDPRs,
+                                              int newParcelNumber,
+                                              XSSFSheet xlsxSheet) {
 
         Integer column = 1;
 
@@ -56,7 +56,7 @@ class DPRTableWriter {
                 writingUtils.calculateIndexOfParcelRow(newParcelNumber, additionConstantToGetToParcelNumberRowInDPRTable);
 
 
-        for (Integer parcelNumber : orderedListOfParcelNumbersAffectedByDPRs){
+        for (String parcelNumber : orderedListOfParcelNumbersAffectedByDPRs){
 
             writingUtils.writeValueIntoCell(indexOfParcelRow, column, xlsxSheet, parcelNumber);
 
@@ -70,13 +70,13 @@ class DPRTableWriter {
      * @param newParcelNumber   amount of new parcels
      * @param xlsxSheet         excel sheet
      */
-    void writeDPRsInTemplate(List<Integer> orderedListOfDPRs,
-                                    int newParcelNumber,
-                                    XSSFSheet xlsxSheet) {
+    void writeDPRsInTemplate(List<String> orderedListOfDPRs,
+                             int newParcelNumber,
+                             XSSFSheet xlsxSheet) {
 
         Integer rowIndex = writingUtils.calculateIndexOfParcelRow(newParcelNumber, additionConstantToGetToFirstRowWithDPRNumber);
 
-        for (Integer dpr : orderedListOfDPRs){
+        for (String dpr : orderedListOfDPRs){
 
             writingUtils.writeValueIntoCell(rowIndex, 0, xlsxSheet, dpr.toString());
 
@@ -93,16 +93,16 @@ class DPRTableWriter {
      * @param dataExtractionDPR                 get-methods for dpr container
      * @param xlsxSheet                         excel sheet
      */
-    void writeAllFlowsIntoDPRTable(List<Integer> orderedListOfParcelNumbers,
-                                           List<Integer> orderedListOfDPRs,
-                                           int numberOfNewParcelsInParcelTable,
-                                           DataExtractionDPR dataExtractionDPR,
-                                           XSSFSheet xlsxSheet){
+    void writeAllFlowsIntoDPRTable(List<String> orderedListOfParcelNumbers,
+                                   List<String> orderedListOfDPRs,
+                                   int numberOfNewParcelsInParcelTable,
+                                   DataExtractionDPR dataExtractionDPR,
+                                   XSSFSheet xlsxSheet){
 
         LOGGER.log(Level.FINER, "Write all flows of area into dpr table");
 
-        for (int parcel : orderedListOfParcelNumbers) {
-            for (int dpr : orderedListOfDPRs) {
+        for (String parcel : orderedListOfParcelNumbers) {
+            for (String dpr : orderedListOfDPRs) {
 
                 Integer area = dataExtractionDPR.getAddedAreaDPR(parcel, dpr);
 
@@ -119,11 +119,11 @@ class DPRTableWriter {
      * @param newParcelNumber           amount of new parcels
      * @param xlsxSheet                 excel sheet
      */
-    void writeDPRInflowAndOutflows(int parcelNumberAffectedByDPR,
-                                          int dpr,
-                                          int area,
-                                          int newParcelNumber,
-                                          XSSFSheet xlsxSheet) {
+    void writeDPRInflowAndOutflows(String parcelNumberAffectedByDPR,
+                                   String dpr,
+                                   int area,
+                                   int newParcelNumber,
+                                   XSSFSheet xlsxSheet) {
 
         Integer indexOfParcelRow =
                 writingUtils.calculateIndexOfParcelRow(newParcelNumber, additionConstantToGetToParcelNumberRowInDPRTable);
@@ -143,14 +143,14 @@ class DPRTableWriter {
      * @param dataExtractionDPR                 get-Methods for dpr container
      * @param xlsxSheet                         excel sheet
      */
-    void writeAllRoundingDifferencesIntoDPRTable(List<Integer> orderedListOfDPRs,
-                                                         int numberOfNewParcelsInParcelTable,
-                                                         DataExtractionDPR dataExtractionDPR,
-                                                         XSSFSheet xlsxSheet){
+    void writeAllRoundingDifferencesIntoDPRTable(List<String> orderedListOfDPRs,
+                                                 int numberOfNewParcelsInParcelTable,
+                                                 DataExtractionDPR dataExtractionDPR,
+                                                 XSSFSheet xlsxSheet){
 
         LOGGER.log(Level.FINER, "Write rounding difference for each dpr into dpr table");
 
-        for (int dpr : orderedListOfDPRs) {
+        for (String dpr : orderedListOfDPRs) {
 
             Integer roundingDifference = dataExtractionDPR.getRoundingDifferenceDPR(dpr);
 
@@ -167,10 +167,10 @@ class DPRTableWriter {
      * @param newParcelNumber       amount of new parcels in parcel table
      * @param xlsxSheet             excel sheet
      */
-    void writeDPRRoundingDifference(int dpr,
-                                            int roundingDifference,
-                                            int newParcelNumber,
-                                            XSSFSheet xlsxSheet) {
+    void writeDPRRoundingDifference(String dpr,
+                                    int roundingDifference,
+                                    int newParcelNumber,
+                                    XSSFSheet xlsxSheet) {
 
         Integer rowDPRNumber;
         Integer columnRoundingDifference;
@@ -192,14 +192,14 @@ class DPRTableWriter {
      * @param dataExtractionDPR                 get-methods for dpr container
      * @param xlsxSheet                         excel sheet
      */
-    void writeAllNewAreasIntoDPRTable(List<Integer> orderedListOfDPRs,
-                                              int numberOfNewParcelsInParcelTable,
-                                              DataExtractionDPR dataExtractionDPR,
-                                              XSSFSheet xlsxSheet){
+    void writeAllNewAreasIntoDPRTable(List<String> orderedListOfDPRs,
+                                      int numberOfNewParcelsInParcelTable,
+                                      DataExtractionDPR dataExtractionDPR,
+                                      XSSFSheet xlsxSheet){
 
         LOGGER.log(Level.FINER, "Write for each dpr the new area into dpr table");
 
-        for (int dpr : orderedListOfDPRs) {
+        for (String dpr : orderedListOfDPRs) {
             Integer newArea = dataExtractionDPR.getNewAreaDPR(dpr);
             writeNewDPRArea(dpr, newArea, numberOfNewParcelsInParcelTable, xlsxSheet);
         }
@@ -213,10 +213,10 @@ class DPRTableWriter {
      * @param newParcelNumber   amount of new parcels in parcel table
      * @param xlsxSheet         excel sheet
      */
-    void writeNewDPRArea(int dpr,
-                                int area,
-                                int newParcelNumber,
-                                XSSFSheet xlsxSheet) {
+    void writeNewDPRArea(String dpr,
+                         int area,
+                         int newParcelNumber,
+                         XSSFSheet xlsxSheet) {
 
         Integer indexOfParcelRow =
                 writingUtils.calculateIndexOfParcelRow(newParcelNumber, additionConstantToGetToParcelNumberRowInDPRTable);
