@@ -51,12 +51,15 @@ class WritingUtils {
     void writeValueIntoCell(int rowIndex,
                             Integer columnIndex,
                             XSSFSheet xlsxSheet,
-                            String value){
+                            String value,
+                            String type){
 
         XSSFRow row = xlsxSheet.getRow(rowIndex);
         XSSFCell cell =row.getCell(columnIndex);
-        cell.setCellValue("(" + value + ")");
-
+        if (type == "dpr")
+            cell.setCellValue("(" + value + ")");
+        else if (type == "parcel")
+            cell.setCellValue(value);
     }
 
     /**
@@ -74,8 +77,7 @@ class WritingUtils {
         Row row = xlsxSheet.getRow(rowNumber);
 
         for (Cell cell : row) {
-            System.out.println("Celltype = "+cell.getCellTypeEnum());
-            if (cell.getCellTypeEnum() == CellType.STRING && cell.getStringCellValue() == ParcelNumber) {
+            if (cell.getCellTypeEnum() == CellType.STRING && cell.getStringCellValue().equals(ParcelNumber)) {
                 indexOldParcelNumber = cell.getColumnIndex();
                 break;
             }
@@ -85,7 +87,6 @@ class WritingUtils {
             throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, "Could not find Parcel " +
                     ParcelNumber);
         }
-        System.out.println("indexOfOldParcelNumber "+ParcelNumber+" = "+indexOldParcelNumber);
 
         return indexOldParcelNumber;
     }
@@ -108,7 +109,7 @@ class WritingUtils {
             Row row1 = rowIterator.next();
             Cell cell1 = row1.getCell(columnIndexOfNewParcelRow);
 
-            if (cell1.getCellTypeEnum() == CellType.NUMERIC && cell1.getStringCellValue() == newParcelNumber){
+            if (cell1.getCellTypeEnum() == CellType.STRING && cell1.getStringCellValue().equals(newParcelNumber)){
                 indexNewParcelNumber = cell1.getRowIndex();
                 break;
             }
@@ -135,7 +136,7 @@ class WritingUtils {
         List<Integer> newAreaList = new ArrayList<>();
 
         for (String newParcel : orderedListOfNewParcelNumbers) {
-            newAreaList.add(dataExtractionParcel.getNewArea(newParcel));
+            newAreaList.add(dataExtractionParcel.getNewArea(newParcel)/10);
         }
 
         return newAreaList;
@@ -206,7 +207,7 @@ class WritingUtils {
 
                 String dprNumber = getDPRNumberFromCell(cell1);
 
-                if (dprNumber == dpr){
+                if (dprNumber.equals(dpr)){
                     indexDPR = cell1.getRowIndex();
                     break;
                 }
@@ -256,7 +257,7 @@ class WritingUtils {
             oldArea = 0;
             for (String newParcel : orderedListOfNewParcelNumbers) {
 
-                area = getAreaOfFlowBetweenOldAndNewParcel(oldParcel, newParcel, dataExtractionParcel)/10;
+                area = getAreaOfFlowBetweenOldAndNewParcel(oldParcel, newParcel, dataExtractionParcel);
 
                 if (area != null) {
                     oldArea += area;
@@ -293,10 +294,14 @@ class WritingUtils {
 
         Integer area;
 
-        if (oldParcel != newParcel) {
-            area = dataExtractionParcel.getAddedArea(newParcel, oldParcel)/10;
+        if (!oldParcel.equals(newParcel)) {
+            area = dataExtractionParcel.getAddedArea(newParcel, oldParcel);
         } else {
-            area = dataExtractionParcel.getRestAreaOfParcel(oldParcel)/10;
+            area = dataExtractionParcel.getRestAreaOfParcel(oldParcel);
+        }
+
+        if (area != null){
+            area = area/10;
         }
 
         return area;

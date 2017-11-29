@@ -64,20 +64,41 @@ public class ParcelContainer implements SetParcel, MetadataOfParcelMutation, Dat
             }
         }
         //Add also all parcelnumbers from parcelRemainingAreaMap to the oldparcelmap
+        List<Integer> oldParcelNumbersAsInteger = new ArrayList<>();
+        List<String> oldParcelNumbersAsString = new ArrayList<>();
+
         for(String key : parcelRemainingAreaMap.keySet()) {
             if(!oldparcelnumbers.contains(key)) {
                 oldparcelnumbers.add(key);
             }
         }
-        Collections.sort(oldparcelnumbers);
-        return oldparcelnumbers;
+
+        for (String parcelNumberAsString : oldparcelnumbers)
+            oldParcelNumbersAsInteger.add(Integer.valueOf(parcelNumberAsString));
+
+        Collections.sort(oldParcelNumbersAsInteger);
+
+        for (Integer parcelNumberAsInteger : oldParcelNumbersAsInteger)
+            oldParcelNumbersAsString.add(Integer.toString(parcelNumberAsInteger));
+
+        return oldParcelNumbersAsString;
     }
 
     @Override
     public List<String> getOrderedListOfNewParcelNumbers() {
         List<String> newparcelnumbers = new ArrayList<>(parcelNewAreaMap.keySet());
-        Collections.sort(newparcelnumbers);
-        return newparcelnumbers;
+        List<Integer> newParcelNumbersAsInteger = new ArrayList<>();
+        List<String> newParcelNumbersAsString = new ArrayList<>();
+
+        for (String parcelNumberAsString : newparcelnumbers)
+            newParcelNumbersAsInteger.add(Integer.valueOf(parcelNumberAsString));
+
+        Collections.sort(newParcelNumbersAsInteger);
+
+        for (Integer parcelNumberAsInteger : newParcelNumbersAsInteger)
+            newParcelNumbersAsString.add(String.valueOf(parcelNumberAsInteger));
+
+        return newParcelNumbersAsString;
     }
     @Override
     public Integer getAddedArea(String newparcel, String oldparcel) {

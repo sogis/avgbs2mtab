@@ -239,7 +239,7 @@ public class XLSXTemplate implements ExcelTemplate {
      * @param parcelsAffectedByDPR  amount of parcels in dpr table
      */
     private void setColumnWidth(XSSFSheet sheet, int oldParcels, int parcelsAffectedByDPR) {
-        sheet.setColumnWidth(0,widthOfFirstColumn);
+        sheet.setColumnWidth(0, widthOfFirstColumn);
         if (oldParcels >= parcelsAffectedByDPR) {
             sheet.setColumnWidth(oldParcels + additionConstantToGetIndexOfLastColumnOfParcelTable,
                     widthOfLastParcelTableColumnAndTheFollowingColumn);
@@ -441,12 +441,15 @@ public class XLSXTemplate implements ExcelTemplate {
                 indent = noIndentValue;
                 cell.setCellValue(parcelNumberString);
             } else if (c==1) {
+                cell.setCellType(CellType.STRING);
                 if (oldParcels > 1) {
                     border_right = thin;
                 }
             } else if (c==oldParcels){
+                cell.setCellType(CellType.STRING);
                 border_left = thin;
             } else if (c<oldParcels) {
+                cell.setCellType(CellType.STRING);
                 border_left = thin;
                 border_right = thin;
             } else if (c==totalSize){
@@ -535,6 +538,7 @@ public class XLSXTemplate implements ExcelTemplate {
             indent = indentValue;
 
             if (c == 0) {
+                cell.setCellType(CellType.STRING);
                 if (i==newParcels * aParcelOrADprNeedsTwoRows + rowsBesideParcelRows - 1){
                     border_bottom = thick;
                     border_top = noStyling;

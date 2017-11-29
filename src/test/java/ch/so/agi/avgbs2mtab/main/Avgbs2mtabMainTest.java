@@ -391,15 +391,19 @@ public class Avgbs2mtabMainTest {
         HashMap<String, String> expectedValuesString = new HashMap<>();
         expectedValuesString.put("A2", "Neue Liegenschaften");
         expectedValuesString.put("A3", "Grundstück-Nr.");
+        expectedValuesString.put("A5", "2199");
         expectedValuesString.put("A7", "Rundungsdifferenz");
         expectedValuesString.put("A8", "Alte Fläche [m2]");
 
         expectedValuesString.put("B1", "Alte Liegenschaften");
         expectedValuesString.put("B2", "Grundstück-Nr.");
+        expectedValuesString.put("B3", "681");
 
         expectedValuesString.put("C1", "Alte Liegenschaften");
+        expectedValuesString.put("C3", "682");
 
         expectedValuesString.put("D1", "Alte Liegenschaften");
+        expectedValuesString.put("D3", "2199");
 
         expectedValuesString.put("E2", "Neue Fläche");
         expectedValuesString.put("E3", "[m2]");
@@ -422,17 +426,16 @@ public class Avgbs2mtabMainTest {
     private HashMap<String, Double> generateHashMapOfExpectedNumericValuesOfSO0200002407_4002_20150807() {
 
         HashMap<String, Double> expectedValuesNumeric = new HashMap<>();
-        expectedValuesNumeric.put("A5", (double) 2199);
 
-        expectedValuesNumeric.put("B3", (double) 681);
+
         expectedValuesNumeric.put("B5", (double) 275);
         expectedValuesNumeric.put("B8", (double) 275);
 
-        expectedValuesNumeric.put("C3", (double) 682);
+
         expectedValuesNumeric.put("C5", (double) 440);
         expectedValuesNumeric.put("C8", (double) 440);
 
-        expectedValuesNumeric.put("D3", (double) 2199);
+
         expectedValuesNumeric.put("D5", (double) 1525);
         expectedValuesNumeric.put("D8", (double) 1525);
 
@@ -552,11 +555,16 @@ public class Avgbs2mtabMainTest {
         HashMap<String, String> expectedValuesString = new HashMap<>();
         expectedValuesString.put("A2", "Neue Liegenschaften");
         expectedValuesString.put("A3", "Grundstück-Nr.");
+        expectedValuesString.put("A5", "597");
+        expectedValuesString.put("A7", "40011");
+        expectedValuesString.put("A9", "40012");
+        expectedValuesString.put("A11", "40013");
         expectedValuesString.put("A13", "Rundungsdifferenz");
         expectedValuesString.put("A14", "Alte Fläche [m2]");
 
         expectedValuesString.put("B1", "Alte Liegenschaften");
         expectedValuesString.put("B2", "Grundstück-Nr.");
+        expectedValuesString.put("B3", "597");
 
         expectedValuesString.put("C2", "Neue Fläche");
         expectedValuesString.put("C3", "[m2]");
@@ -578,12 +586,9 @@ public class Avgbs2mtabMainTest {
     private HashMap<String, Double> generateHashMapOfExpectedNumericValuesOfSO0200002407_4001_20150806() {
 
         HashMap<String, Double> expectedValuesNumeric = new HashMap<>();
-        expectedValuesNumeric.put("A5", (double) 597);
-        expectedValuesNumeric.put("A7", (double) 40011);
-        expectedValuesNumeric.put("A9", (double) 40012);
-        expectedValuesNumeric.put("A11", (double) 40013);
 
-        expectedValuesNumeric.put("B3", (double) 597);
+
+
         expectedValuesNumeric.put("B5", (double) 636);
         expectedValuesNumeric.put("B7", (double) 453);
         expectedValuesNumeric.put("B9", (double) 460);
@@ -620,8 +625,10 @@ public class Avgbs2mtabMainTest {
 
         expectedValuesString.put("B11", "Liegenschaften");
         expectedValuesString.put("B12", "Grundstück-Nr.");
+        expectedValuesString.put("B13", "2141");
 
         expectedValuesString.put("C11", "Liegenschaften");
+        expectedValuesString.put("C13", "2142");
 
         expectedValuesString.put("D12", "Rundungs-differenz");
 
@@ -635,10 +642,9 @@ public class Avgbs2mtabMainTest {
     private HashMap<String, Double> generateHashMapOfExpectedNumericValuesOfSO0200002407_40051_20150811() {
 
         HashMap<String, Double> expectedValuesNumeric = new HashMap<>();
-        expectedValuesNumeric.put("B13", (double) 2141);
+
         expectedValuesNumeric.put("B15", (double) 1175);
 
-        expectedValuesNumeric.put("C13", (double) 2142);
         expectedValuesNumeric.put("C15", (double) 2481);
         expectedValuesNumeric.put("E15", (double) 3656);
 
@@ -697,17 +703,34 @@ public class Avgbs2mtabMainTest {
 
         expectedValuesString.put("A2", "Neue Liegenschaften");
         expectedValuesString.put("A3", "Grundstück-Nr.");
+        expectedValuesString.put("A5", "695");
+        expectedValuesString.put("A7", "696");
+        expectedValuesString.put("A9", "697");
+        expectedValuesString.put("A11", "701");
+        expectedValuesString.put("A13", "870");
+        expectedValuesString.put("A15", "874");
+        expectedValuesString.put("A17", "4004");
         expectedValuesString.put("A19", "Rundungsdifferenz");
         expectedValuesString.put("A20", "Alte Fläche [m2]");
 
         expectedValuesString.put("B1", "Alte Liegenschaften");
         expectedValuesString.put("B2", "Grundstück-Nr.");
+        expectedValuesString.put("B3", "695");
 
         expectedValuesString.put("C1", "Alte Liegenschaften");
+        expectedValuesString.put("C3", "696");
+
         expectedValuesString.put("D1", "Alte Liegenschaften");
+        expectedValuesString.put("D3", "697");
+
         expectedValuesString.put("E1", "Alte Liegenschaften");
+        expectedValuesString.put("E3", "701");
+
         expectedValuesString.put("F1", "Alte Liegenschaften");
+        expectedValuesString.put("F3", "870");
+
         expectedValuesString.put("G1", "Alte Liegenschaften");
+        expectedValuesString.put("G3", "874");
 
         expectedValuesString.put("H2", "Neue Fläche");
         expectedValuesString.put("H3", "[m2]");
@@ -733,45 +756,31 @@ public class Avgbs2mtabMainTest {
 
         HashMap<String, Double> expectedValuesNumeric = new HashMap<>();
 
-        expectedValuesNumeric.put("A5", (double) 695);
-        expectedValuesNumeric.put("A7", (double) 696);
-        expectedValuesNumeric.put("A9", (double) 697);
-        expectedValuesNumeric.put("A11", (double) 701);
-        expectedValuesNumeric.put("A13", (double) 870);
-        expectedValuesNumeric.put("A15", (double) 874);
-        expectedValuesNumeric.put("A17", (double) 4004);
-
-        expectedValuesNumeric.put("B3", (double) 695);
         expectedValuesNumeric.put("B5", (double) 416);
         expectedValuesNumeric.put("B17", (double) 242);
         expectedValuesNumeric.put("B19", (double) -1);
         expectedValuesNumeric.put("B20", (double) 657);
 
-        expectedValuesNumeric.put("C3", (double) 696);
         expectedValuesNumeric.put("C7", (double) 507);
         expectedValuesNumeric.put("C11", (double) 1);
         expectedValuesNumeric.put("C17", (double) 100);
         expectedValuesNumeric.put("C20", (double) 608);
 
-        expectedValuesNumeric.put("D3", (double) 697);
         expectedValuesNumeric.put("D9", (double) 687);
         expectedValuesNumeric.put("D11", (double) 1);
         expectedValuesNumeric.put("D17", (double) 129);
         expectedValuesNumeric.put("D19", (double) -1);
         expectedValuesNumeric.put("D20", (double) 816);
 
-        expectedValuesNumeric.put("E3", (double) 701);
         expectedValuesNumeric.put("E11", (double) 1112);
         expectedValuesNumeric.put("E17", (double) 1);
         expectedValuesNumeric.put("E19", (double) 1);
         expectedValuesNumeric.put("E20", (double) 1114);
 
-        expectedValuesNumeric.put("F3", (double) 870);
         expectedValuesNumeric.put("F13", (double) 611);
         expectedValuesNumeric.put("F17", (double) 39);
         expectedValuesNumeric.put("F20", (double) 650);
 
-        expectedValuesNumeric.put("G3", (double) 874);
         expectedValuesNumeric.put("G15", (double) 1939);
         expectedValuesNumeric.put("G17", (double) 81);
         expectedValuesNumeric.put("G20", (double) 2020);
@@ -809,13 +818,18 @@ public class Avgbs2mtabMainTest {
 
         expectedValuesString.put("A2", "Neue Liegenschaften");
         expectedValuesString.put("A3", "Grundstück-Nr.");
+        expectedValuesString.put("A5", "1273");
+        expectedValuesString.put("A7", "1864");
+        expectedValuesString.put("A9", "1973");
         expectedValuesString.put("A11", "Rundungsdifferenz");
         expectedValuesString.put("A12", "Alte Fläche [m2]");
 
         expectedValuesString.put("B1", "Alte Liegenschaften");
         expectedValuesString.put("B2", "Grundstück-Nr.");
+        expectedValuesString.put("B3", "1273");
 
         expectedValuesString.put("C1", "Alte Liegenschaften");
+        expectedValuesString.put("C3", "1864");
 
         expectedValuesString.put("D2", "Neue Fläche");
         expectedValuesString.put("D3", "[m2]");
@@ -826,6 +840,7 @@ public class Avgbs2mtabMainTest {
 
         expectedValuesString.put("B15", "Liegenschaften");
         expectedValuesString.put("B16", "Grundstück-Nr.");
+        expectedValuesString.put("B17", "1864");
 
         expectedValuesString.put("C16", "Rundungsdifferenz");
 
@@ -838,16 +853,13 @@ public class Avgbs2mtabMainTest {
     private HashMap<String, Double> generateHashMapOfExpectedNumericValuesOfSO0200002427_809_20170529() {
         HashMap<String, Double> expectedValuesNumeric = new HashMap<>();
 
-        expectedValuesNumeric.put("A5", (double) 1273);
-        expectedValuesNumeric.put("A7", (double) 1864);
-        expectedValuesNumeric.put("A9", (double) 1973);
 
-        expectedValuesNumeric.put("B3", (double) 1273);
+
         expectedValuesNumeric.put("B5", (double) 352);
         expectedValuesNumeric.put("B9", (double) 2);
         expectedValuesNumeric.put("B12", (double) 354);
 
-        expectedValuesNumeric.put("C3", (double) 1864);
+
         expectedValuesNumeric.put("C5", (double) 69);
         expectedValuesNumeric.put("C7", (double) 1238);
         expectedValuesNumeric.put("C9", (double) 1434);
@@ -858,7 +870,6 @@ public class Avgbs2mtabMainTest {
         expectedValuesNumeric.put("D9", (double) 1436);
         expectedValuesNumeric.put("D12", (double) 3095);
 
-        expectedValuesNumeric.put("B17", (double) 1864);
         expectedValuesNumeric.put("B19", (double) 1238);
 
         expectedValuesNumeric.put("D19", (double) 1238);
@@ -886,6 +897,7 @@ public class Avgbs2mtabMainTest {
 
         expectedValuesString.put("B11", "Liegenschaften");
         expectedValuesString.put("B12", "Grundstück-Nr.");
+        expectedValuesString.put("B13", "1606");
 
         expectedValuesString.put("C12", "Rundungs-differenz");
 
@@ -898,8 +910,6 @@ public class Avgbs2mtabMainTest {
     private HashMap<String, Double> generateHashMapOfExpectedNumericValuesOfSO0200002578_39732_01_20170908() {
         HashMap<String, Double> expectedValuesNumeric = new HashMap<>();
 
-
-        expectedValuesNumeric.put("B13", (double) 1606);
         expectedValuesNumeric.put("B15", (double) 893);
 
         expectedValuesNumeric.put("D15", (double) 893);

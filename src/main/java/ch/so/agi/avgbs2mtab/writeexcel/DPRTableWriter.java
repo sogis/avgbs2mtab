@@ -58,7 +58,7 @@ class DPRTableWriter {
 
         for (String parcelNumber : orderedListOfParcelNumbersAffectedByDPRs){
 
-            writingUtils.writeValueIntoCell(indexOfParcelRow, column, xlsxSheet, parcelNumber);
+            writingUtils.writeValueIntoCell(indexOfParcelRow, column, xlsxSheet, parcelNumber, "parcel");
 
             column++;
         }
@@ -78,7 +78,7 @@ class DPRTableWriter {
 
         for (String dpr : orderedListOfDPRs){
 
-            writingUtils.writeValueIntoCell(rowIndex, 0, xlsxSheet, dpr.toString());
+            writingUtils.writeValueIntoCell(rowIndex, 0, xlsxSheet, dpr.toString(), "dpr");
 
             rowIndex++;
             rowIndex++;
@@ -132,7 +132,7 @@ class DPRTableWriter {
 
         int indexDPR = writingUtils.getRowIndexOfDPRInTable(indexOfParcelRow, dpr, xlsxSheet);
 
-        writingUtils.writeValueIntoCell(indexDPR, indexParcel, xlsxSheet, area);
+        writingUtils.writeValueIntoCell(indexDPR, indexParcel, xlsxSheet, area/10);
     }
 
 
@@ -225,7 +225,7 @@ class DPRTableWriter {
 
         Integer columnNewArea = (int) xlsxSheet.getRow(rowDPRNumber).getLastCellNum()-1;
 
-        writeNewDPRAreaValueIntoCell(rowDPRNumber, columnNewArea, area, xlsxSheet);
+        writeNewDPRAreaValueIntoCell(rowDPRNumber, columnNewArea, area/10, xlsxSheet);
     }
 
     /**

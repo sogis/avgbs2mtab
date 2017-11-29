@@ -74,7 +74,7 @@ class ParcelTableWriter {
 
         for (String parcelNumber : orderedListOfNewParcelNumbers){
             writingUtils.writeValueIntoCell(startIndexOfRow + aParcelOrADprNeedsTwoRows * amountOfParcels,
-                    columnIndexOfNewParcelRow, xlsxSheet, parcelNumber);
+                    columnIndexOfNewParcelRow, xlsxSheet, parcelNumber, "parcel");
             amountOfParcels++;
         }
     }
@@ -241,7 +241,7 @@ class ParcelTableWriter {
 
         for (String newParcel : orderedListOfNewParcelNumbers){
 
-            int newArea = dataExtractionParcel.getNewArea(newParcel);
+            int newArea = dataExtractionParcel.getNewArea(newParcel)/10;
 
             writeNewArea(newParcel, newArea, xlsxSheet);
         }

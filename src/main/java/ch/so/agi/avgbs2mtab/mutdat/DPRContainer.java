@@ -66,26 +66,48 @@ public class DPRContainer implements SetDPR, MetadataOfDPRMutation, DataExtracti
     @Override
     public List<String> getOrderedListOfParcelsAffectedByDPRs() {
         List<String> parcelsaffectedmydprs = new ArrayList<>();
+        List<Integer> ParcelNumbersAsInteger = new ArrayList<>();
+        List<String> ParcelNumbersAsString = new ArrayList<>();
+
         for(String key : affectedParcelsMap.keySet()) {
             String keyparcelnumber = numberAndRefMap.get(key);
             if(!parcelsaffectedmydprs.contains(keyparcelnumber)) {
                 parcelsaffectedmydprs.add(keyparcelnumber);
             }
         }
-        Collections.sort(parcelsaffectedmydprs);
-        return parcelsaffectedmydprs;
+
+        for (String parcelNumberAsString : parcelsaffectedmydprs)
+            ParcelNumbersAsInteger.add(Integer.valueOf(parcelNumberAsString));
+
+        Collections.sort(ParcelNumbersAsInteger);
+
+        for (Integer parcelNumberAsInteger : ParcelNumbersAsInteger)
+            ParcelNumbersAsString.add(String.valueOf(parcelNumberAsInteger));
+
+        return ParcelNumbersAsString;
     }
 
     @Override
     public List<String> getOrderedListOfNewDPRs() {
         List<String> newdprs = new ArrayList<>(mainDprMap.keySet());
+        List<Integer> newDPRsAsInteger = new ArrayList<>();
+        List<String> newDPRsAsString = new ArrayList<>();
+
         for (String key : newAreaMap.keySet()) {
             if(newAreaMap.get(key).equals(0)) {
                 newdprs.add(key);
             }
         }
-        Collections.sort(newdprs);
-        return newdprs;
+
+        for (String newDPRAsString : newdprs)
+            newDPRsAsInteger.add(Integer.valueOf(newDPRAsString));
+
+        Collections.sort(newDPRsAsInteger);
+
+        for (Integer newDPRAsInteger : newDPRsAsInteger)
+            newDPRsAsString.add(String.valueOf(newDPRAsInteger));
+
+        return newDPRsAsString;
     }
 
     @Override

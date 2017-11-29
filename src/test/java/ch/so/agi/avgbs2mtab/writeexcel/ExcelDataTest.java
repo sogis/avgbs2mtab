@@ -368,7 +368,6 @@ public class ExcelDataTest {
 
         Row row = xlsxSheet.getRow(2);
         for (Cell cell : row){
-            System.out.println("Cell = "+cell.getStringCellValue());
             if (cell.getColumnIndex()== 1){
                 if(!cell.getStringCellValue().equals("695")){
                     allOldParcelsAreCorrect = false;
@@ -424,8 +423,6 @@ public class ExcelDataTest {
             Row row = xlsxSheet.getRow(2 + 2*i);
             Cell cell = row.getCell(0);
 
-            System.out.println("Cell "+i+" = "+cell.getStringCellValue());
-
             if (i == 1) {
                 if(!cell.getStringCellValue().equals("695")){
                     allNewParcelsAreCorrect = false;
@@ -455,7 +452,6 @@ public class ExcelDataTest {
                     allNewParcelsAreCorrect = false;
                 }
             }
-            System.out.println("allNewParcelsAreCorrect = "+allNewParcelsAreCorrect);
 
         }
 
@@ -565,9 +561,6 @@ public class ExcelDataTest {
         boolean allOldAreasAreCorrect = true;
 
         Row row = xlsxSheet.getRow(19);
-        /*System.out.println(row.getCell(1));
-        System.out.println(row.getCell(2));
-        System.out.println(row.getCell(3));*/
 
         if (row.getCell(1).getNumericCellValue() != 657 ||
                 row.getCell(2).getNumericCellValue() != 608 ||
