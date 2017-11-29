@@ -12,6 +12,10 @@ import java.util.logging.Logger;
 class ParcelTableWriter {
     private static final Logger LOGGER = Logger.getLogger( XLSXTemplate.class.getName());
 
+    private static final String typeParcel = "parcel";
+    private static final String typeArea = "area";
+    private static final String typeRoundingDifference = "rounding difference";
+
     private static final Integer startIndexOfColumn = 1;
     private static final Integer rowIndexOfOldParcels = 2;
     private static final Integer aParcelOrADprNeedsTwoRows = 2;
@@ -74,7 +78,7 @@ class ParcelTableWriter {
 
         for (String parcelNumber : orderedListOfNewParcelNumbers){
             writingUtils.writeValueIntoCell(startIndexOfRow + aParcelOrADprNeedsTwoRows * amountOfParcels,
-                    columnIndexOfNewParcelRow, xlsxSheet, parcelNumber, "parcel");
+                    columnIndexOfNewParcelRow, xlsxSheet, parcelNumber, typeParcel);
             amountOfParcels++;
         }
     }
@@ -129,7 +133,7 @@ class ParcelTableWriter {
         indexOldParcelNumber = writingUtils.getColumnIndexOfParcelInTable(oldParcelNumber, rowIndexOfOldParcels, xlsxSheet);
         indexNewParcelNumber = writingUtils.getRowIndexOfNewParcelInTable(newParcelNumber, xlsxSheet);
 
-        writingUtils.writeValueIntoCell(indexNewParcelNumber, indexOldParcelNumber, xlsxSheet, area);
+        writingUtils.writeValueIntoCell(indexNewParcelNumber, indexOldParcelNumber, xlsxSheet, area, typeArea);
     }
 
     /**
@@ -179,7 +183,8 @@ class ParcelTableWriter {
             LOGGER.log(Level.SEVERE, errorMessage);
             throw new Avgbs2MtabException(Avgbs2MtabException.TYPE_MISSING_PARCEL_IN_EXCEL, errorMessage);
         } else {
-            writingUtils.writeValueIntoCell(rowOldParcelNumber, columnOldParcelNumber, xlsxSheet, roundingDifference);
+            writingUtils.writeValueIntoCell(rowOldParcelNumber, columnOldParcelNumber, xlsxSheet, roundingDifference,
+                    typeRoundingDifference);
         }
     }
 
@@ -223,7 +228,8 @@ class ParcelTableWriter {
         int columnNumber = NumberOfOldParcels + 1;
 
         if (roundingDifferenceSum != 0) {
-            writingUtils.writeValueIntoCell(rowNumber, columnNumber, xlsxSheet, roundingDifferenceSum);
+            writingUtils.writeValueIntoCell(rowNumber, columnNumber, xlsxSheet, roundingDifferenceSum,
+                    typeRoundingDifference);
         }
     }
 
@@ -241,7 +247,7 @@ class ParcelTableWriter {
 
         for (String newParcel : orderedListOfNewParcelNumbers){
 
-            int newArea = dataExtractionParcel.getNewArea(newParcel)/10;
+            int newArea = dataExtractionParcel.getNewArea(newParcel);
 
             writeNewArea(newParcel, newArea, xlsxSheet);
         }
@@ -262,7 +268,7 @@ class ParcelTableWriter {
         try {
             Row row = xlsxSheet.getRow(rowNewParcelNumber);
             Integer columnNewParcelNumber = row.getLastCellNum()-1;
-            writingUtils.writeValueIntoCell(rowNewParcelNumber, columnNewParcelNumber, xlsxSheet, area);
+            writingUtils.writeValueIntoCell(rowNewParcelNumber, columnNewParcelNumber, xlsxSheet, area, typeArea);
         } catch (Exception e){
             LOGGER.log(Level.SEVERE,"Last row could not be found");
             throw new Avgbs2MtabException("Could not find last row");
@@ -313,7 +319,7 @@ class ParcelTableWriter {
         Integer rowOldParcelArea = additionConstantToGetToOldAreaRow + aParcelOrADprNeedsTwoRows * numberOfnewParcels;
 
         if (columnOldParcelNumber != null){
-            writingUtils.writeValueIntoCell(rowOldParcelArea, columnOldParcelNumber, xlsxSheet, oldArea);
+            writingUtils.writeValueIntoCell(rowOldParcelArea, columnOldParcelNumber, xlsxSheet, oldArea, typeArea);
         } else {
             String errorMessage = "The old parcel " + oldParcelNumber + " could not be found in the excel.";
             LOGGER.log(Level.SEVERE, errorMessage);
@@ -374,12 +380,12 @@ class ParcelTableWriter {
         for (int area : newAreas){
             sumNewAreas += area;
         }
-        sumNewAreas = sumNewAreas + roundingDifference;
+        sumNewAreas = sumNewAreas + roundingDifference*10;
 
         if (sumOldAreas.equals( sumNewAreas)){
             writingUtils.writeValueIntoCell(additionConstantToGetToOldAreaRow + aParcelOrADprNeedsTwoRows * numberOfNewParcels,
                     columnIndexOfNewAreas, xlsxSheet,
-                    sumOldAreas);
+                    sumOldAreas, typeArea);
         } else {
             LOGGER.log(Level.SEVERE, "The sum of the old areas is not equal to the sum of the new areas.");
             throw new Avgbs2MtabException("The sum of the old areas is not equal to the sum of the new areas.");

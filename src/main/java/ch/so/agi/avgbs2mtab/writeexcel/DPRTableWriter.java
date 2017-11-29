@@ -12,6 +12,11 @@ import java.util.logging.Logger;
 class DPRTableWriter {
     private static final Logger LOGGER = Logger.getLogger( XLSXTemplate.class.getName());
 
+    private static final String typeDPR = "dpr";
+    private static final String typeParcel = "parcel";
+    private static final String typeArea = "area";
+    private static final String typeRoundingDifference = "rounding difference";
+
     private static final Integer additionConstantToGetToRoundingDifferenceRow = 4; //empty, new Area, square Meter, 2
     // cells rounding difference
     // (-1 because index starts with 0)
@@ -58,7 +63,7 @@ class DPRTableWriter {
 
         for (String parcelNumber : orderedListOfParcelNumbersAffectedByDPRs){
 
-            writingUtils.writeValueIntoCell(indexOfParcelRow, column, xlsxSheet, parcelNumber, "parcel");
+            writingUtils.writeValueIntoCell(indexOfParcelRow, column, xlsxSheet, parcelNumber, typeParcel);
 
             column++;
         }
@@ -78,7 +83,7 @@ class DPRTableWriter {
 
         for (String dpr : orderedListOfDPRs){
 
-            writingUtils.writeValueIntoCell(rowIndex, 0, xlsxSheet, dpr.toString(), "dpr");
+            writingUtils.writeValueIntoCell(rowIndex, 0, xlsxSheet, dpr.toString(), typeDPR);
 
             rowIndex++;
             rowIndex++;
@@ -132,7 +137,7 @@ class DPRTableWriter {
 
         int indexDPR = writingUtils.getRowIndexOfDPRInTable(indexOfParcelRow, dpr, xlsxSheet);
 
-        writingUtils.writeValueIntoCell(indexDPR, indexParcel, xlsxSheet, area/10);
+        writingUtils.writeValueIntoCell(indexDPR, indexParcel, xlsxSheet, area, typeArea);
     }
 
 
@@ -182,7 +187,8 @@ class DPRTableWriter {
 
         columnRoundingDifference = (int) xlsxSheet.getRow(rowDPRNumber).getLastCellNum()-2;
 
-        writingUtils.writeValueIntoCell(rowDPRNumber, columnRoundingDifference, xlsxSheet, roundingDifference);
+        writingUtils.writeValueIntoCell(rowDPRNumber, columnRoundingDifference, xlsxSheet, roundingDifference,
+                typeRoundingDifference);
     }
 
     /**
@@ -225,7 +231,7 @@ class DPRTableWriter {
 
         Integer columnNewArea = (int) xlsxSheet.getRow(rowDPRNumber).getLastCellNum()-1;
 
-        writeNewDPRAreaValueIntoCell(rowDPRNumber, columnNewArea, area/10, xlsxSheet);
+        writeNewDPRAreaValueIntoCell(rowDPRNumber, columnNewArea, area, xlsxSheet);
     }
 
     /**
@@ -242,9 +248,10 @@ class DPRTableWriter {
 
         XSSFRow rowFlows = xlsxSheet.getRow(rowDPRNumber);
         XSSFCell cellFlows = rowFlows.getCell(columnNewArea);
+        double areaDouble = area/10.0;
 
-        if (area > 0) {
-            cellFlows.setCellValue(area);
+        if (areaDouble > 0) {
+            cellFlows.setCellValue(areaDouble);
         } else {
             cellFlows.setCellValue("gelöscht");
         }

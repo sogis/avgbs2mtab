@@ -23,6 +23,11 @@ class WritingUtils {
     private static final Integer aParcelOrADprNeedsTwoRows = 2;
     private static final Integer columnIndexOfNewParcelRow = 0;
 
+    private static final String typeDPR = "dpr";
+    private static final String typeParcel = "parcel";
+    private static final String typeArea = "area";
+    private static final String typeRoundingDifference = "rounding difference";
+
     /**
      * writes inflow or outflow value in a specific cell
      * @param rowIndex      Index of row
@@ -33,11 +38,18 @@ class WritingUtils {
     void writeValueIntoCell(Integer rowIndex,
                                     Integer columnIndex,
                                     XSSFSheet xlsxSheet,
-                                    Integer value){
+                                    Integer value,
+                                    String type){
 
         Row row = xlsxSheet.getRow(rowIndex);
         Cell cell = row.getCell(columnIndex);
-        cell.setCellValue(value);
+        double valueDouble = 0.0;
+        if (type.equals(typeArea)) {
+            valueDouble = value / 10.0;
+        } else if (type.equals(typeRoundingDifference)){
+            valueDouble = value;
+        }
+        cell.setCellValue(valueDouble);
 
     }
 
@@ -56,9 +68,9 @@ class WritingUtils {
 
         XSSFRow row = xlsxSheet.getRow(rowIndex);
         XSSFCell cell =row.getCell(columnIndex);
-        if (type == "dpr")
+        if (type.equals(typeDPR))
             cell.setCellValue("(" + value + ")");
-        else if (type == "parcel")
+        else if (type.equals(typeParcel))
             cell.setCellValue(value);
     }
 
@@ -136,7 +148,7 @@ class WritingUtils {
         List<Integer> newAreaList = new ArrayList<>();
 
         for (String newParcel : orderedListOfNewParcelNumbers) {
-            newAreaList.add(dataExtractionParcel.getNewArea(newParcel)/10);
+            newAreaList.add(dataExtractionParcel.getNewArea(newParcel));
         }
 
         return newAreaList;
@@ -267,7 +279,7 @@ class WritingUtils {
             if (oldArea != null) {
                 roundingDifference = dataExtractionParcel.getRoundingDifference(oldParcel);
                 if (roundingDifference != null){
-                    oldArea = oldArea - roundingDifference;
+                    oldArea = oldArea - roundingDifference*10;
                 }
                 oldAreaHashMap.put(oldParcel, oldArea);
             } else {
@@ -300,9 +312,6 @@ class WritingUtils {
             area = dataExtractionParcel.getRestAreaOfParcel(oldParcel);
         }
 
-        if (area != null){
-            area = area/10;
-        }
 
         return area;
 

@@ -7,7 +7,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -267,7 +266,7 @@ public class Avgbs2mtabMainTest {
     }
 
     @Test
-    public void worksWithDecimalValues() throws Exception {
+    public void worksWithDecimalValuesZerosInDPR() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         File xtfFile = new File(classLoader.getResource("SO0200002578_39732-01_20170908.xml").getFile());
         File outputFilePath = validOutputFilePath();
@@ -289,6 +288,59 @@ public class Avgbs2mtabMainTest {
                 expectedValuesString,
                 xlsxDataString);
 
+
+        Assert.assertTrue(allValuesAreCorrect);
+    }
+
+    @Test
+    public void worksWithDecimalValuesElseThanZerosInDPR() throws Exception {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File xtfFile = new File(classLoader.getResource("dprarea_as_double.xtf").getFile());
+        File outputFilePath = validOutputFilePath();
+
+        Avgbs2mtabMain.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
+
+        XSSFSheet xlsxSheet = openExcelSheet(outputFilePath.getAbsolutePath());
+
+        HashMap<String, Double> xlsxDataNumeric = generateHashMapFromNumericValuesInExcel(xlsxSheet);
+        HashMap<String, String> xlsxDataString = generateHashMapFromStringValuesInExcel(xlsxSheet);
+
+        HashMap<String, String> expectedValuesString =
+                generateHashMapOfExpectedStringValuesOfDprarea_as_double();
+        HashMap<String, Double> expectedValuesNumeric =
+                generateHashMapOfExpectedNumericValuesOfDprarea_as_double();
+
+        Boolean allValuesAreCorrect = checkIfValuesAreCorrect(expectedValuesNumeric,
+                xlsxDataNumeric,
+                expectedValuesString,
+                xlsxDataString);
+
+
+        Assert.assertTrue(allValuesAreCorrect);
+    }
+
+    @Test
+    public void correctDecimalValuesInParcelTable() throws Exception {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File xtfFile = new File(classLoader.getResource("parcelareas_as_double.xtf").getFile());
+        File outputFilePath = validOutputFilePath();
+
+        Avgbs2mtabMain.runConversion(xtfFile.getAbsolutePath(), outputFilePath.getAbsolutePath());
+
+        XSSFSheet xlsxSheet = openExcelSheet(outputFilePath.getAbsolutePath());
+
+        HashMap<String, Double> xlsxDataNumeric = generateHashMapFromNumericValuesInExcel(xlsxSheet);
+        HashMap<String, String> xlsxDataString = generateHashMapFromStringValuesInExcel(xlsxSheet);
+
+        HashMap<String, String> expectedValuesString =
+                generateHashMapOfExpectedStringValuesOfParcelareas_as_double();
+        HashMap<String, Double> expectedValuesNumeric =
+                generateHashMapOfExpectedNumericValuesOfParcelareas_as_double();
+
+        Boolean allValuesAreCorrect = checkIfValuesAreCorrect(expectedValuesNumeric,
+                xlsxDataNumeric,
+                expectedValuesString,
+                xlsxDataString);
 
         Assert.assertTrue(allValuesAreCorrect);
     }
@@ -913,6 +965,147 @@ public class Avgbs2mtabMainTest {
         expectedValuesNumeric.put("B15", (double) 893);
 
         expectedValuesNumeric.put("D15", (double) 893);
+
+        return expectedValuesNumeric;
+    }
+
+    private HashMap<String, String> generateHashMapOfExpectedStringValuesOfDprarea_as_double() {
+        HashMap<String, String> expectedValuesString = new HashMap<>();
+
+        expectedValuesString.put("A2", "Neue Liegenschaften");
+        expectedValuesString.put("A3", "Grundstück-Nr.");
+        expectedValuesString.put("A7", "Rundungsdifferenz");
+        expectedValuesString.put("A8", "Alte Fläche [m2]");
+
+        expectedValuesString.put("B1", "Alte Liegenschaften");
+        expectedValuesString.put("B2", "Grundstück-Nr.");
+
+        expectedValuesString.put("C2", "Neue Fläche");
+        expectedValuesString.put("C3", "[m2]");
+
+        expectedValuesString.put("A12", "Selbst. Recht");
+        expectedValuesString.put("A13", "Grundstück-Nr.");
+        expectedValuesString.put("A15", "(1635)");
+
+        expectedValuesString.put("B11", "Liegenschaften");
+        expectedValuesString.put("B12", "Grundstück-Nr.");
+        expectedValuesString.put("B13", "1606");
+
+        expectedValuesString.put("C12", "Rundungs-differenz");
+
+        expectedValuesString.put("D12", "Selbst. Recht Fläche");
+        expectedValuesString.put("D13", "[m2]");
+
+        return expectedValuesString;
+    }
+
+    private HashMap<String, Double> generateHashMapOfExpectedNumericValuesOfDprarea_as_double() {
+        HashMap<String, Double> expectedValuesNumeric = new HashMap<>();
+
+        expectedValuesNumeric.put("B15", 123.5);
+
+        expectedValuesNumeric.put("D15", 123.5);
+
+        return expectedValuesNumeric;
+    }
+
+    private HashMap<String, String> generateHashMapOfExpectedStringValuesOfParcelareas_as_double() {
+        HashMap<String, String> expectedValuesString = new HashMap<>();
+
+        expectedValuesString.put("A2", "Neue Liegenschaften");
+        expectedValuesString.put("A3", "Grundstück-Nr.");
+        expectedValuesString.put("A5", "695");
+        expectedValuesString.put("A7", "696");
+        expectedValuesString.put("A9", "697");
+        expectedValuesString.put("A11", "701");
+        expectedValuesString.put("A13", "870");
+        expectedValuesString.put("A15", "874");
+        expectedValuesString.put("A17", "4004");
+        expectedValuesString.put("A19", "Rundungsdifferenz");
+        expectedValuesString.put("A20", "Alte Fläche [m2]");
+
+        expectedValuesString.put("B1", "Alte Liegenschaften");
+        expectedValuesString.put("B2", "Grundstück-Nr.");
+        expectedValuesString.put("B3", "695");
+
+        expectedValuesString.put("C1", "Alte Liegenschaften");
+        expectedValuesString.put("C3", "696");
+
+        expectedValuesString.put("D1", "Alte Liegenschaften");
+        expectedValuesString.put("D3", "697");
+
+        expectedValuesString.put("E1", "Alte Liegenschaften");
+        expectedValuesString.put("E3", "701");
+
+        expectedValuesString.put("F1", "Alte Liegenschaften");
+        expectedValuesString.put("F3", "870");
+
+        expectedValuesString.put("G1", "Alte Liegenschaften");
+        expectedValuesString.put("G3", "874");
+
+        expectedValuesString.put("H2", "Neue Fläche");
+        expectedValuesString.put("H3", "[m2]");
+
+        expectedValuesString.put("A24", "Selbst. Recht");
+        expectedValuesString.put("A25", "Grundstück-Nr.");
+
+        expectedValuesString.put("B23", "Liegenschaften");
+        expectedValuesString.put("B24", "Grundstück-Nr.");
+
+        expectedValuesString.put("C24", "Rundungsdifferenz");
+
+        expectedValuesString.put("D24", "Selbst. Recht Fläche");
+        expectedValuesString.put("D25", "[m2]");
+
+        return expectedValuesString;
+
+    }
+
+    private HashMap<String, Double> generateHashMapOfExpectedNumericValuesOfParcelareas_as_double() {
+
+
+
+        HashMap<String, Double> expectedValuesNumeric = new HashMap<>();
+
+        expectedValuesNumeric.put("B5", (double) 416);
+        expectedValuesNumeric.put("B17", (double) 242);
+        expectedValuesNumeric.put("B19", (double) -1);
+        expectedValuesNumeric.put("B20", (double) 657);
+
+        expectedValuesNumeric.put("C7", (double) 507);
+        expectedValuesNumeric.put("C11", (double) 1);
+        expectedValuesNumeric.put("C17",  100.5);
+        expectedValuesNumeric.put("C20",  608.5);
+
+        expectedValuesNumeric.put("D9", (double) 687);
+        expectedValuesNumeric.put("D11", (double) 1);
+        expectedValuesNumeric.put("D17", (double) 129);
+        expectedValuesNumeric.put("D19", (double) -1);
+        expectedValuesNumeric.put("D20", (double) 816);
+
+        expectedValuesNumeric.put("E11", (double) 1112);
+        expectedValuesNumeric.put("E17",  1.2);
+        expectedValuesNumeric.put("E19", (double) 1);
+        expectedValuesNumeric.put("E20",  1114.2);
+
+        expectedValuesNumeric.put("F13", (double) 611);
+        expectedValuesNumeric.put("F17", (double) 39);
+        expectedValuesNumeric.put("F20", (double) 650);
+
+        expectedValuesNumeric.put("G15",  1939.1);
+        expectedValuesNumeric.put("G17", (double) 81);
+        expectedValuesNumeric.put("G20",  2020.1);
+
+        expectedValuesNumeric.put("H5", (double) 416);
+        expectedValuesNumeric.put("H7", (double) 507);
+        expectedValuesNumeric.put("H9", (double) 687);
+        expectedValuesNumeric.put("H11", (double) 1114);
+        expectedValuesNumeric.put("H13", (double) 611);
+        expectedValuesNumeric.put("H15",  1939.1);
+        expectedValuesNumeric.put("H17",  592.7);
+        expectedValuesNumeric.put("H19", (double) -1);
+        expectedValuesNumeric.put("H20",  5865.8);
+
 
         return expectedValuesNumeric;
     }
