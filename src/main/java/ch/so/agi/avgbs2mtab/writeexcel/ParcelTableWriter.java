@@ -59,7 +59,7 @@ class ParcelTableWriter {
         Integer column = startIndexOfColumn;
 
         for (String parcelNumber : orderedListOfOldParcelNumbers){
-            Cell cell =rowWithOldParcelNumbers.getCell(column);
+            Cell cell = rowWithOldParcelNumbers.getCell(column);
             cell.setCellValue(parcelNumber);
             column++;
         }
